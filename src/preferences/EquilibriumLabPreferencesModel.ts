@@ -4,9 +4,6 @@
  * Model for the simulation-specific preferences shown in Preferences →
  * Simulation. Each preference Property takes its initial value from the
  * corresponding query parameter in equilibriumLabQueryParameters.
- *
- * Remove the example preference (and its query parameter / UI control) if the
- * sim has no sim-specific preferences.
  */
 
 import { BooleanProperty } from "scenerystack/axon";
@@ -15,18 +12,26 @@ import EquilibriumLabNamespace from "../EquilibriumLabNamespace.js";
 import equilibriumLabQueryParameters from "./equilibriumLabQueryParameters.js";
 
 export class EquilibriumLabPreferencesModel {
-  /** Example preference; initial value comes from the `exampleToggle` query parameter. */
-  public readonly exampleToggleProperty: BooleanProperty;
+  /** Gas reactions start with Q and K in the Kp form. */
+  public readonly startWithKpProperty: BooleanProperty;
+
+  /** Newly formed molecules are ringed briefly in the particle box. */
+  public readonly showReactionFlashesProperty: BooleanProperty;
 
   public constructor(tandem?: Tandem) {
-    this.exampleToggleProperty = new BooleanProperty(
-      equilibriumLabQueryParameters.exampleToggle,
-      tandem ? { tandem: tandem.createTandem("exampleToggleProperty") } : undefined,
+    this.startWithKpProperty = new BooleanProperty(
+      equilibriumLabQueryParameters.startWithKp,
+      tandem ? { tandem: tandem.createTandem("startWithKpProperty") } : undefined,
+    );
+    this.showReactionFlashesProperty = new BooleanProperty(
+      equilibriumLabQueryParameters.showReactionFlashes,
+      tandem ? { tandem: tandem.createTandem("showReactionFlashesProperty") } : undefined,
     );
   }
 
   public reset(): void {
-    this.exampleToggleProperty.reset();
+    this.startWithKpProperty.reset();
+    this.showReactionFlashesProperty.reset();
   }
 }
 

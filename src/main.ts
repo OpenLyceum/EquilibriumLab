@@ -39,6 +39,8 @@ onReadyToLaunch(() => {
   const screens = [
     new ApproachScreen({
       name: stringManager.getScreenNames().approachStringProperty,
+      startWithKpProperty: simPreferences.startWithKpProperty,
+      showReactionFlashesProperty: simPreferences.showReactionFlashesProperty,
       tandem: Tandem.ROOT.createTandem("approachScreen"),
       backgroundColorProperty: EquilibriumLabColors.backgroundColorProperty,
     }),

@@ -155,7 +155,8 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     volumeRange: new Range(0.05, 0.25),
     defaultVolume: 0.1,
     defaultAmounts: [0.005, 0.4, 0],
-    maxAmount: 1.2,
+    maxAmount: 0.012,
+    maxAmounts: [0.012, 1.2, 0.012],
     particlesPerMole: 12000,
   },
   {

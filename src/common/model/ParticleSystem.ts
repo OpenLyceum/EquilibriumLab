@@ -18,6 +18,7 @@
 
 import { Random } from "scenerystack/dot";
 import {
+  BOX_MAX_HEIGHT,
   BOX_WIDTH,
   MAX_PARTICLES,
   PARTICLE_REFERENCE_MASS,
@@ -30,9 +31,6 @@ import type { ReactionMixture } from "./ReactionMixture.js";
 
 /** Most events replayed per frame in each direction; a faster backlog is skipped, not queued. */
 const MAX_EVENTS_PER_STEP = 12;
-
-/** Height of the box at the reaction's default volume (box units). */
-const DEFAULT_HEIGHT = 0.8;
 
 export type Particle = {
   /** Index of the species in the reaction. */
@@ -50,7 +48,7 @@ export class ParticleSystem {
 
   private readonly mixture: ReactionMixture;
   private readonly random = new Random({ seed: PARTICLE_SEED });
-  private height = DEFAULT_HEIGHT;
+  private height = BOX_MAX_HEIGHT;
 
   /** Gross events replayed so far in each direction, against the mixture's flows. */
   private forwardDone = 0;
@@ -92,9 +90,9 @@ export class ParticleSystem {
     return this.mixture.reaction;
   }
 
-  /** Box height (box units) for `volume`, proportional to it. */
+  /** Box height (box units) for `volume`: proportional to it, BOX_MAX_HEIGHT at the largest volume. */
   public heightFor(volume: number): number {
-    return (DEFAULT_HEIGHT * volume) / this.reaction.definition.defaultVolume;
+    return (BOX_MAX_HEIGHT * volume) / this.reaction.definition.volumeRange.max;
   }
 
   public getHeight(): number {

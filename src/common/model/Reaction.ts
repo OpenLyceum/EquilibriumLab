@@ -79,6 +79,8 @@ export type ReactionDefinition = {
   readonly defaultAmounts: readonly number[];
   /** Largest amount of any one species the controls allow (mol). */
   readonly maxAmount: number;
+  /** Per-species overrides of `maxAmount` (mol), for a species used in large excess. */
+  readonly maxAmounts?: readonly number[];
   /** Particles drawn per mole, so the default mixture shows roughly 50–150 particles. */
   readonly particlesPerMole: number;
 };
@@ -120,6 +122,11 @@ export class Reaction {
   /** Indices of the products (ν > 0). */
   public get productIndices(): number[] {
     return this.species.flatMap((s, i) => (s.nu > 0 ? [i] : []));
+  }
+
+  /** Largest amount of species `index` the controls allow (mol). */
+  public maxAmountOf(index: number): number {
+    return this.definition.maxAmounts?.[index] ?? this.definition.maxAmount;
   }
 
   /** ΔG° at `temperature` (J/mol). */

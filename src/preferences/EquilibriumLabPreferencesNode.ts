@@ -6,6 +6,7 @@
  * equilibriumLabQueryParameters).
  */
 
+import type { BooleanProperty, TReadOnlyProperty } from "scenerystack/axon";
 import { Text, VBox } from "scenerystack/scenery";
 import { PhetFont } from "scenerystack/scenery-phet";
 import { Checkbox } from "scenerystack/sun";
@@ -27,24 +28,39 @@ export class EquilibriumLabPreferencesNode extends VBox {
       fill: EquilibriumLabColors.controlSurfaceTextColorProperty,
     });
 
-    const exampleToggleCheckbox = new Checkbox(
-      preferencesModel.exampleToggleProperty,
-      new Text(prefStrings.exampleToggleStringProperty, {
-        font: new PhetFont(14),
-        fill: EquilibriumLabColors.controlSurfaceTextColorProperty,
-      }),
-      {
-        checkboxColor: EquilibriumLabColors.controlSurfaceTextColorProperty,
-        checkboxColorBackground: EquilibriumLabColors.controlSurfaceColorProperty,
-        spacing: 8,
-        ...(tandem && { tandem: tandem.createTandem("exampleToggleCheckbox") }),
-      },
-    );
+    const preferenceCheckbox = (property: BooleanProperty, label: TReadOnlyProperty<string>, name: string) =>
+      new Checkbox(
+        property,
+        new Text(label, {
+          font: new PhetFont(14),
+          fill: EquilibriumLabColors.controlSurfaceTextColorProperty,
+          maxWidth: 420,
+        }),
+        {
+          checkboxColor: EquilibriumLabColors.controlSurfaceTextColorProperty,
+          checkboxColorBackground: EquilibriumLabColors.controlSurfaceColorProperty,
+          spacing: 8,
+          accessibleName: label,
+          ...(tandem && { tandem: tandem.createTandem(name) }),
+        },
+      );
 
     super({
       align: "left",
       spacing: 12,
-      children: [header, exampleToggleCheckbox],
+      children: [
+        header,
+        preferenceCheckbox(
+          preferencesModel.startWithKpProperty,
+          prefStrings.startWithKpStringProperty,
+          "startWithKpCheckbox",
+        ),
+        preferenceCheckbox(
+          preferencesModel.showReactionFlashesProperty,
+          prefStrings.showReactionFlashesStringProperty,
+          "showReactionFlashesCheckbox",
+        ),
+      ],
     });
   }
 }

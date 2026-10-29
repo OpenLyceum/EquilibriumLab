@@ -1,59 +1,159 @@
 {
-  "title": "Equilibrium Lab",
+  "title": "Labo d'équilibre",
   "screens": {
-    "approach": "Approach",
-    "iceTable": "ICE Table",
+    "approach": "Vers l'équilibre",
+    "iceTable": "Tableau ICE",
     "leChatelier": "Le Chatelier",
     "vantHoff": "Van 't Hoff"
+  },
+  "common": {
+    "reactionHeading": "Réaction",
+    "reactionNames": {
+      "dinitrogenTetroxide": "Dioxyde d'azote",
+      "hydrogenIodide": "Iodure d'hydrogène",
+      "haber": "Procédé Haber (ammoniac)",
+      "waterGasShift": "Conversion du gaz à l'eau",
+      "thiocyanatoiron": "Thiocyanate de fer(III)",
+      "cobaltChloride": "Chlorure de cobalt(II)",
+      "genericIsomer": "Générique : A ⇌ B",
+      "genericCombination": "Générique : A + B ⇌ C",
+      "genericDimer": "Générique : 2A ⇌ B"
+    },
+    "speciesNames": {
+      "N2O4": "tétraoxyde de diazote",
+      "NO2": "dioxyde d'azote",
+      "H2": "dihydrogène",
+      "I2": "diiode",
+      "HI": "iodure d'hydrogène",
+      "N2": "diazote",
+      "NH3": "ammoniac",
+      "CO": "monoxyde de carbone",
+      "H2O": "eau",
+      "CO2": "dioxyde de carbone",
+      "Fe": "ion fer(III)",
+      "SCN": "ion thiocyanate",
+      "FeSCN": "ion thiocyanatofer(III)",
+      "CoH2O": "ion hexaaquacobalt(II)",
+      "Cl": "ion chlorure",
+      "CoCl4": "ion tétrachlorocobaltate(II)",
+      "A": "A",
+      "B": "B",
+      "C": "C"
+    },
+    "kcSymbols": {
+      "q": "Q<sub>c</sub>",
+      "k": "K<sub>c</sub>"
+    },
+    "kpSymbols": {
+      "q": "Q<sub>p</sub>",
+      "k": "K<sub>p</sub>"
+    },
+    "formHeading": "Écrire Q et K avec",
+    "formKc": "concentrations (K<sub>c</sub>)",
+    "formKp": "pressions partielles (K<sub>p</sub>)",
+    "formKcPlain": "concentrations, Kc",
+    "formKpPlain": "pressions partielles, Kp",
+    "quotientReadoutPattern": "{{q}} = {{qValue}}    {{k}} = {{kValue}}",
+    "quotientExpressionPattern": "{{q}} = {{expression}}",
+    "shiftRight": "Q &lt; K : évolue vers les produits →",
+    "shiftLeft": "Q &gt; K : ← évolue vers les réactifs",
+    "atEquilibrium": "Q = K : à l'équilibre",
+    "cannotReact": "Rien ne peut réagir : ajoutez un réactif ou un produit.",
+    "conditionsPattern": "T = {{temperature}} K    V = {{volume}} L",
+    "totalPressurePattern": "P<sub>totale</sub> = {{value}} bar",
+    "excessPattern": "[{{formula}}] = {{value}} M (grand excès)",
+    "molarPattern": "{{value}} M",
+    "molesPattern": "{{value}} mol",
+    "kelvinPattern": "{{value}} K",
+    "litersPattern": "{{value}} L",
+    "concentrationChart": {
+      "title": "Concentration",
+      "xAxis": "Temps (s)",
+      "yAxis": "Concentration (M)"
+    },
+    "rateChart": {
+      "title": "Vitesses de réaction",
+      "xAxis": "Temps (s)",
+      "yAxis": "Vitesse (M/s)",
+      "forward": "Directe",
+      "reverse": "Inverse"
+    },
+    "eventsHeading": "Événements de réaction par seconde",
+    "forwardEventsPattern": "Directs : {{value}}",
+    "reverseEventsPattern": "Inverses : {{value}}",
+    "showEquilibrium": "Afficher les concentrations à l'équilibre",
+    "a11y": {
+      "piston": "Piston",
+      "pistonHelp": "Déplacez le piston vers le haut ou le bas pour changer le volume du gaz.",
+      "reactionMenu": "Réaction",
+      "formRadio": "Forme de Q et K",
+      "shiftRight": "Q est inférieur à K, donc le mélange évolue vers les produits",
+      "shiftLeft": "Q est supérieur à K, donc le mélange évolue vers les réactifs",
+      "atEquilibrium": "Q est égal à K : le mélange est à l'équilibre",
+      "cannotReact": "rien ne peut réagir",
+      "reachedEquilibrium": "Équilibre atteint : les vitesses directe et inverse sont maintenant égales."
+    }
+  },
+  "approach": {
+    "startingHeading": "Concentrations initiales",
+    "initialPattern": "[{{formula}}]₀",
+    "reactantsOnly": "Réactifs seulement",
+    "productsOnly": "Produits seulement",
+    "randomMixture": "Mélange aléatoire",
+    "genericHeading": "Réaction générique",
+    "equilibriumConstant": "K à 298 K",
+    "forwardRateConstant": "Constante de vitesse directe",
+    "forwardRateConstantPattern": "{{value}}"
   },
   "a11y": {
     "approach": {
       "screenSummary": {
-        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+        "playArea": "La zone de jeu montre un récipient de molécules qui réagissent, l'équation équilibrée, une jauge comparant le quotient de réaction Q à la constante d'équilibre K, et des graphiques de la concentration et des vitesses directe et inverse en fonction du temps.",
+        "controlArea": "La zone de contrôle contient le menu des réactions, une concentration initiale pour chaque espèce, des boutons pour partir des réactifs, des produits ou d'un mélange aléatoire, le choix de Kc ou Kp, les commandes de temps et Tout réinitialiser.",
+        "interactionHint": "Choisissez une réaction et ses concentrations initiales, puis lancez la simulation et regardez Q s'approcher de K."
       },
-      "currentDetails": "La simulation est dans son état initial.",
-      "controls": {
-        "exampleControl": "Contrôle d'exemple"
+      "currentDetailsPattern": "{{reaction}} : {{direction}}. Q vaut {{q}} et K vaut {{k}}.",
+      "responses": {
+        "restarted": "Redémarré à partir du nouveau mélange initial."
       }
     },
     "iceTable": {
       "screenSummary": {
         "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+        "controlArea": "La zone de contrôle contient un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en utilisant ses commandes."
       },
       "currentDetails": "La simulation est dans son état initial.",
       "controls": {
-        "exampleControl": "Contrôle d'exemple"
+        "exampleControl": "Commande d'exemple"
       }
     },
     "leChatelier": {
       "screenSummary": {
         "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+        "controlArea": "La zone de contrôle contient un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en utilisant ses commandes."
       },
       "currentDetails": "La simulation est dans son état initial.",
       "controls": {
-        "exampleControl": "Contrôle d'exemple"
+        "exampleControl": "Commande d'exemple"
       }
     },
     "vantHoff": {
       "screenSummary": {
         "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+        "controlArea": "La zone de contrôle contient un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en utilisant ses commandes."
       },
       "currentDetails": "La simulation est dans son état initial.",
       "controls": {
-        "exampleControl": "Contrôle d'exemple"
+        "exampleControl": "Commande d'exemple"
       }
     }
   },
   "preferences": {
     "title": "Simulation",
-    "exampleToggle": "Exemple de bascule"
+    "startWithKp": "Écrire Q et K avec les pressions partielles (Kp) pour les gaz",
+    "showReactionFlashes": "Faire clignoter chaque molécule qui se forme"
   }
 }

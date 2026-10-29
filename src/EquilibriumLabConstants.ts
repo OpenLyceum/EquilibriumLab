@@ -85,8 +85,11 @@ export const RECORD_CAPACITY = 2400;
 
 // ── Particle box ──────────────────────────────────────────────────────────────
 
-/** Particle box width in box units; the height is the volume over the reference volume. */
+/** Particle box width in box units. */
 export const BOX_WIDTH = 1;
+
+/** Particle box height at the reaction's largest volume (box units); it scales with the volume. */
+export const BOX_MAX_HEIGHT = 1.1;
 
 /** Speed of a 30 g/mol particle at 298 K (box units per real second); scales as √(T/M). */
 export const PARTICLE_REFERENCE_SPEED = 0.18;

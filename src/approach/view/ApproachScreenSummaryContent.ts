@@ -1,40 +1,41 @@
 /**
  * ApproachScreenSummaryContent.ts
  *
- * The accessible screen summary read by screen readers (SceneryStack's
- * Interactive Description). It appears at the top of the parallel DOM and gives
- * a non-visual user a way to orient themselves and to re-read the simulation's
- * current state at any time.
- *
- * A summary has four regions (all optional, but provide at least the first
- * three in every sim for consistency across OpenLyceum):
- *   - playAreaContent       — what the play area contains
- *   - controlAreaContent    — what the controls do
- *   - currentDetailsContent — a LIVE paragraph describing current state
- *   - interactionHintContent — a short hint on how to get started
- *
- * ── Making "current details" live ─────────────────────────────────────────────
- * The template has no model state, so currentDetails is a static string. In a
- * real sim, build a DerivedProperty over the relevant model Properties and pass
- * it as `currentDetailsContent` so the paragraph updates as the sim runs.
- * See LunarLander/src/.../LunarLanderScreenSummaryContent.ts for the pattern.
- * If that DerivedProperty (or any Multilink) is owned by a short-lived object,
- * dispose it on teardown — see the commented dispose() stub in ApproachScreenView.
+ * Screen summary for the Approach screen. The current-details paragraph is live: the reaction,
+ * which way the mixture is shifting, and Q and K to two significant figures. It is rewritten only
+ * when its text changes, so a screen reader is not flooded while the mixture settles.
  */
+
+import { Multilink, StringProperty } from "scenerystack/axon";
+import { localeProperty } from "scenerystack/joist";
+import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
+import { describeQuotient } from "../../common/view/quotientDescription.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { ApproachModel } from "../model/ApproachModel.js";
 
 export class ApproachScreenSummaryContent extends ScreenSummaryContent {
-  // `model` is unused in the template but kept in the signature so real sims can
-  // derive a live currentDetailsContent from it without changing call sites.
-  public constructor(_model: ApproachModel) {
+  public constructor(model: ApproachModel) {
     const a11y = StringManager.getInstance().getApproachA11yStrings();
+    const names = StringManager.getInstance().getCommonStrings().reactionNames;
+    const mixture = model.scene.mixture;
+
+    // Lives as long as the screen, which is never disposed.
+    const currentDetailsProperty = new StringProperty("");
+    const update = () => {
+      const description = describeQuotient(mixture, model.scene.formProperty);
+      currentDetailsProperty.value = StringUtils.fillIn(a11y.currentDetailsPatternStringProperty.value, {
+        reaction: names[`${mixture.reaction.id}StringProperty`].value,
+        ...description,
+      });
+    };
+    mixture.changedEmitter.addListener(update);
+    Multilink.multilinkAny([model.scene.formProperty, mixture.reactionProperty, localeProperty], update);
 
     super({
       playAreaContent: a11y.screenSummary.playAreaStringProperty,
       controlAreaContent: a11y.screenSummary.controlAreaStringProperty,
-      currentDetailsContent: a11y.currentDetailsStringProperty,
+      currentDetailsContent: currentDetailsProperty,
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }

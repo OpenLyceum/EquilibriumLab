@@ -1,21 +1,120 @@
 {
-  "title": "Equilibrium Lab",
+  "title": "Laboratorio de equilibrio",
   "screens": {
-    "approach": "Approach",
-    "iceTable": "ICE Table",
+    "approach": "Hacia el equilibrio",
+    "iceTable": "Tabla ICE",
     "leChatelier": "Le Chatelier",
     "vantHoff": "Van 't Hoff"
+  },
+  "common": {
+    "reactionHeading": "Reacción",
+    "reactionNames": {
+      "dinitrogenTetroxide": "Dióxido de nitrógeno",
+      "hydrogenIodide": "Yoduro de hidrógeno",
+      "haber": "Proceso Haber (amoníaco)",
+      "waterGasShift": "Desplazamiento del gas de agua",
+      "thiocyanatoiron": "Tiocianato de hierro(III)",
+      "cobaltChloride": "Cloruro de cobalto(II)",
+      "genericIsomer": "Genérica: A ⇌ B",
+      "genericCombination": "Genérica: A + B ⇌ C",
+      "genericDimer": "Genérica: 2A ⇌ B"
+    },
+    "speciesNames": {
+      "N2O4": "tetróxido de dinitrógeno",
+      "NO2": "dióxido de nitrógeno",
+      "H2": "hidrógeno",
+      "I2": "yodo",
+      "HI": "yoduro de hidrógeno",
+      "N2": "nitrógeno",
+      "NH3": "amoníaco",
+      "CO": "monóxido de carbono",
+      "H2O": "agua",
+      "CO2": "dióxido de carbono",
+      "Fe": "ion hierro(III)",
+      "SCN": "ion tiocianato",
+      "FeSCN": "ion tiocianatohierro(III)",
+      "CoH2O": "ion hexaacuocobalto(II)",
+      "Cl": "ion cloruro",
+      "CoCl4": "ion tetraclorocobaltato(II)",
+      "A": "A",
+      "B": "B",
+      "C": "C"
+    },
+    "kcSymbols": {
+      "q": "Q<sub>c</sub>",
+      "k": "K<sub>c</sub>"
+    },
+    "kpSymbols": {
+      "q": "Q<sub>p</sub>",
+      "k": "K<sub>p</sub>"
+    },
+    "formHeading": "Escribir Q y K con",
+    "formKc": "concentraciones (K<sub>c</sub>)",
+    "formKp": "presiones parciales (K<sub>p</sub>)",
+    "formKcPlain": "concentraciones, Kc",
+    "formKpPlain": "presiones parciales, Kp",
+    "quotientReadoutPattern": "{{q}} = {{qValue}}    {{k}} = {{kValue}}",
+    "quotientExpressionPattern": "{{q}} = {{expression}}",
+    "shiftRight": "Q &lt; K: se desplaza hacia los productos →",
+    "shiftLeft": "Q &gt; K: ← se desplaza hacia los reactivos",
+    "atEquilibrium": "Q = K: en equilibrio",
+    "cannotReact": "Nada puede reaccionar: añade un reactivo o un producto.",
+    "conditionsPattern": "T = {{temperature}} K    V = {{volume}} L",
+    "totalPressurePattern": "P<sub>total</sub> = {{value}} bar",
+    "excessPattern": "[{{formula}}] = {{value}} M (gran exceso)",
+    "molarPattern": "{{value}} M",
+    "molesPattern": "{{value}} mol",
+    "kelvinPattern": "{{value}} K",
+    "litersPattern": "{{value}} L",
+    "concentrationChart": {
+      "title": "Concentración",
+      "xAxis": "Tiempo (s)",
+      "yAxis": "Concentración (M)"
+    },
+    "rateChart": {
+      "title": "Velocidades de reacción",
+      "xAxis": "Tiempo (s)",
+      "yAxis": "Velocidad (M/s)",
+      "forward": "Directa",
+      "reverse": "Inversa"
+    },
+    "eventsHeading": "Eventos de reacción por segundo",
+    "forwardEventsPattern": "Directos: {{value}}",
+    "reverseEventsPattern": "Inversos: {{value}}",
+    "showEquilibrium": "Mostrar concentraciones de equilibrio",
+    "a11y": {
+      "piston": "Pistón",
+      "pistonHelp": "Mueve el pistón hacia arriba o hacia abajo para cambiar el volumen del gas.",
+      "reactionMenu": "Reacción",
+      "formRadio": "Forma de Q y K",
+      "shiftRight": "Q es menor que K, así que la mezcla se desplaza hacia los productos",
+      "shiftLeft": "Q es mayor que K, así que la mezcla se desplaza hacia los reactivos",
+      "atEquilibrium": "Q es igual a K: la mezcla está en equilibrio",
+      "cannotReact": "nada puede reaccionar",
+      "reachedEquilibrium": "Equilibrio alcanzado: las velocidades directa e inversa ahora son iguales."
+    }
+  },
+  "approach": {
+    "startingHeading": "Concentraciones iniciales",
+    "initialPattern": "[{{formula}}]₀",
+    "reactantsOnly": "Solo reactivos",
+    "productsOnly": "Solo productos",
+    "randomMixture": "Mezcla aleatoria",
+    "genericHeading": "Reacción genérica",
+    "equilibriumConstant": "K a 298 K",
+    "forwardRateConstant": "Constante de velocidad directa",
+    "forwardRateConstantPattern": "{{value}}"
   },
   "a11y": {
     "approach": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego muestra un recipiente de moléculas que reaccionan, la ecuación balanceada, un indicador que compara el cociente de reacción Q con la constante de equilibrio K, y gráficas de la concentración y de las velocidades directa e inversa frente al tiempo.",
+        "controlArea": "El área de control tiene el menú de reacciones, una concentración inicial para cada especie, botones para empezar desde reactivos, productos o una mezcla aleatoria, la elección de Kc o Kp, controles de tiempo y Restablecer todo.",
+        "interactionHint": "Elige una reacción y sus concentraciones iniciales, luego reproduce y observa cómo Q se acerca a K."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
-      "controls": {
-        "exampleControl": "Control de ejemplo"
+      "currentDetailsPattern": "{{reaction}}: {{direction}}. Q es {{q}} y K es {{k}}.",
+      "responses": {
+        "restarted": "Reiniciado desde la nueva mezcla inicial."
       }
     },
     "iceTable": {
@@ -54,6 +153,7 @@
   },
   "preferences": {
     "title": "Simulación",
-    "exampleToggle": "Ejemplo de alternancia"
+    "startWithKp": "Escribir Q y K con presiones parciales (Kp) para los gases",
+    "showReactionFlashes": "Destacar cada molécula al formarse"
   }
 }

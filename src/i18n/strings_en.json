@@ -6,16 +6,115 @@
     "leChatelier": "Le Chatelier",
     "vantHoff": "Van 't Hoff"
   },
+  "common": {
+    "reactionHeading": "Reaction",
+    "reactionNames": {
+      "dinitrogenTetroxide": "Nitrogen dioxide",
+      "hydrogenIodide": "Hydrogen iodide",
+      "haber": "Haber process (ammonia)",
+      "waterGasShift": "Water-gas shift",
+      "thiocyanatoiron": "Iron(III) thiocyanate",
+      "cobaltChloride": "Cobalt(II) chloride",
+      "genericIsomer": "Generic: A ⇌ B",
+      "genericCombination": "Generic: A + B ⇌ C",
+      "genericDimer": "Generic: 2A ⇌ B"
+    },
+    "speciesNames": {
+      "N2O4": "dinitrogen tetroxide",
+      "NO2": "nitrogen dioxide",
+      "H2": "hydrogen",
+      "I2": "iodine",
+      "HI": "hydrogen iodide",
+      "N2": "nitrogen",
+      "NH3": "ammonia",
+      "CO": "carbon monoxide",
+      "H2O": "water",
+      "CO2": "carbon dioxide",
+      "Fe": "iron(III) ion",
+      "SCN": "thiocyanate ion",
+      "FeSCN": "thiocyanatoiron(III) ion",
+      "CoH2O": "hexaaquacobalt(II) ion",
+      "Cl": "chloride ion",
+      "CoCl4": "tetrachlorocobaltate(II) ion",
+      "A": "A",
+      "B": "B",
+      "C": "C"
+    },
+    "kcSymbols": {
+      "q": "Q<sub>c</sub>",
+      "k": "K<sub>c</sub>"
+    },
+    "kpSymbols": {
+      "q": "Q<sub>p</sub>",
+      "k": "K<sub>p</sub>"
+    },
+    "formHeading": "Write Q and K with",
+    "formKc": "concentrations (K<sub>c</sub>)",
+    "formKp": "partial pressures (K<sub>p</sub>)",
+    "formKcPlain": "concentrations, Kc",
+    "formKpPlain": "partial pressures, Kp",
+    "quotientReadoutPattern": "{{q}} = {{qValue}}    {{k}} = {{kValue}}",
+    "quotientExpressionPattern": "{{q}} = {{expression}}",
+    "shiftRight": "Q &lt; K: shifts toward products →",
+    "shiftLeft": "Q &gt; K: ← shifts toward reactants",
+    "atEquilibrium": "Q = K: at equilibrium",
+    "cannotReact": "Nothing can react: add a reactant or a product.",
+    "conditionsPattern": "T = {{temperature}} K    V = {{volume}} L",
+    "totalPressurePattern": "P<sub>total</sub> = {{value}} bar",
+    "excessPattern": "[{{formula}}] = {{value}} M (large excess)",
+    "molarPattern": "{{value}} M",
+    "molesPattern": "{{value}} mol",
+    "kelvinPattern": "{{value}} K",
+    "litersPattern": "{{value}} L",
+    "concentrationChart": {
+      "title": "Concentration",
+      "xAxis": "Time (s)",
+      "yAxis": "Concentration (M)"
+    },
+    "rateChart": {
+      "title": "Reaction rates",
+      "xAxis": "Time (s)",
+      "yAxis": "Rate (M/s)",
+      "forward": "Forward",
+      "reverse": "Reverse"
+    },
+    "eventsHeading": "Reaction events per second",
+    "forwardEventsPattern": "Forward: {{value}}",
+    "reverseEventsPattern": "Reverse: {{value}}",
+    "showEquilibrium": "Show equilibrium concentrations",
+    "a11y": {
+      "piston": "Piston",
+      "pistonHelp": "Move the piston up or down to change the volume of the gas.",
+      "reactionMenu": "Reaction",
+      "formRadio": "Form of Q and K",
+      "shiftRight": "Q is less than K, so the mixture shifts toward products",
+      "shiftLeft": "Q is greater than K, so the mixture shifts toward reactants",
+      "atEquilibrium": "Q equals K: the mixture is at equilibrium",
+      "cannotReact": "nothing can react",
+      "reachedEquilibrium": "Equilibrium reached: the forward and reverse rates are now equal."
+    }
+  },
+  "approach": {
+    "startingHeading": "Starting concentrations",
+    "initialPattern": "[{{formula}}]₀",
+    "reactantsOnly": "Reactants only",
+    "productsOnly": "Products only",
+    "randomMixture": "Random mixture",
+    "genericHeading": "Generic reaction",
+    "equilibriumConstant": "K at 298 K",
+    "forwardRateConstant": "Forward rate constant",
+    "forwardRateConstantPattern": "{{value}}"
+  },
   "a11y": {
     "approach": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows a vessel of reacting molecules, the balanced equation, a gauge comparing the reaction quotient Q with the equilibrium constant K, and charts of concentration and of the forward and reverse rates against time.",
+        "controlArea": "The control area has the reaction menu, a starting concentration for each species, buttons to start from reactants, products or a random mixture, the choice of Kc or Kp, time controls, and Reset All.",
+        "interactionHint": "Choose a reaction and its starting concentrations, then play and watch Q approach K."
       },
-      "currentDetails": "The simulation is in its initial state.",
-      "controls": {
-        "exampleControl": "Example control"
+      "currentDetailsPattern": "{{reaction}}: {{direction}}. Q is {{q}} and K is {{k}}.",
+      "responses": {
+        "restarted": "Restarted from the new starting mixture."
       }
     },
     "iceTable": {
@@ -54,6 +153,7 @@
   },
   "preferences": {
     "title": "Simulation",
-    "exampleToggle": "Example Toggle"
+    "startWithKp": "Write Q and K with partial pressures (Kp) for gases",
+    "showReactionFlashes": "Flash each molecule as it forms"
   }
 }

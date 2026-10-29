@@ -9,7 +9,7 @@
 
 import { DerivedProperty, Multilink, Property, type TReadOnlyProperty } from "scenerystack/axon";
 import { StringUtils } from "scenerystack/phetcommon";
-import { HBox, Line, Node, RichText, Text, VBox } from "scenerystack/scenery";
+import { HBox, Line, Node, RichText, type TColor, Text, VBox } from "scenerystack/scenery";
 import { PhetFont } from "scenerystack/scenery-phet";
 import { NumberPicker } from "scenerystack/sun";
 import { disposeChildren } from "../../common/view/disposeChildren.js";
@@ -35,6 +35,29 @@ export function changeExpression(initial: number, coefficient: number): string {
     return coefficient < 0 ? `−${magnitude}` : magnitude;
   }
   return `${c0} ${coefficient < 0 ? "−" : "+"} ${magnitude}`;
+}
+
+/**
+ * The evaluated E cell: the given concentration (in "find K" problems), or I + Cx once x is entered,
+ * flagged when negative (a concentration cannot be).
+ */
+function evaluateCell(
+  initial: number,
+  coefficient: number,
+  x: number | null,
+  given: number | null,
+): { text: string; fill: TColor } {
+  if (given !== null) {
+    return { text: `= ${significant(given, 3)}`, fill: EquilibriumLabColors.kMarkerColorProperty };
+  }
+  if (x === null) {
+    return { text: "", fill: EquilibriumLabColors.mutedTextColorProperty };
+  }
+  const value = initial + coefficient * x;
+  return {
+    text: `= ${scientific(value, 3)}`,
+    fill: value < 0 ? EquilibriumLabColors.poorColorProperty : EquilibriumLabColors.mutedTextColorProperty,
+  };
 }
 
 export class ICETableNode extends Node {
@@ -147,21 +170,14 @@ export class ICETableNode extends Node {
         const cell = new VBox({ spacing: 1, children: [expression, value] });
         const multilink = Multilink.multilink([coefficient, model.xEntryProperty], (c, x) => {
           expression.string = changeExpression(problem.initial[i] ?? 0, c);
-          const given = problem.givenIndex === i ? problem.givenValue : null;
-          value.string =
-            given !== null
-              ? `= ${significant(given, 3)}`
-              : x === null
-                ? ""
-                : `= ${scientific((problem.initial[i] ?? 0) + c * x, 3)}`;
-          // A negative concentration cannot be: flag it.
-          const negative = given === null && x !== null && (problem.initial[i] ?? 0) + c * x < 0;
-          value.fill =
-            given !== null
-              ? EquilibriumLabColors.kMarkerColorProperty
-              : negative
-                ? EquilibriumLabColors.poorColorProperty
-                : EquilibriumLabColors.mutedTextColorProperty;
+          const evaluated = evaluateCell(
+            problem.initial[i] ?? 0,
+            c,
+            x,
+            problem.givenIndex === i ? problem.givenValue : null,
+          );
+          value.string = evaluated.text;
+          value.fill = evaluated.fill;
           cell.centerX = columnX(i);
           cell.centerY = rowY(3);
         });

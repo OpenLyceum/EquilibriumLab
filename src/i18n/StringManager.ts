@@ -110,6 +110,11 @@ export class StringManager {
     return stringProperties.leChatelier;
   }
 
+  /** Visible strings of the Van 't Hoff screen. */
+  public getVantHoffStrings() {
+    return stringProperties.vantHoff;
+  }
+
   /** Accessibility strings for the Approach screen. */
   public getApproachA11yStrings() {
     return stringProperties.a11y.approach;

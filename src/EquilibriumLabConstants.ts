@@ -86,6 +86,17 @@ export const DILUTION_STEP_FRACTION = 0.15;
 /** Each argon press adds this fraction of the moles of gas already in the vessel. */
 export const ARGON_STEP_FRACTION = 0.5;
 
+// ── Van 't Hoff ───────────────────────────────────────────────────────────────
+
+/**
+ * K can be measured once ln(Q/K) is within this of zero: tighter than "at equilibrium" in messages,
+ * so a reaction with a small ΔH° still gives a straight van 't Hoff line.
+ */
+export const MEASUREMENT_LN_TOLERANCE = 0.002;
+
+/** Standard deviation of a measured ln K when measurement error is on (about ±4 % in K). */
+export const MEASUREMENT_LN_SPREAD = 0.04;
+
 // ── Records ───────────────────────────────────────────────────────────────────
 
 /** Simulated seconds between recorded samples. */

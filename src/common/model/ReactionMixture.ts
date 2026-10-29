@@ -134,6 +134,16 @@ export class ReactionMixture {
     return lnQp(this.reaction, this.amounts, this.volume, this.temperature);
   }
 
+  /** ln Q against the standard state: Qp (bar) for gases, Qc (M) for solutions. */
+  public get lnStandardQ(): number {
+    return this.reaction.isGas ? this.lnQp : this.lnQc;
+  }
+
+  /** ln K°: Kp (bar) for gases, Kc (M) for solutions. */
+  public get lnStandardK(): number {
+    return this.reaction.lnStandardK(this.temperature);
+  }
+
   /**
    * ln(Q/K): negative when the mixture will shift toward products, positive toward reactants, 0 at
    * equilibrium (NaN when the mixture cannot react). Kc and Kp forms give the same ratio.

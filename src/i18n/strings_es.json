@@ -141,6 +141,43 @@
     "smallXInvalid": "El cambio de [{{formula}}] es el {{percent}} % de su valor inicial, más del 5 %: la aproximación de x pequeña fallaría aquí.",
     "runHint": "Ejecutar inicia la mezcla desde la fila I. Las líneas discontinuas marcan tu fila E."
   },
+  "vantHoff": {
+    "choices": {
+      "unknown1": "Desconocida 1: A + B ⇌ C",
+      "unknown2": "Desconocida 2: A ⇌ B"
+    },
+    "measureHeading": "Medir",
+    "temperature": "Temperatura",
+    "measureK": "Medir K",
+    "removeLast": "Quitar el último",
+    "clearAll": "Borrar todo",
+    "measurementError": "Error de medición",
+    "reveal": "Revelar ΔH° y ΔS°",
+    "waiting": "Esperando el equilibrio…",
+    "ready": "En equilibrio: listo para medir.",
+    "kReadoutPattern": "{{k}} = {{value}}",
+    "catalystNote": "Hay un catalizador en el recipiente, así que la mezcla se estabiliza rápido tras cada cambio de temperatura. K es K<sub>p</sub> (bar) para gases y K<sub>c</sub> (M) para disoluciones.",
+    "lnPlot": {
+      "title": "ln K frente a 1/T",
+      "xAxis": "1000/T (K<sup>−1</sup>)",
+      "yAxis": "ln K"
+    },
+    "gibbsPlot": {
+      "title": "ΔG° frente a T",
+      "xAxis": "Temperatura (K)",
+      "yAxis": "ΔG° (kJ/mol)"
+    },
+    "resultsHeading": "Ajuste",
+    "needTwo": "Mide K a dos o más temperaturas para ajustar una recta.",
+    "slopePattern": "pendiente = {{value}} K",
+    "interceptPattern": "ordenada al origen = {{value}}",
+    "rSquaredPattern": "R<sup>2</sup> = {{value}}",
+    "deltaHPattern": "ΔH° = −R × pendiente = {{value}} kJ/mol",
+    "deltaSPattern": "ΔS° = R × ordenada = {{value}} J/K",
+    "acceptedPattern": "aceptado {{value}}, error {{error}} %",
+    "crossoverPattern": "ΔG° = 0 a T = ΔH°/ΔS° = {{value}} K",
+    "noCrossover": "ΔH° y ΔS° tienen signos opuestos: ΔG° nunca cambia de signo."
+  },
   "leChatelier": {
     "stressesHeading": "Perturbaciones",
     "speciesHeading": "Añadir o quitar",
@@ -230,14 +267,13 @@
     },
     "vantHoff": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego muestra la mezcla a la temperatura elegida, una gráfica de ln K frente a 1000 entre T con los puntos medidos y su recta ajustada, y una gráfica de la energía de Gibbs estándar frente a la temperatura.",
+        "controlArea": "El área de control tiene el menú de reacciones, un control de temperatura, Medir K, Quitar el último, Borrar todo, las casillas de error de medición y de revelar, los resultados del ajuste, controles de tiempo y Restablecer todo.",
+        "interactionHint": "Ajusta una temperatura, espera el equilibrio y mide K. Repite a varias temperaturas y lee ΔH° en la pendiente."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
-      "controls": {
-        "exampleControl": "Control de ejemplo"
-      }
+      "currentDetailsPattern": "{{reaction}} a {{temperature}} K. {{count}} mediciones. {{fit}}",
+      "measuredPattern": "ln K medido = {{value}} a {{temperature}} K.",
+      "fitPattern": "La recta ajustada da ΔH° = {{deltaH}} kJ/mol y ΔS° = {{deltaS}} J/(mol·K)."
     }
   },
   "preferences": {

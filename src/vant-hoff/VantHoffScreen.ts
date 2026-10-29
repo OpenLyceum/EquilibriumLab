@@ -6,10 +6,10 @@
  * to the parent Screen class.
  *
  * Registered in the screens array in src/main.ts. Its home-screen and navigation-bar
- * icons come from createVantHoffIcon() in src/common/EquilibriumLabScreenIcons.ts
- * (see doc/multi-screen.md).
+ * icons come from createVantHoffIcon() in src/common/EquilibriumLabScreenIcons.ts.
  */
-import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
+import type { BooleanProperty } from "scenerystack/axon";
+import { optionize } from "scenerystack/phet-core";
 import type { ScreenOptions } from "scenerystack/sim";
 import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
@@ -19,8 +19,13 @@ import { VantHoffModel } from "./model/VantHoffModel.js";
 import { VantHoffKeyboardHelpContent } from "./view/VantHoffKeyboardHelpContent.js";
 import { VantHoffScreenView } from "./view/VantHoffScreenView.js";
 
+type SelfOptions = {
+  /** Preferences: ring each molecule as it forms. */
+  showReactionFlashesProperty: BooleanProperty;
+};
+
 // Require tandem to be explicit — accidental omission would break PhET-iO.
-type VantHoffScreenOptions = ScreenOptions & { tandem: Tandem };
+type VantHoffScreenOptions = SelfOptions & ScreenOptions & { tandem: Tandem };
 
 export class VantHoffScreen extends Screen<VantHoffModel, VantHoffScreenView> {
   public constructor(options: VantHoffScreenOptions) {
@@ -30,9 +35,10 @@ export class VantHoffScreen extends Screen<VantHoffModel, VantHoffScreenView> {
       // View factory — receives the model instance
       (model) =>
         new VantHoffScreenView(model, {
+          showReactionFlashesProperty: options.showReactionFlashesProperty,
           tandem: options.tandem.createTandem("view"),
         }),
-      optionize<VantHoffScreenOptions, EmptySelfOptions, ScreenOptions>()(
+      optionize<VantHoffScreenOptions, SelfOptions, ScreenOptions>()(
         {
           backgroundColorProperty: EquilibriumLabColors.backgroundColorProperty,
           createKeyboardHelpNode: () => new VantHoffKeyboardHelpContent(),

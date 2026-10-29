@@ -58,6 +58,7 @@ onReadyToLaunch(() => {
     }),
     new VantHoffScreen({
       name: stringManager.getScreenNames().vantHoffStringProperty,
+      showReactionFlashesProperty: simPreferences.showReactionFlashesProperty,
       tandem: Tandem.ROOT.createTandem("vantHoffScreen"),
       backgroundColorProperty: EquilibriumLabColors.backgroundColorProperty,
     }),

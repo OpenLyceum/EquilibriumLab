@@ -141,6 +141,43 @@
     "smallXInvalid": "The change in [{{formula}}] is {{percent}} % of its initial value, over 5 %: the small-x approximation would fail here.",
     "runHint": "Run it starts the mixture from the I row. Dashed lines mark your E row."
   },
+  "vantHoff": {
+    "choices": {
+      "unknown1": "Unknown 1: A + B ⇌ C",
+      "unknown2": "Unknown 2: A ⇌ B"
+    },
+    "measureHeading": "Measure",
+    "temperature": "Temperature",
+    "measureK": "Measure K",
+    "removeLast": "Remove last",
+    "clearAll": "Clear all",
+    "measurementError": "Measurement error",
+    "reveal": "Reveal ΔH° and ΔS°",
+    "waiting": "Waiting for equilibrium…",
+    "ready": "At equilibrium: ready to measure.",
+    "kReadoutPattern": "{{k}} = {{value}}",
+    "catalystNote": "A catalyst is in the vessel, so the mixture settles quickly after each temperature change. K is K<sub>p</sub> (bar) for gases and K<sub>c</sub> (M) for solutions.",
+    "lnPlot": {
+      "title": "ln K against 1/T",
+      "xAxis": "1000/T (K<sup>−1</sup>)",
+      "yAxis": "ln K"
+    },
+    "gibbsPlot": {
+      "title": "ΔG° against T",
+      "xAxis": "Temperature (K)",
+      "yAxis": "ΔG° (kJ/mol)"
+    },
+    "resultsHeading": "Fit",
+    "needTwo": "Measure K at two or more temperatures to fit a line.",
+    "slopePattern": "slope = {{value}} K",
+    "interceptPattern": "intercept = {{value}}",
+    "rSquaredPattern": "R<sup>2</sup> = {{value}}",
+    "deltaHPattern": "ΔH° = −R × slope = {{value}} kJ/mol",
+    "deltaSPattern": "ΔS° = R × intercept = {{value}} J/K",
+    "acceptedPattern": "accepted {{value}}, error {{error}} %",
+    "crossoverPattern": "ΔG° = 0 at T = ΔH°/ΔS° = {{value}} K",
+    "noCrossover": "ΔH° and ΔS° have opposite signs: ΔG° never changes sign."
+  },
   "leChatelier": {
     "stressesHeading": "Stresses",
     "speciesHeading": "Add or remove",
@@ -230,14 +267,13 @@
     },
     "vantHoff": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows the reacting mixture at the chosen temperature, a plot of ln K against 1000 over T with the measured points and their fitted line, and a plot of the standard Gibbs energy change against temperature.",
+        "controlArea": "The control area has the reaction menu, a temperature slider, Measure K, Remove last, Clear all, the measurement-error and reveal checkboxes, the fit results, time controls, and Reset All.",
+        "interactionHint": "Set a temperature, wait for equilibrium, and measure K. Repeat at several temperatures and read ΔH° from the slope."
       },
-      "currentDetails": "The simulation is in its initial state.",
-      "controls": {
-        "exampleControl": "Example control"
-      }
+      "currentDetailsPattern": "{{reaction}} at {{temperature}} K. {{count}} measurements. {{fit}}",
+      "measuredPattern": "Measured ln K = {{value}} at {{temperature}} K.",
+      "fitPattern": "The fitted line gives ΔH° = {{deltaH}} kJ/mol and ΔS° = {{deltaS}} J/(mol·K)."
     }
   },
   "preferences": {

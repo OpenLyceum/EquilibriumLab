@@ -141,6 +141,43 @@
     "smallXInvalid": "La variation de [{{formula}}] vaut {{percent}} % de sa valeur initiale, plus de 5 % : l'approximation des petits x échouerait ici.",
     "runHint": "Lancer démarre le mélange à partir de la ligne I. Les tirets marquent votre ligne E."
   },
+  "vantHoff": {
+    "choices": {
+      "unknown1": "Inconnue 1 : A + B ⇌ C",
+      "unknown2": "Inconnue 2 : A ⇌ B"
+    },
+    "measureHeading": "Mesurer",
+    "temperature": "Température",
+    "measureK": "Mesurer K",
+    "removeLast": "Retirer le dernier",
+    "clearAll": "Tout effacer",
+    "measurementError": "Erreur de mesure",
+    "reveal": "Révéler ΔH° et ΔS°",
+    "waiting": "En attente de l'équilibre…",
+    "ready": "À l'équilibre : prêt à mesurer.",
+    "kReadoutPattern": "{{k}} = {{value}}",
+    "catalystNote": "Un catalyseur est dans le récipient, donc le mélange se stabilise vite après chaque changement de température. K est K<sub>p</sub> (bar) pour les gaz et K<sub>c</sub> (M) pour les solutions.",
+    "lnPlot": {
+      "title": "ln K en fonction de 1/T",
+      "xAxis": "1000/T (K<sup>−1</sup>)",
+      "yAxis": "ln K"
+    },
+    "gibbsPlot": {
+      "title": "ΔG° en fonction de T",
+      "xAxis": "Température (K)",
+      "yAxis": "ΔG° (kJ/mol)"
+    },
+    "resultsHeading": "Ajustement",
+    "needTwo": "Mesurez K à au moins deux températures pour ajuster une droite.",
+    "slopePattern": "pente = {{value}} K",
+    "interceptPattern": "ordonnée à l'origine = {{value}}",
+    "rSquaredPattern": "R<sup>2</sup> = {{value}}",
+    "deltaHPattern": "ΔH° = −R × pente = {{value}} kJ/mol",
+    "deltaSPattern": "ΔS° = R × ordonnée = {{value}} J/K",
+    "acceptedPattern": "acceptée {{value}}, écart {{error}} %",
+    "crossoverPattern": "ΔG° = 0 à T = ΔH°/ΔS° = {{value}} K",
+    "noCrossover": "ΔH° et ΔS° sont de signes opposés : ΔG° ne change jamais de signe."
+  },
   "leChatelier": {
     "stressesHeading": "Contraintes",
     "speciesHeading": "Ajouter ou retirer",
@@ -230,14 +267,13 @@
     },
     "vantHoff": {
       "screenSummary": {
-        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle contient un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en utilisant ses commandes."
+        "playArea": "La zone de jeu montre le mélange à la température choisie, un graphique de ln K en fonction de 1000 sur T avec les points mesurés et leur droite d'ajustement, et un graphique de l'enthalpie libre standard en fonction de la température.",
+        "controlArea": "La zone de contrôle contient le menu des réactions, un curseur de température, Mesurer K, Retirer le dernier, Tout effacer, les cases d'erreur de mesure et de révélation, les résultats de l'ajustement, les commandes de temps et Tout réinitialiser.",
+        "interactionHint": "Réglez une température, attendez l'équilibre et mesurez K. Recommencez à plusieurs températures et lisez ΔH° dans la pente."
       },
-      "currentDetails": "La simulation est dans son état initial.",
-      "controls": {
-        "exampleControl": "Commande d'exemple"
-      }
+      "currentDetailsPattern": "{{reaction}} à {{temperature}} K. {{count}} mesures. {{fit}}",
+      "measuredPattern": "ln K mesuré = {{value}} à {{temperature}} K.",
+      "fitPattern": "La droite d'ajustement donne ΔH° = {{deltaH}} kJ/mol et ΔS° = {{deltaS}} J/(mol·K)."
     }
   },
   "preferences": {

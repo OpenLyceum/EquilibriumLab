@@ -15,7 +15,9 @@
  *   Fe³⁺ + SCN⁻ ⇌ FeSCN²⁺                   K(298 K) ≈ 138, mildly exothermic (heating fades the red)
  *   Co(H₂O)₆²⁺ + 4Cl⁻ ⇌ CoCl₄²⁻ + 6H₂O(l)   K(298 K) ≈ 3 × 10⁻³, endothermic (heating turns it blue)
  *
- * Rate constants and activation energies are illustrative (see Reaction.ts).
+ * Rate constants and activation energies are illustrative (see Reaction.ts). The activation
+ * energies are kept low (29–40 kJ/mol) so the rate constant changes by at most about 30× across a
+ * reaction's temperature range: every temperature on the Van 't Hoff screen settles in seconds.
  */
 
 import { Range } from "scenerystack/dot";
@@ -37,7 +39,7 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     deltaS: 175.8,
     forwardRateConstant: 0.05,
     referenceTemperature: STANDARD_TEMPERATURE,
-    activationEnergy: 57 * KJ,
+    activationEnergy: 30 * KJ,
     temperatureRange: new Range(273, 373),
     defaultTemperature: STANDARD_TEMPERATURE,
     volumeRange: new Range(0.25, 2),
@@ -59,8 +61,8 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     deltaS: 21.8,
     forwardRateConstant: 20,
     referenceTemperature: 700,
-    activationEnergy: 165 * KJ,
-    temperatureRange: new Range(500, 800),
+    activationEnergy: 38 * KJ,
+    temperatureRange: new Range(600, 800),
     defaultTemperature: 700,
     volumeRange: new Range(0.25, 2),
     defaultVolume: 1,
@@ -81,8 +83,8 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     deltaS: -198.1,
     forwardRateConstant: 5,
     referenceTemperature: 600,
-    activationEnergy: 100 * KJ,
-    temperatureRange: new Range(450, 800),
+    activationEnergy: 29 * KJ,
+    temperatureRange: new Range(550, 800),
     defaultTemperature: 600,
     volumeRange: new Range(0.25, 2),
     defaultVolume: 1,
@@ -104,8 +106,8 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     deltaS: -42.0,
     forwardRateConstant: 5,
     referenceTemperature: 900,
-    activationEnergy: 80 * KJ,
-    temperatureRange: new Range(600, 1200),
+    activationEnergy: 34 * KJ,
+    temperatureRange: new Range(700, 1200),
     defaultTemperature: 900,
     volumeRange: new Range(0.25, 2),
     defaultVolume: 1,
@@ -149,7 +151,7 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     deltaS: Reaction.entropyForK(3e-3, 50 * KJ),
     forwardRateConstant: 0.0008,
     referenceTemperature: STANDARD_TEMPERATURE,
-    activationEnergy: 60 * KJ,
+    activationEnergy: 35 * KJ,
     temperatureRange: new Range(278, 363),
     defaultTemperature: STANDARD_TEMPERATURE,
     volumeRange: new Range(0.05, 0.25),
@@ -171,7 +173,7 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     deltaS: Reaction.entropyForK(2, 0),
     forwardRateConstant: 0.2,
     referenceTemperature: STANDARD_TEMPERATURE,
-    activationEnergy: 50 * KJ,
+    activationEnergy: 30 * KJ,
     temperatureRange: new Range(273, 373),
     defaultTemperature: STANDARD_TEMPERATURE,
     volumeRange: new Range(0.5, 2),
@@ -193,7 +195,7 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     deltaS: Reaction.entropyForK(2, 0),
     forwardRateConstant: 0.2,
     referenceTemperature: STANDARD_TEMPERATURE,
-    activationEnergy: 50 * KJ,
+    activationEnergy: 30 * KJ,
     temperatureRange: new Range(273, 373),
     defaultTemperature: STANDARD_TEMPERATURE,
     volumeRange: new Range(0.5, 2),
@@ -214,7 +216,7 @@ const DEFINITIONS: readonly ReactionDefinition[] = [
     deltaS: Reaction.entropyForK(2, 0),
     forwardRateConstant: 0.2,
     referenceTemperature: STANDARD_TEMPERATURE,
-    activationEnergy: 50 * KJ,
+    activationEnergy: 30 * KJ,
     temperatureRange: new Range(273, 373),
     defaultTemperature: STANDARD_TEMPERATURE,
     volumeRange: new Range(0.5, 2),

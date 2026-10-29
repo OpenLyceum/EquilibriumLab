@@ -1,4 +1,4 @@
-# AGENTS.md — SceneryStack Template
+# AGENTS.md — Equilibrium Lab
 
 Sim-specific context for AI assistants. General SceneryStack guidance: [OpenLyceum/.github/AGENTS.md](https://github.com/OpenLyceum/.github/blob/main/AGENTS.md).
 
@@ -13,18 +13,18 @@ OpenLyceum sims. Prefer `Baton/scripts/create-sim.sh` (or GitHub **Use this temp
 
 | File | Purpose |
 |---|---|
-| `src/SimColors.ts` | All `ProfileColorProperty` instances |
-| `src/SimConstants.ts` | Named numeric constants (layout px, physics SI units) |
-| `src/SimNamespace.ts` | Namespace for color property names |
+| `src/EquilibriumLabColors.ts` | All `ProfileColorProperty` instances |
+| `src/EquilibriumLabConstants.ts` | Named numeric constants (layout px, physics SI units) |
+| `src/EquilibriumLabNamespace.ts` | Namespace for color property names |
 | `src/i18n/StringManager.ts` | Singleton localized string accessor |
-| `src/sim-screen/SimScreen.ts` | Screen wrapper |
-| `src/sim-screen/model/SimModel.ts` | Simulation state and logic |
-| `src/sim-screen/view/SimScreenView.ts` | Visual nodes, layout, `screenSummaryContent` + `pdomOrder` |
-| `src/sim-screen/view/SimScreenSummaryContent.ts` | Accessible screen summary (reference a11y pattern) |
-| `src/sim-screen/view/SimKeyboardHelpContent.ts` | Basic keyboard actions + commented slider/time-control sections |
-| `src/common/SimPanel.ts` | Pre-themed `Panel` wrapper (uses `SimColors` automatically) |
-| `src/common/SimButtonOptions.ts` | Flat button-appearance option bundles + light-control-surface combo-box options |
-| `src/common/SimControlOptions.ts` | Shared slider, number-control, and checkbox sizing/theme options |
+| `src/approach/ApproachScreen.ts` | Screen wrapper |
+| `src/approach/model/ApproachModel.ts` | Simulation state and logic |
+| `src/approach/view/ApproachScreenView.ts` | Visual nodes, layout, `screenSummaryContent` + `pdomOrder` |
+| `src/approach/view/ApproachScreenSummaryContent.ts` | Accessible screen summary (reference a11y pattern) |
+| `src/approach/view/ApproachKeyboardHelpContent.ts` | Basic keyboard actions + commented slider/time-control sections |
+| `src/common/EquilibriumLabPanel.ts` | Pre-themed `Panel` wrapper (uses `EquilibriumLabColors` automatically) |
+| `src/common/EquilibriumLabButtonOptions.ts` | Flat button-appearance option bundles + light-control-surface combo-box options |
+| `src/common/EquilibriumLabControlOptions.ts` | Shared slider, number-control, and checkbox sizing/theme options |
 | `src/common/TimeModel.ts` | Composable play/pause + elapsed-time model for animated sims |
 | `scripts/generate-icons.ts` | PNG icons from `public/icons/icon.svg` |
 | `scripts/rename-sim.ts` | Sim-level fork/rename (metadata, Colors, Constants, Panel, Button/Control options, Preferences) |
@@ -32,15 +32,15 @@ OpenLyceum sims. Prefer `Baton/scripts/create-sim.sh` (or GitHub **Use this temp
 
 ## Common components
 
-### SimPanel
+### EquilibriumLabPanel
 
-Every control panel and info box in the sim should use `SimPanel` so that
+Every control panel and info box in the sim should use `EquilibriumLabPanel` so that
 default/projector color switching is automatic:
 
 ```typescript
-import { SimPanel } from "../../common/SimPanel.js";
-const panel = new SimPanel(content);              // uses SimColors defaults
-const panel = new SimPanel(content, { xMargin: 20 }); // override any PanelOption
+import { EquilibriumLabPanel } from "../../common/EquilibriumLabPanel.js";
+const panel = new EquilibriumLabPanel(content);              // uses EquilibriumLabColors defaults
+const panel = new EquilibriumLabPanel(content, { xMargin: 20 }); // override any PanelOption
 ```
 
 ### TimeModel
@@ -64,13 +64,13 @@ export class MyModel implements TModel {
 Wire the view to `TimeControlNode` from `scenerystack/scenery-phet` binding on
 `model.timer.isPlayingProperty`.
 
-### SimButtonOptions
+### EquilibriumLabButtonOptions
 
 SceneryStack's push/round buttons default to a 3-D/beveled look; every button in the sim
 should be flat instead. Spread these into the relevant options object:
 
 ```typescript
-import { FLAT_RESET_ALL_BUTTON_OPTIONS, FLAT_RECTANGULAR_BUTTON_OPTIONS } from "../../common/SimButtonOptions.js";
+import { FLAT_RESET_ALL_BUTTON_OPTIONS, FLAT_RECTANGULAR_BUTTON_OPTIONS } from "../../common/EquilibriumLabButtonOptions.js";
 
 const resetAllButton = new ResetAllButton({ ...FLAT_RESET_ALL_BUTTON_OPTIONS, listener: () => {...} });
 const exampleButton = new RectangularPushButton({ ...FLAT_RECTANGULAR_BUTTON_OPTIONS, content, listener });
@@ -78,11 +78,11 @@ const exampleButton = new RectangularPushButton({ ...FLAT_RECTANGULAR_BUTTON_OPT
 
 `FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS` spreads into `TimeControlNode`'s `playPauseStepButtonOptions`;
 `TIME_CONTROL_SPEED_RADIO_OPTIONS` fixes `TimeControlNode`'s speed-radio label color, which
-otherwise defaults to black text on the sim's dark default-mode panels. `SIM_COMBO_BOX_OPTIONS`
+otherwise defaults to black text on the sim's dark default-mode panels. `EQUILIBRIUM_LAB_COMBO_BOX_OPTIONS`
 themes a `ComboBox`'s button/list chrome to the light control surface below; pair item labels
-with `LIGHT_SURFACE_TEXT_FILL` (not `SimColors.textColorProperty`, which is for panel-fill text).
+with `LIGHT_SURFACE_TEXT_FILL` (not `EquilibriumLabColors.textColorProperty`, which is for panel-fill text).
 
-`SimColors.ts` backs this with a "light control surfaces" section —
+`EquilibriumLabColors.ts` backs this with a "light control surfaces" section —
 `controlSurfaceColorProperty`, `controlSurfaceDisabledColorProperty`,
 `controlSurfaceTextColorProperty` — identical white/dark-text values in both default and
 projector profiles, so any component that must stay light regardless of theme (combo boxes,
@@ -91,15 +91,15 @@ flat buttons, editable fields) keeps readable contrast automatically.
 ## Accessibility
 
 This template is the **canonical accessibility reference** for OpenLyceum sims. It ships with
-the three required layers wired up: PDOM names, a `SimScreenSummaryContent`, and an explicit
-`pdomOrder` + `SimKeyboardHelpContent`. A11y strings live under the `a11y` key in each locale
-JSON, exposed via `StringManager.getA11yStrings()`. When building a real sim, make
+the three required layers wired up: PDOM names, a `ApproachScreenSummaryContent`, and an explicit
+`pdomOrder` + `ApproachKeyboardHelpContent`. A11y strings live under the `a11y` key in each locale
+JSON, exposed via `StringManager.getApproachA11yStrings()`. When building a real sim, make
 `currentDetailsContent` a live `DerivedProperty` over model state and add `accessibleName`s to
 every interactive node. Full convention and checklist: [Baton/ACCESSIBILITY.md](https://github.com/OpenLyceum/Baton/blob/main/ACCESSIBILITY.md).
 
 ## Compliance carve-outs
 
-A clean fork of this template rarely needs compliance carve-outs — root `SimConstants.ts`,
+A clean fork of this template rarely needs compliance carve-outs — root `EquilibriumLabConstants.ts`,
 `*Colors.ts`, `*Namespace.ts`, standard screen layout, and full a11y wiring pass Baton's
 compliance check out of the box. Document carve-outs in the forked sim's `AGENTS.md` only when
 you introduce a deliberate deviation (nested constants, hardcoded interaction fills, etc.).
@@ -205,8 +205,8 @@ After both steps no `Sim*` identifier should remain — `rg -n '\bSim[A-Z_]|\bSI
 
 ### Manual checklist (if not using the scripts)
 
-1. **Rename** — replace `scenerystack-template` / `SceneryStack Template` / `Sim` prefix in `init.ts`, `brand.ts`, `package.json` (name, description, keywords, repository.url), Colors/Constants/Namespace/Panel/ButtonOptions/ControlOptions/Preferences
-2. **Screens** — run `scaffold-screens` or mirror `sim-screen/` into kebab folders
+1. **Rename** — replace `equilibrium-lab` / `Equilibrium Lab` / `Sim` prefix in `init.ts`, `brand.ts`, `package.json` (name, description, keywords, repository.url), Colors/Constants/Namespace/Panel/ButtonOptions/ControlOptions/Preferences
+2. **Screens** — run `scaffold-screens` or mirror `approach/` into kebab folders
 3. **Locale** — add `strings_XX.json`, register in `StringManager`, add locale to `init.ts` `availableLocales`
 4. **Icon** — edit `public/icons/icon.svg`, run `npm run icons`; match theme color in `index.html` / `vite.config.ts`.
    Once `assets/screenshot.png` exists (Baton `generate-screenshots.sh`), `npm run icons -- --screenshots-from-assets`
@@ -226,11 +226,11 @@ Full guide: [`doc/multi-screen.md`](doc/multi-screen.md)
 
 Summary:
 - Prefer `npm run scaffold-screens -- --screens Intro,Lab` (add `--shared-model` for a root model)
-- Or create a screen folder mirroring `src/sim-screen/` for each screen (kebab names, no `-screen` suffix)
+- Or create a screen folder mirroring `src/approach/` for each screen (kebab names, no `-screen` suffix)
 - Add screen-name keys to all locale JSON files; nest `a11y` per screen
 - Expose new getters in `StringManager.getScreenNames()` / `get{Screen}A11yStrings()`
 - Shared state: `--shared-model` → `common/model/SharedModel.ts` composed per screen (rename to a domain type)
-- Add `src/common/{SimName}ScreenIcons.ts` with `create{Screen}Icon()` factories; wire `homeScreenIcon` + `navigationBarIcon` on each Screen
+- Add `src/common/EquilibriumLabScreenIcons.ts` with `create{Screen}Icon()` factories; wire `homeScreenIcon` + `navigationBarIcon` on each Screen
 - Register all screens in the `screens` array in `main.ts`
 
 ## Using this template beyond a direct copy

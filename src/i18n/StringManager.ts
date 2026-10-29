@@ -50,7 +50,7 @@ const stringProperties = LocalizedString.getNestedStringProperties({
  * Keep this in sync with the `a11y` key in `strings_en.json` — a locale key
  * rename that is not mirrored here fails at the getter return (not silently).
  */
-export type SimA11yStrings = {
+export type EquilibriumLabA11yStrings = {
   readonly screenSummary: {
     readonly playAreaStringProperty: ReadOnlyProperty<string>;
     readonly controlAreaStringProperty: ReadOnlyProperty<string>;
@@ -64,9 +64,9 @@ export type SimA11yStrings = {
 
 /**
  * Explicit Preferences → Simulation labels from {@link StringManager.getPreferences}.
- * Same sync rule as {@link SimA11yStrings}.
+ * Same sync rule as {@link EquilibriumLabA11yStrings}.
  */
-export type SimPreferenceStrings = {
+export type EquilibriumLabPreferenceStrings = {
   readonly titleStringProperty: ReadOnlyProperty<string>;
   readonly exampleToggleStringProperty: ReadOnlyProperty<string>;
 };
@@ -103,34 +103,43 @@ export class StringManager {
    * Each property updates automatically when the locale changes.
    */
   public getScreenNames(): {
-    readonly simStringProperty: ReadOnlyProperty<string>;
+    readonly approachStringProperty: ReadOnlyProperty<string>;
+    readonly iceTableStringProperty: ReadOnlyProperty<string>;
+    readonly leChatelierStringProperty: ReadOnlyProperty<string>;
+    readonly vantHoffStringProperty: ReadOnlyProperty<string>;
   } {
     return {
-      simStringProperty: stringProperties.screens.simStringProperty,
+      approachStringProperty: stringProperties.screens.approachStringProperty,
+      iceTableStringProperty: stringProperties.screens.iceTableStringProperty,
+      leChatelierStringProperty: stringProperties.screens.leChatelierStringProperty,
+      vantHoffStringProperty: stringProperties.screens.vantHoffStringProperty,
     };
   }
 
-  /**
-   * Accessibility (Interactive Description) StringProperties.
-   *
-   * Returns the reactive `a11y` string tree used by the parallel DOM:
-   *   - `screenSummary.*` — play-area / control-area overview and an interaction
-   *     hint, read by `SimScreenSummaryContent`.
-   *   - `currentDetails` — a paragraph describing the simulation's current state.
-   *     In a real sim, derive a live version from model Properties (see
-   *     LunarLander's ScreenSummaryContent for the canonical pattern).
-   *
-   * Add `accessibleName` / `accessibleHelpText` strings for individual controls
-   * to the `a11y` group too, then read them through this same nested tree.
-   */
-  public getA11yStrings(): SimA11yStrings {
-    return stringProperties.a11y;
+  /** Accessibility strings for the Approach screen. */
+  public getApproachA11yStrings() {
+    return stringProperties.a11y.approach;
+  }
+
+  /** Accessibility strings for the ICE Table screen. */
+  public getICETableA11yStrings() {
+    return stringProperties.a11y.iceTable;
+  }
+
+  /** Accessibility strings for the Le Chatelier screen. */
+  public getLeChatelierA11yStrings() {
+    return stringProperties.a11y.leChatelier;
+  }
+
+  /** Accessibility strings for the Van 't Hoff screen. */
+  public getVantHoffA11yStrings() {
+    return stringProperties.a11y.vantHoff;
   }
 
   /**
    * Simulation-specific preference labels shown in Preferences → Simulation.
    */
-  public getPreferences(): SimPreferenceStrings {
+  public getPreferences() {
     return stringProperties.preferences;
   }
 }

@@ -105,6 +105,42 @@
     "forwardRateConstant": "Constante de velocidad directa",
     "forwardRateConstantPattern": "{{value}}"
   },
+  "iceTable": {
+    "problemHeading": "Problema",
+    "findEquilibrium": "Hallar la fila de equilibrio",
+    "findK": "Hallar K",
+    "newProblem": "Nuevo problema",
+    "givenKPattern": "{{k}} = {{value}} a {{temperature}} K",
+    "givenEquilibriumPattern": "En el equilibrio, [{{formula}}] = {{value}} M  ({{temperature}} K)",
+    "taskFindEquilibrium": "Escribe la fila de cambios en función de x, luego halla x y las concentraciones de equilibrio.",
+    "taskFindK": "Escribe la fila de cambios en función de x, usa la concentración dada para hallar x y luego K.",
+    "rowInitial": "I",
+    "rowChange": "C",
+    "rowEquilibrium": "E",
+    "rowInitialName": "Inicial (M)",
+    "rowChangeName": "Cambio (M)",
+    "rowEquilibriumName": "Equilibrio (M)",
+    "xLabel": "x =",
+    "unknown": "?",
+    "check": "Comprobar",
+    "showSolution": "Ver la solución",
+    "runIt": "Ejecutar",
+    "keypadRangePattern": "Entre {{min}} y {{max}}",
+    "feedbackHeading": "Comentarios",
+    "startPrompt": "Ajusta la fila de cambios con los selectores, introduce x y pulsa Comprobar.",
+    "changeRowRight": "Fila de cambios: correcta.",
+    "changeRowWrong": "Fila de cambios: todavía no. Cada cambio es el coeficiente de la especie por x, con un signo para los reactivos y el opuesto para los productos.",
+    "xMissing": "Introduce x para comprobarlo.",
+    "xRight": "x = {{value}} M: correcto.",
+    "xWrong": "x: todavía no. Sustituye la fila E en la expresión de K y despeja x.",
+    "xWrongFindK": "x: todavía no. La concentración de equilibrio dada es igual a su valor inicial más su cambio.",
+    "kMissing": "Introduce K para comprobarlo.",
+    "kRight": "K = {{value}}: correcto.",
+    "kWrong": "K: todavía no. Sustituye la fila E en la expresión de K.",
+    "smallXValid": "El cambio de [{{formula}}] es el {{percent}} % de su valor inicial, menos del 5 %: la aproximación de x pequeña habría funcionado.",
+    "smallXInvalid": "El cambio de [{{formula}}] es el {{percent}} % de su valor inicial, más del 5 %: la aproximación de x pequeña fallaría aquí.",
+    "runHint": "Ejecutar inicia la mezcla desde la fila I. Las líneas discontinuas marcan tu fila E."
+  },
   "leChatelier": {
     "stressesHeading": "Perturbaciones",
     "speciesHeading": "Añadir o quitar",
@@ -170,14 +206,15 @@
     },
     "iceTable": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego muestra el problema y una tabla ICE con las filas inicial, cambio y equilibrio para cada especie, las entradas de x y K, comentarios y una gráfica de la concentración frente al tiempo para Ejecutar.",
+        "controlArea": "El área de control tiene el tipo de problema, el menú de reacciones, Nuevo problema, controles de tiempo y Restablecer todo.",
+        "interactionHint": "Ajusta cada cambio con su selector, introduce x y pulsa Comprobar."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
-      "controls": {
-        "exampleControl": "Control de ejemplo"
-      }
+      "currentDetailsPattern": "{{reaction}}. {{given}} {{task}}",
+      "changePickerPattern": "Cambio de {{name}}, en múltiplos de x",
+      "xEntry": "Introducir x",
+      "kEntry": "Introducir K",
+      "modeRadio": "Tipo de problema"
     },
     "leChatelier": {
       "screenSummary": {

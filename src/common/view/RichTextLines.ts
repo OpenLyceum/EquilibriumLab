@@ -14,14 +14,15 @@ import { FONT_SIZE } from "../../EquilibriumLabConstants.js";
 export class RichTextLines extends VBox {
   private readonly lines: RichText[];
 
-  public constructor(count: number, maxWidth: number) {
+  /** With `wrap`, long lines wrap at `maxWidth`; otherwise they shrink to fit it. */
+  public constructor(count: number, maxWidth: number, wrap = false) {
     const lines = Array.from(
       { length: count },
       () =>
         new RichText("", {
           font: new PhetFont(FONT_SIZE.control),
           fill: EquilibriumLabColors.textColorProperty,
-          maxWidth,
+          ...(wrap ? { lineWrap: maxWidth } : { maxWidth }),
         }),
     );
     super({ align: "left", spacing: 4, children: lines });

@@ -105,6 +105,42 @@
     "forwardRateConstant": "Forward rate constant",
     "forwardRateConstantPattern": "{{value}}"
   },
+  "iceTable": {
+    "problemHeading": "Problem",
+    "findEquilibrium": "Find the equilibrium row",
+    "findK": "Find K",
+    "newProblem": "New problem",
+    "givenKPattern": "{{k}} = {{value}} at {{temperature}} K",
+    "givenEquilibriumPattern": "At equilibrium, [{{formula}}] = {{value}} M  ({{temperature}} K)",
+    "taskFindEquilibrium": "Write the change row in terms of x, then solve for x and the equilibrium concentrations.",
+    "taskFindK": "Write the change row in terms of x, use the given concentration to find x, then find K.",
+    "rowInitial": "I",
+    "rowChange": "C",
+    "rowEquilibrium": "E",
+    "rowInitialName": "Initial (M)",
+    "rowChangeName": "Change (M)",
+    "rowEquilibriumName": "Equilibrium (M)",
+    "xLabel": "x =",
+    "unknown": "?",
+    "check": "Check",
+    "showSolution": "Show solution",
+    "runIt": "Run it",
+    "keypadRangePattern": "Between {{min}} and {{max}}",
+    "feedbackHeading": "Feedback",
+    "startPrompt": "Set the change row with the pickers, enter x, then press Check.",
+    "changeRowRight": "Change row: correct.",
+    "changeRowWrong": "Change row: not yet. Each change is the species' coefficient times x, with one sign for reactants and the opposite sign for products.",
+    "xMissing": "Enter x to check it.",
+    "xRight": "x = {{value}} M: correct.",
+    "xWrong": "x: not yet. Put the E row into the expression for K and solve for x.",
+    "xWrongFindK": "x: not yet. The given equilibrium concentration equals its initial value plus its change.",
+    "kMissing": "Enter K to check it.",
+    "kRight": "K = {{value}}: correct.",
+    "kWrong": "K: not yet. Put the E row into the expression for K.",
+    "smallXValid": "The change in [{{formula}}] is {{percent}} % of its initial value, under 5 %: the small-x approximation would have worked.",
+    "smallXInvalid": "The change in [{{formula}}] is {{percent}} % of its initial value, over 5 %: the small-x approximation would fail here.",
+    "runHint": "Run it starts the mixture from the I row. Dashed lines mark your E row."
+  },
   "leChatelier": {
     "stressesHeading": "Stresses",
     "speciesHeading": "Add or remove",
@@ -170,14 +206,15 @@
     },
     "iceTable": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows the problem and an ICE table with initial, change and equilibrium rows for each species, the x and K entries, feedback, and a chart of concentration against time for Run it.",
+        "controlArea": "The control area has the problem type, the reaction menu, New problem, time controls, and Reset All.",
+        "interactionHint": "Set each change with its picker, enter x, and press Check."
       },
-      "currentDetails": "The simulation is in its initial state.",
-      "controls": {
-        "exampleControl": "Example control"
-      }
+      "currentDetailsPattern": "{{reaction}}. {{given}} {{task}}",
+      "changePickerPattern": "Change in {{name}}, in multiples of x",
+      "xEntry": "Enter x",
+      "kEntry": "Enter K",
+      "modeRadio": "Problem type"
     },
     "leChatelier": {
       "screenSummary": {

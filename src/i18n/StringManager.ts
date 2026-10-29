@@ -100,6 +100,11 @@ export class StringManager {
     return stringProperties.approach;
   }
 
+  /** Visible strings of the ICE Table screen. */
+  public getICETableStrings() {
+    return stringProperties.iceTable;
+  }
+
   /** Visible strings of the Le Chatelier screen. */
   public getLeChatelierStrings() {
     return stringProperties.leChatelier;

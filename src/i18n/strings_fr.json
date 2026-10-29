@@ -105,6 +105,42 @@
     "forwardRateConstant": "Constante de vitesse directe",
     "forwardRateConstantPattern": "{{value}}"
   },
+  "iceTable": {
+    "problemHeading": "Problème",
+    "findEquilibrium": "Trouver la ligne d'équilibre",
+    "findK": "Trouver K",
+    "newProblem": "Nouveau problème",
+    "givenKPattern": "{{k}} = {{value}} à {{temperature}} K",
+    "givenEquilibriumPattern": "À l'équilibre, [{{formula}}] = {{value}} M  ({{temperature}} K)",
+    "taskFindEquilibrium": "Écrivez la ligne des variations en fonction de x, puis trouvez x et les concentrations à l'équilibre.",
+    "taskFindK": "Écrivez la ligne des variations en fonction de x, utilisez la concentration donnée pour trouver x, puis K.",
+    "rowInitial": "I",
+    "rowChange": "C",
+    "rowEquilibrium": "E",
+    "rowInitialName": "Initiale (M)",
+    "rowChangeName": "Variation (M)",
+    "rowEquilibriumName": "Équilibre (M)",
+    "xLabel": "x =",
+    "unknown": "?",
+    "check": "Vérifier",
+    "showSolution": "Voir la solution",
+    "runIt": "Lancer",
+    "keypadRangePattern": "Entre {{min}} et {{max}}",
+    "feedbackHeading": "Rétroaction",
+    "startPrompt": "Réglez la ligne des variations avec les sélecteurs, entrez x, puis appuyez sur Vérifier.",
+    "changeRowRight": "Ligne des variations : correcte.",
+    "changeRowWrong": "Ligne des variations : pas encore. Chaque variation est le coefficient de l'espèce multiplié par x, avec un signe pour les réactifs et le signe opposé pour les produits.",
+    "xMissing": "Entrez x pour le vérifier.",
+    "xRight": "x = {{value}} M : correct.",
+    "xWrong": "x : pas encore. Remplacez la ligne E dans l'expression de K et résolvez pour x.",
+    "xWrongFindK": "x : pas encore. La concentration à l'équilibre donnée est égale à sa valeur initiale plus sa variation.",
+    "kMissing": "Entrez K pour le vérifier.",
+    "kRight": "K = {{value}} : correct.",
+    "kWrong": "K : pas encore. Remplacez la ligne E dans l'expression de K.",
+    "smallXValid": "La variation de [{{formula}}] vaut {{percent}} % de sa valeur initiale, moins de 5 % : l'approximation des petits x aurait fonctionné.",
+    "smallXInvalid": "La variation de [{{formula}}] vaut {{percent}} % de sa valeur initiale, plus de 5 % : l'approximation des petits x échouerait ici.",
+    "runHint": "Lancer démarre le mélange à partir de la ligne I. Les tirets marquent votre ligne E."
+  },
   "leChatelier": {
     "stressesHeading": "Contraintes",
     "speciesHeading": "Ajouter ou retirer",
@@ -170,14 +206,15 @@
     },
     "iceTable": {
       "screenSummary": {
-        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle contient un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en utilisant ses commandes."
+        "playArea": "La zone de jeu montre le problème et un tableau ICE avec les lignes initiale, variation et équilibre pour chaque espèce, les entrées de x et K, la rétroaction et un graphique de la concentration en fonction du temps pour Lancer.",
+        "controlArea": "La zone de contrôle contient le type de problème, le menu des réactions, Nouveau problème, les commandes de temps et Tout réinitialiser.",
+        "interactionHint": "Réglez chaque variation avec son sélecteur, entrez x et appuyez sur Vérifier."
       },
-      "currentDetails": "La simulation est dans son état initial.",
-      "controls": {
-        "exampleControl": "Commande d'exemple"
-      }
+      "currentDetailsPattern": "{{reaction}}. {{given}} {{task}}",
+      "changePickerPattern": "Variation de {{name}}, en multiples de x",
+      "xEntry": "Entrer x",
+      "kEntry": "Entrer K",
+      "modeRadio": "Type de problème"
     },
     "leChatelier": {
       "screenSummary": {

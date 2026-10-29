@@ -1,88 +1,257 @@
 /**
  * ICETableScreenView.ts
  *
- * The top-level view for the simulation screen.
- *
- * All visual nodes are added here. Follow these conventions:
- *   - Use this.layoutBounds for positioning (never magic pixel values)
- *   - Keep a ResetAllButton that calls model.reset() and this.reset()
- *   - Override step(dt) for frame-by-frame animation
- *
- * ── Adding content ────────────────────────────────────────────────────────────
- * 1. Create Node subclasses in separate files (e.g. EquilibriumLabControlPanel.ts)
- * 2. Instantiate them here and call this.addChild(...)
- * 3. Link them to model properties:
- *      model.isRunningProperty.link( isRunning => { ... } );
- *
- * ── Layout bounds ─────────────────────────────────────────────────────────────
- * SceneryStack uses a virtual 1024×618 coordinate space by default.
- * this.layoutBounds gives you the full rectangle; use it for alignment:
- *   center, minX, maxX, minY, maxY, width, height
+ * ICE Table screen layout: the equation, what is given and the task at the top left; the ICE table
+ * under them with the x (and K) entries, the Check / Show solution / Run it buttons and the
+ * feedback; and on the right the problem controls, the concentration chart that Run it fills, and
+ * the time controls.
  */
 
+import { DerivedProperty, Multilink, Property } from "scenerystack/axon";
+import { Range } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, Text } from "scenerystack/scenery";
-import { ResetAllButton } from "scenerystack/scenery-phet";
-import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
+import { StringUtils } from "scenerystack/phetcommon";
+import { HBox, Node, RichText, VBox } from "scenerystack/scenery";
+import { Keypad, PhetFont, ResetAllButton } from "scenerystack/scenery-phet";
+import { KeypadDialog, ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/EquilibriumLabButtonOptions.js";
+import { EquilibriumLabPanel } from "../../common/EquilibriumLabPanel.js";
+import { EquilibriumForm } from "../../common/model/EquilibriumForm.js";
+import { comboBox, heading, label, note, pushButton, radioGroup } from "../../common/view/ControlFactory.js";
+import { createTimeControl } from "../../common/view/createTimeControl.js";
+import { scientific, significant } from "../../common/view/formatValues.js";
+import { ReactionEquationNode } from "../../common/view/ReactionEquationNode.js";
+import { reactionChoices } from "../../common/view/reactionChoices.js";
+import { speciesStyleIn } from "../../common/view/speciesStyles.js";
+import { type ChartTrace, TimeChartNode } from "../../common/view/TimeChartNode.js";
 import EquilibriumLabColors from "../../EquilibriumLabColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../EquilibriumLabConstants.js";
+import { FONT_SIZE, SCREEN_VIEW_MARGIN, SIDE_COLUMN_WIDTH } from "../../EquilibriumLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import type { ICETableModel } from "../model/ICETableModel.js";
+import { markupToSpeech } from "../../le-chatelier/view/StressExplanationNode.js";
+import { ICE_REACTION_IDS, type ICETableModel } from "../model/ICETableModel.js";
+import { feedbackLines, ICEFeedbackNode } from "./ICEFeedbackNode.js";
+import { ICETableNode } from "./ICETableNode.js";
 import { ICETableScreenSummaryContent } from "./ICETableScreenSummaryContent.js";
+import { NumberEntryNode } from "./NumberEntryNode.js";
 
 export type ICETableScreenViewOptions = ScreenViewOptions;
 
+const LEFT_WIDTH = 620;
+const TABLE_TOP = 118;
+const CHART_LEFT = 708;
+const CHART_WIDTH = 292;
+const CHART_TOP = 300;
+const CHART_HEIGHT = 140;
+const SIDE_CONTENT_WIDTH = SIDE_COLUMN_WIDTH - 24;
+
+/** Largest |x| and K the keypad accepts. */
+const X_ENTRY_LIMIT = 10;
+const K_ENTRY_LIMIT = 1e7;
+
 export class ICETableScreenView extends ScreenView {
   public constructor(model: ICETableModel, providedOptions?: ICETableScreenViewOptions) {
-    // ── Accessibility: screen summary ───────────────────────────────────────────
-    // The screen summary is the first thing a screen-reader user encounters. It
-    // is registered here, in the ScreenView's super() options, so every sim wires
-    // it the same way. See ICETableScreenSummaryContent for the four content regions.
     const options = optionize<ICETableScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
-      {
-        screenSummaryContent: new ICETableScreenSummaryContent(model),
-      },
+      { screenSummaryContent: new ICETableScreenSummaryContent(model) },
       providedOptions,
     );
     super(options);
 
-    // ── Background ────────────────────────────────────────────────────────────
-    // A full-screen rectangle that follows the active color profile.
-    // Replace or remove once you add real content.
-    const backgroundRect = new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {
-      fill: EquilibriumLabColors.backgroundColorProperty,
+    const strings = StringManager.getInstance().getICETableStrings();
+    const common = StringManager.getInstance().getCommonStrings();
+    const a11y = StringManager.getInstance().getICETableA11yStrings();
+    const scene = model.scene;
+    const mixture = scene.mixture;
+    const listParent = new Node();
+
+    // ── Problem statement ───────────────────────────────────────────────────────
+    // ICE problems are always in Kc: the table holds concentrations.
+    const kcProperty = new Property(EquilibriumForm.KC);
+    const equation = new ReactionEquationNode(mixture.reactionProperty, kcProperty, LEFT_WIDTH);
+    equation.left = SCREEN_VIEW_MARGIN;
+    equation.top = SCREEN_VIEW_MARGIN - 6;
+    const given = new RichText("", {
+      font: new PhetFont({ size: FONT_SIZE.readout, weight: "bold" }),
+      fill: EquilibriumLabColors.kMarkerColorProperty,
+      maxWidth: LEFT_WIDTH,
     });
-    this.addChild(backgroundRect);
-
-    // ── Placeholder label ─────────────────────────────────────────────────────
-    // Replace this with your actual simulation content.
-    const placeholderText = new Text(StringManager.getInstance().getScreenNames().iceTableStringProperty, {
-      font: "bold 36px sans-serif",
-      fill: EquilibriumLabColors.textColorProperty,
-      center: this.layoutBounds.center,
+    const task = new RichText("", {
+      font: new PhetFont(FONT_SIZE.control),
+      fill: EquilibriumLabColors.mutedTextColorProperty,
+      lineWrap: LEFT_WIDTH,
     });
-    this.addChild(placeholderText);
+    Multilink.multilinkAny(
+      [
+        model.problemProperty,
+        strings.givenKPatternStringProperty,
+        strings.givenEquilibriumPatternStringProperty,
+        strings.taskFindEquilibriumStringProperty,
+        strings.taskFindKStringProperty,
+        common.kcSymbols.kStringProperty,
+      ],
+      () => {
+        const problem = model.problem;
+        given.string =
+          problem.mode === "findEquilibrium"
+            ? StringUtils.fillIn(strings.givenKPatternStringProperty.value, {
+                k: common.kcSymbols.kStringProperty.value,
+                value: scientific(problem.k, 3),
+                temperature: significant(problem.temperature, 3),
+              })
+            : StringUtils.fillIn(strings.givenEquilibriumPatternStringProperty.value, {
+                formula: problem.reaction.species[problem.givenIndex ?? 0]?.formula ?? "",
+                value: significant(problem.givenValue ?? 0, 3),
+                temperature: significant(problem.temperature, 3),
+              });
+        task.string = (
+          problem.mode === "findEquilibrium"
+            ? strings.taskFindEquilibriumStringProperty
+            : strings.taskFindKStringProperty
+        ).value;
+      },
+    );
+    const statement = new VBox({ align: "left", spacing: 6, children: [given, task] });
+    statement.left = SCREEN_VIEW_MARGIN;
+    statement.top = equation.bottom + 8;
 
-    // ── Accessibility: per-control names ────────────────────────────────────────
-    // EVERY interactive node must carry an `accessibleName` (and an
-    // `accessibleHelpText` where useful), sourced from the StringManager `a11y`
-    // string group — never a hard-coded English literal. Sun/scenery-phet controls
-    // (NumberControl, Checkbox, ComboBox, AquaRadioButtonGroup, …) accept it as an
-    // option; a draggable plain Node needs `tagName: "div", focusable: true` too.
-    // Example (uncomment and adapt when you add a real control):
-    //
-    //   const a11y = StringManager.getInstance().getICETableA11yStrings();
-    //   const exampleButton = new RectangularPushButton({
-    //     ...FLAT_RECTANGULAR_BUTTON_OPTIONS, // flat appearance, not SceneryStack's default 3-D look
-    //     content: someIcon,
-    //     listener: () => model.doSomething(),
-    //     accessibleName: a11y.controls.exampleControlStringProperty,
-    //   });
-    //   this.addChild(exampleButton);
+    // ── Table, entries, buttons, feedback ───────────────────────────────────────
+    const table = new ICETableNode(model, LEFT_WIDTH);
+    table.left = SCREEN_VIEW_MARGIN;
+    table.top = TABLE_TOP;
 
-    // ── Reset All button ──────────────────────────────────────────────────────
-    // Always position at bottom-right (PhET convention).
+    const keypadDialog = new KeypadDialog({
+      keypadLayout: Keypad.PositiveAndNegativeFloatingPointLayout,
+      keypadOptions: { accumulatorOptions: { maxDigits: 9, maxDigitsRightOfMantissa: 7 } },
+    });
+    const xEntry = new NumberEntryNode(
+      model.xEntryProperty,
+      () => new Range(-X_ENTRY_LIMIT, X_ENTRY_LIMIT),
+      keypadDialog,
+      a11y.xEntryStringProperty,
+      130,
+    );
+    const kEntry = new NumberEntryNode(
+      model.kEntryProperty,
+      () => new Range(0, K_ENTRY_LIMIT),
+      keypadDialog,
+      a11y.kEntryStringProperty,
+      130,
+    );
+    const findKProperty = new DerivedProperty([model.problemProperty], (problem) => problem.mode === "findK");
+    const kEntryRow = new HBox({
+      spacing: 6,
+      children: [label(common.kcSymbols.kStringProperty, 40), label("=", 20), kEntry],
+      visibleProperty: findKProperty,
+    });
+    const entries = new HBox({
+      spacing: 24,
+      children: [
+        new HBox({ spacing: 6, children: [label(strings.xLabelStringProperty, 40), xEntry, label("M", 20)] }),
+        kEntryRow,
+      ],
+    });
+
+    const feedback = new ICEFeedbackNode(model, LEFT_WIDTH - 24);
+    const checkButton = pushButton(strings.checkStringProperty, () => {
+      model.check();
+      this.addAccessibleResponse(markupToSpeech(feedbackLines(model).texts.join(" ")));
+    });
+    const solutionButton = pushButton(strings.showSolutionStringProperty, () => {
+      model.showSolution();
+      this.addAccessibleResponse(markupToSpeech(feedbackLines(model).texts.join(" ")));
+    });
+    const runButton = pushButton(strings.runItStringProperty, () => model.runIt());
+    const buttons = new HBox({ spacing: 10, children: [checkButton, solutionButton, runButton] });
+    const work = new VBox({ align: "left", spacing: 14, children: [entries, buttons] });
+    work.left = SCREEN_VIEW_MARGIN;
+    work.top = TABLE_TOP + 214;
+
+    const feedbackPanel = new EquilibriumLabPanel(
+      new VBox({
+        align: "left",
+        spacing: 6,
+        children: [heading(strings.feedbackHeadingStringProperty, 300), feedback],
+      }),
+      { minWidth: LEFT_WIDTH, maxWidth: LEFT_WIDTH },
+    );
+    feedbackPanel.left = SCREEN_VIEW_MARGIN;
+    feedbackPanel.top = work.bottom + 16;
+
+    // ── Problem controls ────────────────────────────────────────────────────────
+    const modeRadio = radioGroup(
+      model.modeProperty,
+      [
+        { value: "findEquilibrium" as const, label: strings.findEquilibriumStringProperty },
+        { value: "findK" as const, label: strings.findKStringProperty },
+      ],
+      a11y.modeRadioStringProperty,
+      SIDE_CONTENT_WIDTH,
+    );
+    const reactionMenu = comboBox(
+      model.reactionIdProperty,
+      reactionChoices(ICE_REACTION_IDS),
+      listParent,
+      common.a11y.reactionMenuStringProperty,
+      SIDE_CONTENT_WIDTH,
+    );
+    const newProblemButton = pushButton(strings.newProblemStringProperty, () => model.newProblem());
+    const problemPanel = new EquilibriumLabPanel(
+      new VBox({
+        align: "left",
+        spacing: 8,
+        children: [
+          heading(strings.problemHeadingStringProperty, SIDE_CONTENT_WIDTH),
+          modeRadio,
+          heading(common.reactionHeadingStringProperty, SIDE_CONTENT_WIDTH),
+          reactionMenu,
+          newProblemButton,
+        ],
+      }),
+      { minWidth: SIDE_COLUMN_WIDTH, maxWidth: SIDE_COLUMN_WIDTH },
+    );
+    problemPanel.right = this.layoutBounds.maxX - SCREEN_VIEW_MARGIN;
+    problemPanel.top = SCREEN_VIEW_MARGIN;
+
+    // ── Run-it chart ────────────────────────────────────────────────────────────
+    const speciesTraces = (): ChartTrace[] =>
+      mixture.reaction.species.map((s, i) => ({
+        color: speciesStyleIn(mixture.reaction, i).color,
+        label: `[${s.formula}]`,
+      }));
+    const chart = new TimeChartNode(
+      scene.concentrationRecord,
+      speciesTraces(),
+      {
+        title: common.concentrationChart.titleStringProperty,
+        xAxis: common.concentrationChart.xAxisStringProperty,
+        yAxis: common.concentrationChart.yAxisStringProperty,
+      },
+      CHART_WIDTH,
+      CHART_HEIGHT,
+    );
+    chart.x = CHART_LEFT;
+    chart.y = CHART_TOP;
+    mixture.reactionProperty.lazyLink(() => chart.setTraces(speciesTraces()));
+    const updateReferences = () => chart.setReferenceValues(model.getEnteredEquilibrium() ?? []);
+    model.xEntryProperty.link(updateReferences);
+    model.changeRowRebuiltEmitter.addListener(() => {
+      for (const property of model.changeCoefficientProperties) {
+        property.link(updateReferences);
+      }
+      updateReferences();
+    });
+    for (const property of model.changeCoefficientProperties) {
+      property.link(updateReferences);
+    }
+    const runHint = note(strings.runHintStringProperty, CHART_WIDTH + 40);
+    runHint.left = CHART_LEFT - 44;
+    runHint.top = CHART_TOP + CHART_HEIGHT + 40;
+
+    const timeControl = createTimeControl(scene.timer.isPlayingProperty, scene.timeSpeedProperty, () =>
+      scene.advance(1 / 30),
+    );
+    timeControl.left = CHART_LEFT - 30;
+    timeControl.bottom = this.layoutBounds.maxY - SCREEN_VIEW_MARGIN;
+
     const resetAllButton = new ResetAllButton({
       ...FLAT_RESET_ALL_BUTTON_OPTIONS,
       listener: () => {
@@ -92,69 +261,40 @@ export class ICETableScreenView extends ScreenView {
       right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
       bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
     });
-    this.addChild(resetAllButton);
 
-    // ── Accessibility: keyboard / reading traversal order ───────────────────────
-    // Make the parallel DOM (Tab order and screen-reader reading order)
-    // deterministic and independent of child z-order. ScreenView throws if you
-    // set pdomOrder on itself, so add a lightweight wrapper Node that "borrows"
-    // the interactive nodes in the order a user should reach them — Reset All
-    // last. Non-interactive decoration (background, placeholder) is omitted.
+    this.children = [
+      equation,
+      statement,
+      table,
+      work,
+      feedbackPanel,
+      problemPanel,
+      chart,
+      runHint,
+      timeControl,
+      resetAllButton,
+      listParent,
+    ];
     this.addChild(
       new Node({
         pdomOrder: [
-          // TODO: add the sim's interactive nodes here, in traversal order
+          table,
+          xEntry,
+          kEntry,
+          checkButton,
+          solutionButton,
+          runButton,
+          modeRadio,
+          reactionMenu,
+          newProblemButton,
+          timeControl,
           resetAllButton,
         ],
       }),
     );
   }
 
-  /**
-   * Resets view-side state (animations, panel visibility, etc.).
-   * Called by the Reset All button listener.
-   */
   public reset(): void {
-    // TODO: reset any view-side state here
+    // No view-only state.
   }
-
-  /**
-   * Steps the view forward by dt seconds for animation.
-   * @param _dt - elapsed time in seconds
-   */
-  public override step(_dt: number): void {
-    // TODO: implement animation updates here
-  }
-
-  // ── Accessibility / listeners: dispose ─────────────────────────────────────
-  // ScreenView is `isDisposable: false` and lives for the whole sim, so this
-  // class rarely needs dispose(). Child Nodes (and a live currentDetails
-  // DerivedProperty you own on a short-lived object) do. When you add
-  // DerivedProperty / Multilink / Property.link against model state, keep the
-  // references and tear them down — forks copy what they see. Pattern:
-  //
-  // private readonly disposeICETableScreenView: () => void;
-  //
-  // // in the constructor, after creating the listeners:
-  // const statusMultilink = Multilink.multilink(
-  //   [model.someProperty, model.otherProperty],
-  //   (a, b) => { /* update view from model */ },
-  // );
-  // const detailsProperty = new DerivedProperty(
-  //   [model.stateProperty],
-  //   (state) => `State: ${state}`,
-  // ); // → pass as currentDetailsContent in ICETableScreenSummaryContent
-  // const onExternal = (v: number) => { /* … */ };
-  // model.externalProperty.link(onExternal); // Property you do NOT own
-  //
-  // this.disposeICETableScreenView = () => {
-  //   statusMultilink.dispose();                 // Multilink you created
-  //   detailsProperty.dispose();                 // DerivedProperty you created
-  //   model.externalProperty.unlink(onExternal); // undo external link
-  // };
-  //
-  // public override dispose(): void {
-  //   this.disposeICETableScreenView();
-  //   super.dispose();
-  // }
 }

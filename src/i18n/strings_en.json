@@ -105,6 +105,57 @@
     "forwardRateConstant": "Forward rate constant",
     "forwardRateConstantPattern": "{{value}}"
   },
+  "leChatelier": {
+    "stressesHeading": "Stresses",
+    "speciesHeading": "Add or remove",
+    "addButton": "+",
+    "removeButton": "−",
+    "temperature": "Temperature",
+    "argonConstantVolume": "Argon, fixed V",
+    "argonConstantPressure": "Argon, fixed P",
+    "dilute": "Add water",
+    "catalyst": "Catalyst",
+    "restart": "Restart at equilibrium",
+    "predictFirst": "Predict before each stress",
+    "predictionHeading": "Which way will it shift?",
+    "predictLeft": "← Reactants",
+    "predictNone": "No shift",
+    "predictRight": "Products →",
+    "predictPrompt": "Choose a prediction to unlock the stresses.",
+    "explanationHeading": "What changed?",
+    "startPrompt": "The mixture starts at equilibrium. Apply a stress and watch how it responds.",
+    "explanations": {
+      "qRight": "The stress changed Q but not K. Now Q &lt; K, so the mixture shifts toward products until Q = K again.",
+      "qLeft": "The stress changed Q but not K. Now Q &gt; K, so the mixture shifts toward reactants until Q = K again.",
+      "kRight": "Changing the temperature changed K, not Q. K rose above Q, so the mixture shifts toward products.",
+      "kLeft": "Changing the temperature changed K, not Q. K fell below Q, so the mixture shifts toward reactants.",
+      "volumeNoChange": "Q did not change: the reaction has as many moles of gas (or of solute) on each side, so changing the volume scales the top and bottom of Q equally. No shift.",
+      "inertVolume": "Argon at fixed volume raises the total pressure but changes no concentration or partial pressure, so Q and K are both unchanged. No shift.",
+      "catalyst": "A catalyst speeds the forward and reverse reactions equally. Q and K are unchanged, so there is no shift; equilibrium is just reached faster.",
+      "noShift": "Q = K still: no shift.",
+      "kpNote": "(In the K<sub>p</sub> form Q also changes a little, because heating at fixed volume raises every partial pressure.)"
+    },
+    "predictionCorrect": "You predicted: {{prediction}}. Correct!",
+    "predictionWrong": "You predicted: {{prediction}}. The mixture shifts: {{actual}}.",
+    "directionNames": {
+      "right": "toward products",
+      "left": "toward reactants",
+      "none": "no shift",
+      "stuck": "no reaction"
+    },
+    "markers": {
+      "addPattern": "+{{formula}}",
+      "removePattern": "−{{formula}}",
+      "heat": "T↑",
+      "cool": "T↓",
+      "compress": "V↓",
+      "expand": "V↑",
+      "water": "+H<sub>2</sub>O",
+      "argon": "+Ar",
+      "catalystOn": "+cat.",
+      "catalystOff": "−cat."
+    }
+  },
   "a11y": {
     "approach": {
       "screenSummary": {
@@ -130,14 +181,15 @@
     },
     "leChatelier": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows a vessel of reacting molecules at equilibrium, the balanced equation, a gauge comparing Q with K, a chart of concentration against time with a marker at each stress, and an explanation of what the last stress changed.",
+        "controlArea": "The control area has the reaction menu, the choice of Kc or Kp, buttons to add or remove each species, a temperature slider, argon and water buttons, a catalyst checkbox, a restart button, the predict-first option, time controls, and Reset All. For gases, the piston changes the volume.",
+        "interactionHint": "Apply a stress, then watch Q move away from K and the mixture shift until they are equal again."
       },
-      "currentDetails": "The simulation is in its initial state.",
-      "controls": {
-        "exampleControl": "Example control"
-      }
+      "currentDetailsPattern": "{{reaction}}: {{direction}}. Q is {{q}} and K is {{k}}.",
+      "addPattern": "Add {{name}}",
+      "removePattern": "Remove {{name}}",
+      "predictionRadio": "Prediction",
+      "restarted": "Restarted at equilibrium."
     },
     "vantHoff": {
       "screenSummary": {

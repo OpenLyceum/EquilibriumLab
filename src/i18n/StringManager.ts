@@ -100,6 +100,11 @@ export class StringManager {
     return stringProperties.approach;
   }
 
+  /** Visible strings of the Le Chatelier screen. */
+  public getLeChatelierStrings() {
+    return stringProperties.leChatelier;
+  }
+
   /** Accessibility strings for the Approach screen. */
   public getApproachA11yStrings() {
     return stringProperties.a11y.approach;

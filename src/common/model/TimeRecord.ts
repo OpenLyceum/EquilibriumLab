@@ -66,7 +66,15 @@ export class TimeRecord {
     this.changedEmitter.emit();
   }
 
-  public addMarker(time: number, label: string): void {
+  /**
+   * Adds a marker, unless the latest one has the same label and is less than `mergeTime` seconds
+   * old (repeated presses of the same stress read as one).
+   */
+  public addMarker(time: number, label: string, mergeTime = 0): void {
+    const last = this.markers[this.markers.length - 1];
+    if (last && last.label === label && time - last.time < mergeTime) {
+      return;
+    }
     this.markers.push({ time, label });
     this.changedEmitter.emit();
   }

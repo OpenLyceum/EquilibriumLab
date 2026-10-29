@@ -10,7 +10,7 @@
 
 import { EnumerationProperty, NumberProperty } from "scenerystack/axon";
 import { TimeSpeed } from "scenerystack/scenery-phet";
-import { REACTION_TIME_SCALE } from "../../EquilibriumLabConstants.js";
+import { MARKER_MERGE_TIME, REACTION_TIME_SCALE } from "../../EquilibriumLabConstants.js";
 import { TimeModel } from "../TimeModel.js";
 import { EquilibriumForm } from "./EquilibriumForm.js";
 import { ParticleSystem } from "./ParticleSystem.js";
@@ -80,8 +80,8 @@ export class ReactionSceneModel {
     this.recordNow(true);
     applyStress();
     this.recordNow(true);
-    this.concentrationRecord.addMarker(this.elapsedTimeProperty.value, label);
-    this.rateRecord.addMarker(this.elapsedTimeProperty.value, label);
+    this.concentrationRecord.addMarker(this.elapsedTimeProperty.value, label, MARKER_MERGE_TIME);
+    this.rateRecord.addMarker(this.elapsedTimeProperty.value, label, MARKER_MERGE_TIME);
   }
 
   public step(dt: number): void {

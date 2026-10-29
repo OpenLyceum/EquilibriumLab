@@ -105,6 +105,57 @@
     "forwardRateConstant": "Constante de vitesse directe",
     "forwardRateConstantPattern": "{{value}}"
   },
+  "leChatelier": {
+    "stressesHeading": "Contraintes",
+    "speciesHeading": "Ajouter ou retirer",
+    "addButton": "+",
+    "removeButton": "−",
+    "temperature": "Température",
+    "argonConstantVolume": "Argon, V fixe",
+    "argonConstantPressure": "Argon, P fixe",
+    "dilute": "Ajouter de l'eau",
+    "catalyst": "Catalyseur",
+    "restart": "Repartir de l'équilibre",
+    "predictFirst": "Prédire avant chaque contrainte",
+    "predictionHeading": "Dans quel sens va-t-il évoluer ?",
+    "predictLeft": "← Réactifs",
+    "predictNone": "Aucun déplacement",
+    "predictRight": "Produits →",
+    "predictPrompt": "Choisissez une prédiction pour débloquer les contraintes.",
+    "explanationHeading": "Qu'est-ce qui a changé ?",
+    "startPrompt": "Le mélange part de l'équilibre. Appliquez une contrainte et observez sa réponse.",
+    "explanations": {
+      "qRight": "La contrainte a changé Q mais pas K. Maintenant Q &lt; K, donc le mélange évolue vers les produits jusqu'à ce que Q = K de nouveau.",
+      "qLeft": "La contrainte a changé Q mais pas K. Maintenant Q &gt; K, donc le mélange évolue vers les réactifs jusqu'à ce que Q = K de nouveau.",
+      "kRight": "Changer la température a changé K, pas Q. K est devenu supérieur à Q, donc le mélange évolue vers les produits.",
+      "kLeft": "Changer la température a changé K, pas Q. K est devenu inférieur à Q, donc le mélange évolue vers les réactifs.",
+      "volumeNoChange": "Q n'a pas changé : la réaction a autant de moles de gaz (ou de soluté) de chaque côté, donc changer le volume modifie également le numérateur et le dénominateur de Q. Aucun déplacement.",
+      "inertVolume": "L'argon à volume fixe augmente la pression totale mais ne change aucune concentration ni pression partielle, donc Q et K restent inchangés. Aucun déplacement.",
+      "catalyst": "Un catalyseur accélère également les réactions directe et inverse. Q et K sont inchangés, donc il n'y a aucun déplacement ; l'équilibre est seulement atteint plus vite.",
+      "noShift": "Q = K toujours : aucun déplacement.",
+      "kpNote": "(Dans la forme K<sub>p</sub>, Q change aussi un peu, car chauffer à volume fixe augmente chaque pression partielle.)"
+    },
+    "predictionCorrect": "Votre prédiction : {{prediction}}. Exact !",
+    "predictionWrong": "Votre prédiction : {{prediction}}. Le mélange évolue : {{actual}}.",
+    "directionNames": {
+      "right": "vers les produits",
+      "left": "vers les réactifs",
+      "none": "aucun déplacement",
+      "stuck": "aucune réaction"
+    },
+    "markers": {
+      "addPattern": "+{{formula}}",
+      "removePattern": "−{{formula}}",
+      "heat": "T↑",
+      "cool": "T↓",
+      "compress": "V↓",
+      "expand": "V↑",
+      "water": "+H<sub>2</sub>O",
+      "argon": "+Ar",
+      "catalystOn": "+cat.",
+      "catalystOff": "−cat."
+    }
+  },
   "a11y": {
     "approach": {
       "screenSummary": {
@@ -130,14 +181,15 @@
     },
     "leChatelier": {
       "screenSummary": {
-        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle contient un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en utilisant ses commandes."
+        "playArea": "La zone de jeu montre un récipient de molécules à l'équilibre, l'équation équilibrée, une jauge comparant Q à K, un graphique de la concentration en fonction du temps avec un repère à chaque contrainte, et une explication de ce que la dernière contrainte a changé.",
+        "controlArea": "La zone de contrôle contient le menu des réactions, le choix de Kc ou Kp, des boutons pour ajouter ou retirer chaque espèce, un curseur de température, des boutons argon et eau, une case catalyseur, un bouton pour repartir, l'option de prédiction, les commandes de temps et Tout réinitialiser. Pour les gaz, le piston change le volume.",
+        "interactionHint": "Appliquez une contrainte, puis regardez Q s'éloigner de K et le mélange évoluer jusqu'à ce qu'ils soient de nouveau égaux."
       },
-      "currentDetails": "La simulation est dans son état initial.",
-      "controls": {
-        "exampleControl": "Commande d'exemple"
-      }
+      "currentDetailsPattern": "{{reaction}} : {{direction}}. Q vaut {{q}} et K vaut {{k}}.",
+      "addPattern": "Ajouter {{name}}",
+      "removePattern": "Retirer {{name}}",
+      "predictionRadio": "Prédiction",
+      "restarted": "Reparti de l'équilibre."
     },
     "vantHoff": {
       "screenSummary": {

@@ -23,6 +23,7 @@ import { scientific, significant } from "../../common/view/formatValues.js";
 import { MixtureReadoutsNode } from "../../common/view/MixtureReadoutsNode.js";
 import { ParticleBoxNode } from "../../common/view/ParticleBoxNode.js";
 import { QKGaugeNode } from "../../common/view/QKGaugeNode.js";
+import { QuotientSummaryContent } from "../../common/view/QuotientSummaryContent.js";
 import { ReactionEquationNode } from "../../common/view/ReactionEquationNode.js";
 import { reactionChoices } from "../../common/view/reactionChoices.js";
 import { speciesStyleIn } from "../../common/view/speciesStyles.js";
@@ -31,7 +32,6 @@ import EquilibriumLabColors from "../../EquilibriumLabColors.js";
 import { PANEL_SPACING, SCREEN_VIEW_MARGIN, SIDE_COLUMN_WIDTH } from "../../EquilibriumLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { ApproachModel } from "../model/ApproachModel.js";
-import { ApproachScreenSummaryContent } from "./ApproachScreenSummaryContent.js";
 import { StartingConcentrationsNode } from "./StartingConcentrationsNode.js";
 
 type SelfOptions = {
@@ -58,7 +58,12 @@ export class ApproachScreenView extends ScreenView {
 
   public constructor(model: ApproachModel, providedOptions: ApproachScreenViewOptions) {
     const options = optionize<ApproachScreenViewOptions, SelfOptions, ScreenViewOptions>()(
-      { screenSummaryContent: new ApproachScreenSummaryContent(model) },
+      {
+        screenSummaryContent: new QuotientSummaryContent(
+          model.scene,
+          StringManager.getInstance().getApproachA11yStrings(),
+        ),
+      },
       providedOptions,
     );
     super(options);

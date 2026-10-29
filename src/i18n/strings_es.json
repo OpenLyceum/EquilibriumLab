@@ -105,6 +105,57 @@
     "forwardRateConstant": "Constante de velocidad directa",
     "forwardRateConstantPattern": "{{value}}"
   },
+  "leChatelier": {
+    "stressesHeading": "Perturbaciones",
+    "speciesHeading": "Añadir o quitar",
+    "addButton": "+",
+    "removeButton": "−",
+    "temperature": "Temperatura",
+    "argonConstantVolume": "Argón, V fijo",
+    "argonConstantPressure": "Argón, P fija",
+    "dilute": "Añadir agua",
+    "catalyst": "Catalizador",
+    "restart": "Reiniciar en equilibrio",
+    "predictFirst": "Predecir antes de cada perturbación",
+    "predictionHeading": "¿Hacia dónde se desplazará?",
+    "predictLeft": "← Reactivos",
+    "predictNone": "Sin desplazamiento",
+    "predictRight": "Productos →",
+    "predictPrompt": "Elige una predicción para desbloquear las perturbaciones.",
+    "explanationHeading": "¿Qué cambió?",
+    "startPrompt": "La mezcla parte del equilibrio. Aplica una perturbación y observa cómo responde.",
+    "explanations": {
+      "qRight": "La perturbación cambió Q pero no K. Ahora Q &lt; K, así que la mezcla se desplaza hacia los productos hasta que Q = K de nuevo.",
+      "qLeft": "La perturbación cambió Q pero no K. Ahora Q &gt; K, así que la mezcla se desplaza hacia los reactivos hasta que Q = K de nuevo.",
+      "kRight": "Cambiar la temperatura cambió K, no Q. K quedó por encima de Q, así que la mezcla se desplaza hacia los productos.",
+      "kLeft": "Cambiar la temperatura cambió K, no Q. K quedó por debajo de Q, así que la mezcla se desplaza hacia los reactivos.",
+      "volumeNoChange": "Q no cambió: la reacción tiene tantos moles de gas (o de soluto) en cada lado, así que cambiar el volumen afecta por igual al numerador y al denominador de Q. Sin desplazamiento.",
+      "inertVolume": "El argón a volumen fijo aumenta la presión total pero no cambia ninguna concentración ni presión parcial, así que Q y K no cambian. Sin desplazamiento.",
+      "catalyst": "Un catalizador acelera por igual las reacciones directa e inversa. Q y K no cambian, así que no hay desplazamiento; solo se llega antes al equilibrio.",
+      "noShift": "Q = K todavía: sin desplazamiento.",
+      "kpNote": "(En la forma K<sub>p</sub>, Q también cambia un poco, porque calentar a volumen fijo aumenta cada presión parcial.)"
+    },
+    "predictionCorrect": "Tu predicción: {{prediction}}. ¡Correcto!",
+    "predictionWrong": "Tu predicción: {{prediction}}. La mezcla se desplaza: {{actual}}.",
+    "directionNames": {
+      "right": "hacia los productos",
+      "left": "hacia los reactivos",
+      "none": "sin desplazamiento",
+      "stuck": "sin reacción"
+    },
+    "markers": {
+      "addPattern": "+{{formula}}",
+      "removePattern": "−{{formula}}",
+      "heat": "T↑",
+      "cool": "T↓",
+      "compress": "V↓",
+      "expand": "V↑",
+      "water": "+H<sub>2</sub>O",
+      "argon": "+Ar",
+      "catalystOn": "+cat.",
+      "catalystOff": "−cat."
+    }
+  },
   "a11y": {
     "approach": {
       "screenSummary": {
@@ -130,14 +181,15 @@
     },
     "leChatelier": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego muestra un recipiente de moléculas en equilibrio, la ecuación balanceada, un indicador que compara Q con K, una gráfica de la concentración frente al tiempo con una marca en cada perturbación, y una explicación de lo que cambió la última perturbación.",
+        "controlArea": "El área de control tiene el menú de reacciones, la elección de Kc o Kp, botones para añadir o quitar cada especie, un control de temperatura, botones de argón y agua, una casilla de catalizador, un botón para reiniciar, la opción de predecir, controles de tiempo y Restablecer todo. Para los gases, el pistón cambia el volumen.",
+        "interactionHint": "Aplica una perturbación y observa cómo Q se aleja de K y la mezcla se desplaza hasta que vuelven a ser iguales."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
-      "controls": {
-        "exampleControl": "Control de ejemplo"
-      }
+      "currentDetailsPattern": "{{reaction}}: {{direction}}. Q es {{q}} y K es {{k}}.",
+      "addPattern": "Añadir {{name}}",
+      "removePattern": "Quitar {{name}}",
+      "predictionRadio": "Predicción",
+      "restarted": "Reiniciado en equilibrio."
     },
     "vantHoff": {
       "screenSummary": {

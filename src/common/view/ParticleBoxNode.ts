@@ -44,6 +44,9 @@ const PISTON_THICKNESS = 10;
 const HANDLE_WIDTH = 46;
 const HANDLE_HEIGHT = 14;
 
+/** Length of the piston rod between the plate and the handle (px). */
+const ROD_LENGTH = 18;
+
 /** Volume change per keyboard press, as a fraction of the largest volume. */
 const KEYBOARD_VOLUME_FRACTION = 0.02;
 
@@ -55,8 +58,11 @@ type SelfOptions = {
   showFlashesProperty?: TReadOnlyProperty<boolean> | null;
   /** Whether dragging the piston (gas) changes the volume. */
   volumeAdjustable?: boolean;
-  /** Called after the piston sets a new volume, e.g. to mark the stress on the charts. */
+  /** Called when a piston drag starts and after it sets a new volume, e.g. to mark the stress. */
+  onVolumeDragStart?: () => void;
   onVolumeDragEnd?: (oldVolume: number, newVolume: number) => void;
+  /** Whether the piston accepts input now (null: always). */
+  pistonEnabledProperty?: TReadOnlyProperty<boolean> | null;
 };
 
 export type ParticleBoxNodeOptions = SelfOptions & NodeOptions;
@@ -76,7 +82,13 @@ export class ParticleBoxNode extends Node {
     providedOptions?: ParticleBoxNodeOptions,
   ) {
     const options = optionize<ParticleBoxNodeOptions, SelfOptions, NodeOptions>()(
-      { showFlashesProperty: null, volumeAdjustable: false, onVolumeDragEnd: () => undefined },
+      {
+        showFlashesProperty: null,
+        volumeAdjustable: false,
+        onVolumeDragStart: () => undefined,
+        onVolumeDragEnd: () => undefined,
+        pistonEnabledProperty: null,
+      },
       providedOptions,
     );
     super();
@@ -101,7 +113,7 @@ export class ParticleBoxNode extends Node {
       fill: EquilibriumLabColors.pistonColorProperty,
       stroke: EquilibriumLabColors.pistonDarkColorProperty,
     });
-    const rod = new Line(width / 2, -PISTON_THICKNESS, width / 2, -PISTON_THICKNESS - maxHeight, {
+    const rod = new Line(width / 2, -PISTON_THICKNESS, width / 2, -PISTON_THICKNESS - ROD_LENGTH, {
       stroke: EquilibriumLabColors.pistonDarkColorProperty,
       lineWidth: 5,
     });
@@ -110,7 +122,12 @@ export class ParticleBoxNode extends Node {
       stroke: EquilibriumLabColors.pistonDarkColorProperty,
       lineWidth: 1.5,
     });
-    const handleRoot = new Node({ children: [handle], cursor: "ns-resize" });
+    const handleRoot = new Node({
+      children: [handle],
+      cursor: "ns-resize",
+      x: width / 2,
+      y: -PISTON_THICKNESS - ROD_LENGTH,
+    });
     const piston = new Node({ children: [rod, plate, handleRoot] });
     const gasVessel = new Node({ children: [piston, cylinder] });
 
@@ -132,9 +149,6 @@ export class ParticleBoxNode extends Node {
       beaker.visible = !reaction.isGas;
       const height = particles.heightFor(volume) * scale;
       piston.y = bottom - height;
-      handleRoot.y = -PISTON_THICKNESS - (headroom - 10) - (maxHeight - height);
-      handleRoot.x = width / 2;
-      rod.setLine(width / 2, -PISTON_THICKNESS, width / 2, handleRoot.y);
     });
 
     // ── Dragging the piston ─────────────────────────────────────────────────────
@@ -148,6 +162,7 @@ export class ParticleBoxNode extends Node {
     const drag = new RichDragListener({
       start: () => {
         dragStartVolume = mixture.volume;
+        options.onVolumeDragStart();
       },
       drag: (_event, listener) => setVolumeBy(listener.modelDelta.y),
       end: () => options.onVolumeDragEnd(dragStartVolume, mixture.volume),
@@ -159,6 +174,9 @@ export class ParticleBoxNode extends Node {
       handleRoot.accessibleName = strings.a11y.pistonStringProperty;
       handleRoot.accessibleHelpText = strings.a11y.pistonHelpStringProperty;
       handleRoot.addInputListener(drag);
+      if (options.pistonEnabledProperty) {
+        handleRoot.setInputEnabledProperty(options.pistonEnabledProperty);
+      }
     } else {
       handleRoot.pickable = false;
       handle.visible = false;

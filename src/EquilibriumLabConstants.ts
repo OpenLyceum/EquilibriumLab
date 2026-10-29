@@ -75,10 +75,24 @@ export const REACTION_TIME_SCALE: TimeScale = { slow: 0.5, normal: 2, fast: 8 };
 /** ln(Q/K) within this of zero counts as "at equilibrium" in messages. */
 export const EQUILIBRIUM_LN_TOLERANCE = 0.01;
 
+// ── Le Chatelier stresses ─────────────────────────────────────────────────────
+
+/** Each add or remove press changes a species by this fraction of the largest default amount. */
+export const SPECIES_STEP_FRACTION = 0.25;
+
+/** Each "add water" press grows the solution by this fraction of its largest volume. */
+export const DILUTION_STEP_FRACTION = 0.15;
+
+/** Each argon press adds this fraction of the moles of gas already in the vessel. */
+export const ARGON_STEP_FRACTION = 0.5;
+
 // ── Records ───────────────────────────────────────────────────────────────────
 
 /** Simulated seconds between recorded samples. */
 export const RECORD_INTERVAL = 0.1;
+
+/** Repeats of the same stress within this many simulated seconds share one chart marker. */
+export const MARKER_MERGE_TIME = 1;
 
 /** A record keeps at most this many samples; later samples are thinned. */
 export const RECORD_CAPACITY = 2400;

@@ -155,6 +155,9 @@ export type NumberControlChoice = {
   /** Readout pattern with a {{value}} placeholder, e.g. "{{value}} M". */
   readonly valuePattern?: TReadOnlyProperty<string>;
   readonly accessibleName?: TReadOnlyProperty<string>;
+  /** Called when a drag or arrow press starts and ends, e.g. to mark a stress on a chart. */
+  readonly startCallback?: () => void;
+  readonly endCallback?: () => void;
 };
 
 /** A themed NumberControl whose keyboard steps match its arrow buttons. */
@@ -180,5 +183,7 @@ export function numberControl(
       pageKeyboardStep: choice.delta * 50,
     },
     accessibleName: choice.accessibleName ?? title,
+    ...(choice.startCallback && { startCallback: choice.startCallback }),
+    ...(choice.endCallback && { endCallback: choice.endCallback }),
   });
 }

@@ -51,6 +51,8 @@ onReadyToLaunch(() => {
     }),
     new LeChatelierScreen({
       name: stringManager.getScreenNames().leChatelierStringProperty,
+      startWithKpProperty: simPreferences.startWithKpProperty,
+      showReactionFlashesProperty: simPreferences.showReactionFlashesProperty,
       tandem: Tandem.ROOT.createTandem("leChatelierScreen"),
       backgroundColorProperty: EquilibriumLabColors.backgroundColorProperty,
     }),

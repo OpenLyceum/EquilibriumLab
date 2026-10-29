@@ -36,6 +36,9 @@ const REFERENCE_WIDTH = 260;
 /** Seconds a newly formed particle is ringed. */
 const FLASH_TIME = 0.5;
 
+/** Above this many reaction events per second the rings fade in proportion. */
+const FLASH_RATE_LIMIT = 24;
+
 /** Wall thickness of the vessel (px). */
 const WALL = 4;
 
@@ -308,6 +311,9 @@ class ParticleCanvasNode extends CanvasNode {
     const edges = styles.map((style) => style.color.value.darkerColor(0.6).toCSS());
     const flash = EquilibriumLabColors.reactionFlashColorProperty.value;
     const showFlashes = this.showFlashesProperty?.value ?? true;
+    // Fade the rings when events come thick and fast, so a fast reaction doesn't become a blur.
+    const rates = this.particles.getEventRates();
+    const flashStrength = Math.min(1, FLASH_RATE_LIMIT / Math.max(1, rates.forward + rates.reverse));
     context.lineWidth = 1;
     for (const p of this.particles.particles) {
       const style = styles[p.species];
@@ -325,7 +331,7 @@ class ParticleCanvasNode extends CanvasNode {
         context.stroke();
       }
       if (showFlashes && p.age < FLASH_TIME) {
-        context.strokeStyle = flash.withAlpha(1 - p.age / FLASH_TIME).toCSS();
+        context.strokeStyle = flash.withAlpha(flashStrength * (1 - p.age / FLASH_TIME)).toCSS();
         context.beginPath();
         context.arc(x, y, 11 * spriteScale, 0, 2 * Math.PI);
         context.stroke();

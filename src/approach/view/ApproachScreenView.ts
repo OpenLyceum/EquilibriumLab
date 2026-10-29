@@ -43,6 +43,7 @@ export type ApproachScreenViewOptions = SelfOptions & ScreenViewOptions;
 
 const BOX_WIDTH_PX = 236;
 const LEFT_X = SCREEN_VIEW_MARGIN + 14;
+const PARTICLE_BOX_Y = 64;
 const CHART_LEFT = 372;
 const CHART_WIDTH = 350;
 const CONCENTRATION_CHART_TOP = 104;
@@ -83,8 +84,9 @@ export class ApproachScreenView extends ScreenView {
     this.particleBox = new ParticleBoxNode(mixture, scene.particles, BOX_WIDTH_PX, {
       showFlashesProperty: options.showReactionFlashesProperty,
     });
-    this.particleBox.left = LEFT_X;
-    this.particleBox.top = 64;
+    // Positioned by its origin, not its bounds, which change as the piston moves.
+    this.particleBox.x = LEFT_X;
+    this.particleBox.y = PARTICLE_BOX_Y;
 
     this.readouts = new MixtureReadoutsNode(mixture, scene.particles, 300);
     this.readouts.left = SCREEN_VIEW_MARGIN;

@@ -7,7 +7,7 @@
  * stress controls and the time controls on the right.
  */
 
-import { BooleanProperty, DerivedProperty, type TReadOnlyProperty } from "scenerystack/axon";
+import { BooleanProperty, DerivedProperty, stepTimer, type TReadOnlyProperty } from "scenerystack/axon";
 import { optionize } from "scenerystack/phet-core";
 import { Node, VBox } from "scenerystack/scenery";
 import { ResetAllButton } from "scenerystack/scenery-phet";
@@ -74,10 +74,21 @@ export class LeChatelierScreenView extends ScreenView {
     const listParent = new Node();
 
     // Stresses are allowed unless predict-first mode is waiting for a prediction.
-    const stressEnabledProperty = new DerivedProperty(
+    // Applied on the next tick: ending a stress clears the prediction, and disabling a slider or the
+    // piston from inside its own end callback would interrupt an input that is already finishing.
+    const stressAllowedProperty = new DerivedProperty(
       [model.predictFirstProperty, model.predictionProperty],
       (predictFirst, prediction) => !predictFirst || prediction !== null,
     );
+    const stressEnabledProperty = new BooleanProperty(stressAllowedProperty.value);
+    stressAllowedProperty.lazyLink((allowed) => {
+      stepTimer.setTimeout(() => {
+        stressEnabledProperty.value = stressAllowedProperty.value;
+      }, 0);
+      if (allowed) {
+        stressEnabledProperty.value = true;
+      }
+    });
     const respond = () =>
       this.addAccessibleResponse(
         markupToSpeech(explainStress(model.lastStressProperty.value, mixture.reaction, scene.formProperty.value)),

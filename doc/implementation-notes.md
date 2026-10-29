@@ -1,135 +1,67 @@
-# Implementation Notes - Equilibrium Lab
+# Equilibrium Lab: implementation notes
 
-Developer-facing notes on the **SceneryStackTemplate** scaffold. **Replace and expand this file when
-forking** to describe your sim's real architecture (see Stern Gerlach or Light Propagation for
-target quality). Until then, this documents what the template provides out of the box.
+How the code is organised and why. The chemistry is in [`model.md`](model.md).
 
-## Architecture Overview
-
-SceneryStackTemplate is the fleet-canonical starting point for new SceneryStack sims (one or N screens).
-It demonstrates Model–View separation, color profiles, localization, reset behavior, accessibility
-reference wiring, and reusable common components — **without** domain physics.
+## Layout of the code
 
 ```
-main.ts
-  └─ ApproachScreen             (Screen<ApproachModel, ApproachScreenView>)
-       ├─ ApproachModel          state + logic  (src/approach/model/)  ← stub: add physics here
-       └─ ApproachScreenView     visuals        (src/approach/view/)
-            ├─ ApproachScreenSummaryContent     (PDOM overview — reference a11y pattern)
-            └─ ApproachKeyboardHelpContent      (keyboard help dialog)
-
-src/common/
-  ├─ EquilibriumLabPanel.ts           pre-themed panel (uses EquilibriumLabColors)
-  ├─ EquilibriumLabButtonOptions.ts   flat button / combo-box option bundles
-  └─ TimeModel.ts          composable play/pause + elapsed time
-
-src/preferences/
-  ├─ EquilibriumLabPreferencesModel   sim-specific pref state
-  ├─ EquilibriumLabPreferencesNode    pref UI in Preferences → Simulation
-  └─ equilibriumLabQueryParameters    QueryStringMachine declarations
+src/
+  common/model/      Reaction, Reactions, ReactionMixture, equilibriumSolver, ParticleSystem,
+                     ReactionSceneModel, TimeRecord, vantHoffFit, EquilibriumForm, shiftDirection,
+                     timeScale
+  common/view/       ParticleBoxNode, TimeChartNode, QKGaugeNode, ReactionEquationNode,
+                     MixtureReadoutsNode, QuotientSummaryContent, speciesStyles, reactionMarkup,
+                     reactionChoices, quotientDescription, ControlFactory, RichTextLines,
+                     formatValues, createTimeControl, disposeChildren
+  approach/          ApproachModel; StartingConcentrationsNode, screen view, keyboard help
+  ice-table/         ICEProblem, ICETableModel; ICETableNode, NumberEntryNode, ICEFeedbackNode, …
+  le-chatelier/      LeChatelierModel; StressControlsNode, StressExplanationNode, screen view, …
+  vant-hoff/         VantHoffModel; XYPlotNode, VantHoffResultsNode, screen view, …
 ```
 
-Data flows Model → View through AXON `Property` objects (`.link()` / `.lazyLink()`). The view never
-integrates physics; the model never imports scenery.
+Each screen's model composes a `ReactionSceneModel` (mixture, particles, records, clock, Kc/Kp
+form) rather than extending a base class. The screens know nothing about each other.
 
-## Forking checklist
+## Decisions
 
-### Automated rename + scaffold (recommended)
+- **One coordinate, the extent.** Integrating ξ rather than each amount makes atom balance exact by
+  construction and gives the solver, the ICE problems and the particle box one shared quantity.
+- **kr = kf/Kc.** Defining the reverse rate constant from K means the kinetics can be tuned freely
+  (for pace on screen) without ever moving the equilibrium, which the tests check against the
+  solver.
+- **RK4 with a relaxation-time step, and a fallback.** The step is at most half the local
+  relaxation time, estimated from a finite difference of the flux. Rather than an implicit method,
+  a frame that would need more than 400 substeps finishes at the equilibrium extent: that only
+  happens when the mixture relaxes far faster than a frame, where the result is the same.
+- **Particles replay the model.** A stochastic particle simulation would wander away from the
+  deterministic curves the charts draw. Replaying the mixture's gross flows keeps the picture, the
+  charts and the gauge consistent, and still shows molecules reacting both ways at equilibrium.
+  Events are capped per frame; a dropped backlog is made up by the net correction.
+- **Immutable reactions.** `Reaction` is immutable; the generic reactions' K and kf, the ICE
+  problems' rounded K, and the Van 't Hoff unknowns are new instances from `withParameters`.
+  `ReactionMixture.replaceReaction` swaps parameters without restarting.
+- **Bulk species.** A species flagged `bulk` (Cl⁻) is skipped by particle events and hidden on the
+  concentration chart (`ChartTrace.visible`), and shown as a readout instead, so it neither swamps
+  the box with particles nor flattens the other traces.
+- **Stress verdicts in the model.** `LeChatelierModel` snapshots ln Qc, ln Kc, V and T at the start
+  of a stress and compares at the end; drags and slider presses call `beginStress`/`endStress`
+  through `onVolumeDragStart`/`onVolumeDragEnd` and `startCallback`/`endCallback`. The catalyst
+  checkbox drives a view-side copy so that Reset All and new reactions, which clear the catalyst
+  directly, are not marked as stresses.
+- **Chart axis order.** bamboo redraws grid lines, ticks and labels on every spacing or range
+  change. Applying a wide range while the old fine spacing is still set draws millions of lines and
+  crashed the page; `TimeChartNode.applyAxis` widens the spacing before the range, or narrows the
+  range before the spacing. `XYPlotNode.setRanges` coarsens the spacing first.
+- **Keypad entry.** The ICE x and K fields open scenery-phet's `KeypadDialog` (accessible, keyboard
+  and pointer); range checks there are deliberately loose so a wrong answer is judged by the
+  feedback, not refused.
+- **Strings.** Formulas are language-neutral and built from the species data
+  (`reactionMarkup.ts`); everything else is in `strings_{en,fr,es}.json`. Plain-text and spoken
+  formulas use Unicode sub- and superscripts (`plainFormula`, `toPlainSuperscript`).
 
-```sh
-npm run rename -- --id my-sim --name "My Simulation"
-npm run scaffold-screens -- --screens Intro,Lab   # or omit --screens for one screen
-npm run check
-```
+## Testing
 
-Or from the workspace: `Baton/scripts/create-sim.sh --repo MySim --name "My Simulation"`.
-
-`scripts/rename-sim.ts` updates sim-level identifiers (package id, Colors, Preferences).
-`scripts/scaffold-screens.ts` emits fleet-named screen folders and wires main/strings/icons.
-
-### Manual steps (after rename/scaffold or if skipping the scripts)
-
-1. **`doc/model.md`** — educator physics (equations, ranges, simplifications).
-2. **`doc/implementation-notes.md`** — this file, rewritten for your architecture.
-3. **Screen model(s)** — real Properties, `step(dt)`, `reset()`; compose `TimeModel` if animated.
-4. **Screen view(s)** — play area + controls; wire `ResetAllButton` to `model.reset()`.
-5. **`*Colors.ts`** — sim palette (default + projector profiles).
-6. **Locale JSON** — title, strings, `a11y` keys; register locales in `init.ts`.
-7. **`public/icons/icon.svg`** → `npm run icons`; align theme color in `index.html` / vite config.
-8. **`tests/setup.ts`** — `init({ name: … })` must match `package.json` name after rename.
-9. **`AGENTS.md`** — sim-specific file map and pitfalls for AI assistants.
-
-## Common components (keep when forking)
-
-### EquilibriumLabPanel
-
-Every control panel should use `EquilibriumLabPanel` so projector-mode switching is automatic:
-
-```typescript
-import { EquilibriumLabPanel } from "../../common/EquilibriumLabPanel.js";
-const panel = new EquilibriumLabPanel(content);
-const panelWide = new EquilibriumLabPanel(content, { xMargin: 20 });
-```
-
-### TimeModel
-
-Compose into your screen model for animation (do not subclass `TimeModel`):
-
-```typescript
-export class MyModel implements TModel {
-  public readonly timer = new TimeModel();  // pass true to auto-play on startup
-
-  public step(dt: number): void {
-    this.timer.step(dt);
-    // physics uses this.timer.timeProperty.value
-  }
-  public reset(): void { this.timer.reset(); /* restore initial state */ }
-}
-```
-
-Wire `TimeControlNode` to `model.timer.isPlayingProperty` in the view.
-
-### EquilibriumLabButtonOptions
-
-Spread flat button options into every push/round button and `TimeControlNode` (see `AGENTS.md`).
-Use `EQUILIBRIUM_LAB_COMBO_BOX_OPTIONS` + `LIGHT_SURFACE_TEXT_FILL` for light control surfaces on dark panels.
-
-## Accessibility (reference implementation)
-
-The template is the **canonical OpenLyceum a11y reference**:
-
-- PDOM `accessibleName` on interactive nodes (prefer live `StringProperty`s).
-- `ApproachScreenSummaryContent` with a live `currentDetailsContent` `DerivedProperty` over model state.
-- Explicit `pdomOrder` + `ApproachKeyboardHelpContent`.
-- Strings under `a11y` in locale JSON → `StringManager.getApproachA11yStrings()`.
-
-Full checklist: [Baton/ACCESSIBILITY.md](https://github.com/OpenLyceum/Baton/blob/main/ACCESSIBILITY.md).
-
-## Testing (fleet layout — keep when forking)
-
-| Path | Purpose |
-|---|---|
-| `vitest.config.ts` | `happy-dom`; `setupFiles: ["./tests/setup.ts"]`; `execArgv: ["--expose-gc"]` |
-| `tests/setup.ts` | Canvas/AudioContext mocks + `init()` before SceneryStack imports |
-| `tests/TimeModel.test.ts` | **Replace** with real model/physics tests mirroring `src/` |
-| `tests/memory-leak.test.ts` | WeakRef + `forceGC` dispose regression |
-| `tests/fuzz/fuzz.spec.ts` | Optional Playwright smoke via `?fuzz` |
-
-Run `npm test`. Expand `memory-leak.test.ts` when adding runtime-created nodes or Property links.
-
-## Multi-screen simulations
-
-Default is single-screen. To add screens, see **`doc/multi-screen.md`**: per-screen folders mirroring
-`src/approach/`, `StringManager` screen-name getters, optional shared root model, a shared
-`src/common/EquilibriumLabScreenIcons.ts` module (`create{Screen}Icon()` factories wired as
-`homeScreenIcon` / `navigationBarIcon`), and register all screens in `main.ts`.
-
-## PWA
-
-After `npm run build`, the sim is installable offline via Workbox (`dist/manifest.webmanifest`).
-
-## Known template stubs (remove when forking)
-
-- `ApproachModel.step()` / `reset()` — empty placeholders until you add physics.
-- Placeholder play-area content in `ApproachScreenView` — replace with real UI.
-- `tests/TimeModel.test.ts` — sample only; add tests for your model under `tests/`.
+The model tests pin the thermodynamic data to tabulated constants, check the solver on textbook
+ICE problems, and check every Le Chatelier stress's direction. View code is covered by the
+memory-leak suite and by browser checks (screenshots, keypad and piston keyboard paths) during
+development; `npm run test:fuzz` exercises every screen with random input.

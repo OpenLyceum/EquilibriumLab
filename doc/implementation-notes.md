@@ -45,9 +45,16 @@ form) rather than extending a base class. The screens know nothing about each ot
   the box with particles nor flattens the other traces.
 - **Stress verdicts in the model.** `LeChatelierModel` snapshots ln Qc, ln Kc, V and T at the start
   of a stress and compares at the end; drags and slider presses call `beginStress`/`endStress`
-  through `onVolumeDragStart`/`onVolumeDragEnd` and `startCallback`/`endCallback`. The catalyst
+  through `onVolumeDragStart`/`onVolumeDragEnd` and `startCallback`/`endCallback`.
+  `ReactionSceneModel` holds advancement during the gesture, including explicit Step Forward,
+  so the verdict describes the stress before any chemical response. It records the old and new
+  states at the same simulation instant, retaining the student's play/pause selection. Restart,
+  reset and reaction changes clear the hold and ignore late releases. The catalyst
   checkbox drives a view-side copy so that Reset All and new reactions, which clear the catalyst
   directly, are not marked as stresses.
+- **Scaled Van 't Hoff axis.** The fit uses 1/T internally. The plot and its displayed slope
+  use `INVERSE_TEMPERATURE_SCALE / T` (1000/T), with the factor of 1000 shown in the enthalpy
+  formula. ΔH° and ΔS° still come from the original unscaled fit.
 - **Chart axis order.** bamboo redraws grid lines, ticks and labels on every spacing or range
   change. Applying a wide range while the old fine spacing is still set draws millions of lines and
   crashed the page; `TimeChartNode.applyAxis` widens the spacing before the range, or narrows the

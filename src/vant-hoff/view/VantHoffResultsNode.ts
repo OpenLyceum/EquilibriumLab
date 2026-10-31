@@ -12,6 +12,7 @@ import type { TColor } from "scenerystack/scenery";
 import { fixed, percentError, signed, significant } from "../../common/view/formatValues.js";
 import { RichTextLines } from "../../common/view/RichTextLines.js";
 import EquilibriumLabColors from "../../EquilibriumLabColors.js";
+import { INVERSE_TEMPERATURE_SCALE } from "../../EquilibriumLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { VantHoffModel } from "../model/VantHoffModel.js";
 
@@ -48,7 +49,9 @@ export class VantHoffResultsNode extends RichTextLines {
         const showAccepted = !model.isUnknown || model.revealProperty.value;
         const muted = EquilibriumLabColors.mutedTextColorProperty;
         const texts: string[] = [
-          StringUtils.fillIn(strings.slopePatternStringProperty.value, { value: signed(fit.slope, 0) }),
+          StringUtils.fillIn(strings.slopePatternStringProperty.value, {
+            value: signed(fit.slope / INVERSE_TEMPERATURE_SCALE, 3),
+          }),
           StringUtils.fillIn(strings.interceptPatternStringProperty.value, { value: fixed(fit.intercept, 2) }),
           StringUtils.fillIn(strings.rSquaredPatternStringProperty.value, { value: fixed(fit.rSquared, 4) }),
           StringUtils.fillIn(strings.deltaHPatternStringProperty.value, { value: signed(fit.deltaH / KJ, 1) }),

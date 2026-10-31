@@ -93,4 +93,99 @@ describe("LeChatelierModel", () => {
     expect(Math.abs(model.mixture.lnQOverK)).toBeLessThan(1e-6);
     expect(model.lastStressProperty.value).toBeNull();
   });
+
+  it.each(["temperature", "volume"] as const)(
+    "holds reaction time during a %s gesture, then grades and resumes",
+    (kind) => {
+      const model = new LeChatelierModel();
+      model.predictFirstProperty.value = true;
+      model.predictionProperty.value = "right";
+      const amounts = model.mixture.getAmounts();
+      model.beginStress();
+      if (kind === "temperature") {
+        model.mixture.temperatureProperty.value = 308;
+      } else {
+        model.mixture.volumeProperty.value = 1.5;
+      }
+      for (let i = 0; i < 300; i++) {
+        model.step(1 / 30);
+        // Step Forward must not bypass the held gesture either.
+        model.scene.advance(1 / 30);
+      }
+      expect(model.mixture.getAmounts()).toEqual(amounts);
+      expect(model.scene.elapsedTimeProperty.value).toBe(0);
+      expect(model.scene.timer.isPlayingProperty.value).toBe(true);
+      model.endStress(kind, "stress");
+      expect(model.lastStressProperty.value).toMatchObject({
+        prediction: "right",
+        direction: "right",
+        qChanged: kind === "volume",
+        kChanged: kind === "temperature",
+      });
+      model.step(1 / 30);
+      expect(model.scene.elapsedTimeProperty.value).toBeGreaterThan(0);
+      expect(model.mixture.getAmounts()).not.toEqual(amounts);
+    },
+  );
+
+  it.each(["add", "volume"] as const)("records both sides of a %s stress at the same time", (kind) => {
+    const model = new LeChatelierModel();
+    model.scene.timer.isPlayingProperty.value = false;
+    model.scene.advance(0.02); // Between ordinary samples.
+    const time = model.scene.elapsedTimeProperty.value;
+    const before = model.mixture.getConcentrations();
+    const ratesBefore = model.mixture.getRates();
+    if (kind === "add") {
+      model.addSpecies(0, "+N₂O₄");
+    } else {
+      model.beginStress();
+      model.mixture.volumeProperty.value = 1.5;
+      model.endStress("volume", "V↑");
+    }
+    const after = model.mixture.getConcentrations();
+    const ratesAfter = model.mixture.getRates();
+    for (const [i, trace] of model.scene.concentrationRecord.traces.entries()) {
+      expect(trace.at(-2)?.x).toBe(time);
+      expect(trace.at(-2)?.y).toBeCloseTo(before[i]!, 12);
+      expect(trace.at(-1)?.x).toBe(time);
+      expect(trace.at(-1)?.y).toBeCloseTo(after[i]!, 12);
+    }
+    for (const [i, name] of (["forward", "reverse"] as const).entries()) {
+      const trace = model.scene.rateRecord.traces[i]!;
+      expect(trace.at(-2)?.x).toBe(time);
+      expect(trace.at(-2)?.y).toBeCloseTo(ratesBefore[name], 12);
+      expect(trace.at(-1)?.x).toBe(time);
+      expect(trace.at(-1)?.y).toBeCloseTo(ratesAfter[name], 12);
+    }
+    expect(model.scene.concentrationRecord.markers).toEqual([{ time, label: kind === "add" ? "+N₂O₄" : "V↑" }]);
+    expect(model.scene.timer.isPlayingProperty.value).toBe(false);
+  });
+
+  it("releases a no-op gesture without changing the paused state", () => {
+    const model = new LeChatelierModel();
+    model.scene.timer.isPlayingProperty.value = false;
+    model.beginStress();
+    model.endStress("temperature", "T↑");
+    model.step(1 / 30);
+    expect(model.scene.elapsedTimeProperty.value).toBe(0);
+    model.scene.advance(1 / 30);
+    expect(model.scene.elapsedTimeProperty.value).toBeGreaterThan(0);
+    expect(model.scene.timer.isPlayingProperty.value).toBe(false);
+    expect(model.lastStressProperty.value).toBeNull();
+  });
+
+  it.each(["reset", "startAtEquilibrium"] as const)(
+    "%s cancels an active gesture and ignores its late release",
+    (action) => {
+      const model = new LeChatelierModel();
+      model.beginStress();
+      model.mixture.temperatureProperty.value = 330;
+      model[action]();
+      model.endStress("temperature", "T↑");
+      expect(model.lastStressProperty.value).toBeNull();
+      expect(model.scene.concentrationRecord.markers).toHaveLength(0);
+      model.step(1 / 30);
+      expect(model.scene.elapsedTimeProperty.value).toBeGreaterThan(0);
+    },
+  );
 });

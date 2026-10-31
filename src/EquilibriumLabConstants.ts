@@ -88,6 +88,9 @@ export const ARGON_STEP_FRACTION = 0.5;
 
 // ── Van 't Hoff ───────────────────────────────────────────────────────────────
 
+/** Plot inverse temperature as 1000/T; the graph slope is the 1/T slope divided by this scale. */
+export const INVERSE_TEMPERATURE_SCALE = 1000;
+
 /**
  * K can be measured once ln(Q/K) is within this of zero: tighter than "at equilibrium" in messages,
  * so a reaction with a small ΔH° still gives a straight van 't Hoff line.

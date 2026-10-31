@@ -37,6 +37,8 @@ export class ReactionSceneModel {
 
   public readonly formProperty: EnumerationProperty<EquilibriumForm>;
   private initialForm: EquilibriumForm;
+  /** A stress is imposed at one simulation instant, before the reaction responds. */
+  private stressActive = false;
 
   public constructor(reaction: Reaction, initialForm: EquilibriumForm = EquilibriumForm.KC) {
     this.mixture = new ReactionMixture(reaction);
@@ -75,10 +77,21 @@ export class ReactionSceneModel {
     this.clearRecords();
   }
 
-  /** Marks a stress on the charts at the current time, recording the state on both sides of it. */
-  public markStress(label: string, applyStress: () => void): void {
+  /** Holds reaction time and records the state before a stress is applied. */
+  public beginStress(): void {
+    this.stressActive = true;
     this.recordNow(true);
-    applyStress();
+  }
+
+  /** Records the other side and resumes time; omit the label when cancelling a gesture. */
+  public endStress(label?: string): void {
+    if (!this.stressActive) {
+      return;
+    }
+    this.stressActive = false;
+    if (label === undefined) {
+      return;
+    }
     this.recordNow(true);
     this.concentrationRecord.addMarker(this.elapsedTimeProperty.value, label, MARKER_MERGE_TIME);
     this.rateRecord.addMarker(this.elapsedTimeProperty.value, label, MARKER_MERGE_TIME);
@@ -92,6 +105,9 @@ export class ReactionSceneModel {
 
   /** Advances by `dt` real seconds at the chosen speed, playing or not (step button). */
   public advance(dt: number): void {
+    if (this.stressActive) {
+      return;
+    }
     const simulatedDt = dt * timeScaleFor(this.timeSpeedProperty.value, REACTION_TIME_SCALE);
     this.mixture.step(simulatedDt);
     this.particles.step(dt, simulatedDt);
@@ -119,6 +135,7 @@ export class ReactionSceneModel {
   }
 
   private clearRecords(): void {
+    this.stressActive = false;
     this.elapsedTimeProperty.value = 0;
     this.concentrationRecord.clear();
     this.rateRecord.clear();

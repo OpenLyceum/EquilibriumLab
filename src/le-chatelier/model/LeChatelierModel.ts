@@ -86,6 +86,7 @@ export class LeChatelierModel implements TModel {
 
   /** Restarts from the reaction's default mixture, already at equilibrium. */
   public startAtEquilibrium(): void {
+    this.before = null;
     this.scene.restart(this.mixture.reaction.definition.defaultAmounts);
     this.mixture.equilibrate();
     this.scene.restart(this.mixture.getAmounts());
@@ -95,18 +96,26 @@ export class LeChatelierModel implements TModel {
 
   /** Starts a stress that unfolds over time (piston drag, temperature slider). */
   public beginStress(): void {
+    if (this.before) {
+      return;
+    }
     this.before = this.snapshot();
+    this.scene.beginStress();
   }
 
   /** Ends a stress begun with beginStress(), marking it on the charts. */
   public endStress(kind: StressKind, label: string): void {
-    const before = this.before ?? this.snapshot();
+    const before = this.before;
+    if (!before) {
+      return; // Ignore a late release after Reset All, restart or reaction selection.
+    }
     this.before = null;
     // A drag that ended where it began is not a stress.
     if (
       (kind === "volume" && before.volume === this.mixture.volume) ||
       (kind === "temperature" && before.temperature === this.mixture.temperature)
     ) {
+      this.scene.endStress();
       return;
     }
     const lnQ = this.mixture.lnQc;
@@ -115,7 +124,7 @@ export class LeChatelierModel implements TModel {
       !(a === b || Math.abs(a - b) <= CHANGE_TOLERANCE * Math.max(1, Math.abs(a), Math.abs(b)));
     const qChanged = changed(before.lnQ, lnQ);
     const kChanged = changed(before.lnK, lnK);
-    this.scene.markStress(label, () => undefined);
+    this.scene.endStress(label);
     this.lastStressProperty.value = {
       kind,
       qChanged,

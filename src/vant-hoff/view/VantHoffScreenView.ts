@@ -27,6 +27,7 @@ import EquilibriumLabColors from "../../EquilibriumLabColors.js";
 import {
   FONT_SIZE,
   GAS_CONSTANT,
+  INVERSE_TEMPERATURE_SCALE,
   PANEL_SPACING,
   SCREEN_VIEW_MARGIN,
   SIDE_COLUMN_WIDTH,
@@ -175,15 +176,15 @@ export class VantHoffScreenView extends ScreenView {
     mixture.reactionProperty.link((reaction) => {
       const t = reaction.definition.temperatureRange;
       lnPlot.setRanges(
-        padded(1000 / t.max, 1000 / t.min),
+        padded(INVERSE_TEMPERATURE_SCALE / t.max, INVERSE_TEMPERATURE_SCALE / t.min),
         padded(reaction.lnStandardK(t.min), reaction.lnStandardK(t.max)),
       );
       gibbsPlot.setRanges(padded(t.min, t.max), padded(reaction.deltaG(t.min) / KJ, reaction.deltaG(t.max) / KJ, [0]));
     });
     Multilink.multilink([model.pointsProperty, model.fitProperty], (points, fit) => {
       lnPlot.setData(
-        points.map((p) => new Vector2(1000 / p.temperature, p.lnK)),
-        fit ? { slope: fit.slope / 1000, intercept: fit.intercept } : null,
+        points.map((p) => new Vector2(INVERSE_TEMPERATURE_SCALE / p.temperature, p.lnK)),
+        fit ? { slope: fit.slope / INVERSE_TEMPERATURE_SCALE, intercept: fit.intercept } : null,
       );
       // ΔG° = −RT ln K at each point; the fit gives the line ΔH° − TΔS°.
       gibbsPlot.setData(

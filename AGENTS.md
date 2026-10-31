@@ -45,8 +45,13 @@ decisions: [`doc/implementation-notes.md`](doc/implementation-notes.md).
   first and K computed from it. Answers are accepted within 2 %, and a change row with every sign
   flipped is accepted with a negated x.
 - **Le Chatelier verdicts compare ln Qc and ln Kc** before and after the stress
-  (`LeChatelierModel.endStress`). A drag or slider press that ends where it began is not a stress;
-  repeats of one stress within a second share a chart marker.
+  (`LeChatelierModel.endStress`). `ReactionSceneModel.beginStress` holds reaction time (including
+  Step Forward) until release and records the pre-stress state; `endStress` records the post-stress
+  state at the same time. The play/pause selection is preserved. A drag or slider press that ends
+  where it began is not a stress; repeats of one stress within a second share a chart marker.
+- **Van 't Hoff slopes.** The fit stores the slope against 1/T; the graph and its slope readout
+  use 1000/T, dividing that slope by `INVERSE_TEMPERATURE_SCALE`. The displayed enthalpy formula
+  includes the factor of 1000. Keep the axis, title, slope readout and formula consistent.
 - **Chart axes:** `TimeChartNode.applyAxis` widens the tick spacing before the range (or narrows the
   range before the spacing). The other order momentarily asks bamboo for millions of grid lines
   and crashes the page.
@@ -125,6 +130,7 @@ open PRs that fight the overrides. Revisit when SceneryStack drops or re-pins th
 | `tests/ice-table/ICETable.test.ts` | Generated problems satisfy K in both modes for every reaction; sign conventions; checking; Run it lands on the E row |
 | `tests/le-chatelier/LeChatelierModel.test.ts` | Q vs K verdicts per stress, no-op drags, argon, dilution, catalyst, predict-first gating |
 | `tests/vant-hoff/VantHoffModel.test.ts` | ΔH° recovered for every choice; no measurement before equilibrium; scatter with error |
+| `tests/browser/review-regressions.spec.ts` | Held temperature/piston keyboard gestures, chart discontinuities, and the plotted fit slope and formula in all three locales |
 | `tests/memory-leak.test.ts`, `tests/helpers/`, `tests/fuzz/` | Template-owned harness; the leak suite covers the mixture, particles, scene and the shared view nodes |
 
 - Unit tests live only under root `tests/`, mirroring `src/`.

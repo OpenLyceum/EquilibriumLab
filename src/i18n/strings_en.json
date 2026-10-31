@@ -158,7 +158,7 @@
     "kReadoutPattern": "{{k}} = {{value}}",
     "catalystNote": "A catalyst is in the vessel, so the mixture settles quickly after each temperature change. K is K<sub>p</sub> (bar) for gases and K<sub>c</sub> (M) for solutions.",
     "lnPlot": {
-      "title": "ln K against 1/T",
+      "title": "ln K against 1000/T",
       "xAxis": "1000/T (K<sup>−1</sup>)",
       "yAxis": "ln K"
     },
@@ -169,10 +169,10 @@
     },
     "resultsHeading": "Fit",
     "needTwo": "Measure K at two or more temperatures to fit a line.",
-    "slopePattern": "slope = {{value}} K",
+    "slopePattern": "graph slope = {{value}} K",
     "interceptPattern": "intercept = {{value}}",
     "rSquaredPattern": "R<sup>2</sup> = {{value}}",
-    "deltaHPattern": "ΔH° = −R × slope = {{value}} kJ/mol",
+    "deltaHPattern": "ΔH° = −1000R × slope = {{value}} kJ/mol",
     "deltaSPattern": "ΔS° = R × intercept = {{value}} J/K",
     "acceptedPattern": "accepted {{value}}, error {{error}} %",
     "crossoverPattern": "ΔG° = 0 at T = ΔH°/ΔS° = {{value}} K",

@@ -122,6 +122,11 @@ the most depleted species as a percentage of its initial concentration against t
 
 ln Qc and ln Kc are compared before and after each stress:
 
+Reaction time is held while a temperature or piston control is being adjusted. On release,
+the lab evaluates the imposed stress before letting the mixture respond. This keeps predictions
+independent of how long a control is held. The chart records both sides of the stress at that
+same instant; the play/pause selection is preserved.
+
 | Stress | Effect |
 |---|---|
 | Add or remove a species (25 % of the largest default amount per press) | Q changes, K does not |
@@ -140,6 +145,10 @@ ln K on 1/T:
 ```
 ln K = −(ΔH°/R)(1/T) + ΔS°/R        ΔH° = −R × slope        ΔS° = R × intercept
 ```
+
+For readable axis values, the graph plots 1000/T. Its displayed slope is therefore the slope
+against 1/T divided by 1000. The Fit panel reports this graph slope and uses
+ΔH° = −1000R × graph slope (converting J/mol to kJ/mol for the final readout).
 
 The ΔG° plot shows −RT ln K at each measured point and the line ΔH° − TΔS° from the fit; it crosses
 zero at T = ΔH°/ΔS° when ΔH° and ΔS° have the same sign.

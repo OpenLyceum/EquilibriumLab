@@ -158,7 +158,7 @@
     "kReadoutPattern": "{{k}} = {{value}}",
     "catalystNote": "Hay un catalizador en el recipiente, así que la mezcla se estabiliza rápido tras cada cambio de temperatura. K es K<sub>p</sub> (bar) para gases y K<sub>c</sub> (M) para disoluciones.",
     "lnPlot": {
-      "title": "ln K frente a 1/T",
+      "title": "ln K frente a 1000/T",
       "xAxis": "1000/T (K<sup>−1</sup>)",
       "yAxis": "ln K"
     },
@@ -169,10 +169,10 @@
     },
     "resultsHeading": "Ajuste",
     "needTwo": "Mide K a dos o más temperaturas para ajustar una recta.",
-    "slopePattern": "pendiente = {{value}} K",
+    "slopePattern": "pendiente del gráfico = {{value}} K",
     "interceptPattern": "ordenada al origen = {{value}}",
     "rSquaredPattern": "R<sup>2</sup> = {{value}}",
-    "deltaHPattern": "ΔH° = −R × pendiente = {{value}} kJ/mol",
+    "deltaHPattern": "ΔH° = −1000R × pendiente = {{value}} kJ/mol",
     "deltaSPattern": "ΔS° = R × ordenada = {{value}} J/K",
     "acceptedPattern": "aceptado {{value}}, error {{error}} %",
     "crossoverPattern": "ΔG° = 0 a T = ΔH°/ΔS° = {{value}} K",

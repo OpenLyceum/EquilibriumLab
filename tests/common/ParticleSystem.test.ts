@@ -7,7 +7,7 @@
 import { describe, expect, it } from "vitest";
 import { ParticleSystem } from "../../src/common/model/ParticleSystem.js";
 import { ReactionMixture } from "../../src/common/model/ReactionMixture.js";
-import { getReaction, getReactions } from "../../src/common/model/Reactions.js";
+import { getReaction, REACTION_IDS } from "../../src/common/model/Reactions.js";
 import { fitVantHoff } from "../../src/common/model/vantHoffFit.js";
 
 const DT = 1 / 30;
@@ -22,7 +22,7 @@ function run(mixture: ReactionMixture, particles: ParticleSystem, seconds: numbe
 
 describe("ParticleSystem", () => {
   it("particle counts follow the amounts for every reaction", () => {
-    for (const reaction of getReactions()) {
+    for (const reaction of REACTION_IDS.map(getReaction)) {
       const mixture = new ReactionMixture(reaction);
       const particles = new ParticleSystem(mixture);
       run(mixture, particles, 40);

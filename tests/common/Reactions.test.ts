@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { getReaction, getReactions } from "../../src/common/model/Reactions.js";
+import { getReaction, REACTION_IDS } from "../../src/common/model/Reactions.js";
 import { GAS_CONSTANT_L_BAR, STANDARD_TEMPERATURE } from "../../src/EquilibriumLabConstants.js";
 
 describe("Reactions", () => {
@@ -41,7 +41,7 @@ describe("Reactions", () => {
   });
 
   it("Kc = Kp / (RT)^Δn for every gas reaction, and Kc = K° otherwise", () => {
-    for (const reaction of getReactions()) {
+    for (const reaction of REACTION_IDS.map(getReaction)) {
       const t = reaction.definition.defaultTemperature;
       const expected = reaction.lnKp(t) - reaction.deltaNGas * Math.log(GAS_CONSTANT_L_BAR * t);
       expect(reaction.lnKc(t)).toBeCloseTo(expected, 10);
@@ -53,7 +53,7 @@ describe("Reactions", () => {
   });
 
   it("Le Chatelier's temperature rule: K rises with T exactly when ΔH° > 0", () => {
-    for (const reaction of getReactions()) {
+    for (const reaction of REACTION_IDS.map(getReaction)) {
       const range = reaction.definition.temperatureRange;
       const rises = reaction.lnStandardK(range.max) > reaction.lnStandardK(range.min);
       if (reaction.deltaH !== 0) {
@@ -63,7 +63,7 @@ describe("Reactions", () => {
   });
 
   it("every reaction's defaults are consistent", () => {
-    for (const reaction of getReactions()) {
+    for (const reaction of REACTION_IDS.map(getReaction)) {
       const d = reaction.definition;
       expect(d.defaultAmounts).toHaveLength(d.species.length);
       expect(d.temperatureRange.contains(d.defaultTemperature)).toBe(true);

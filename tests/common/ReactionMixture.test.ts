@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 import { equilibriumAmounts, lnQc, solveEquilibriumExtent } from "../../src/common/model/equilibriumSolver.js";
 import { Reaction } from "../../src/common/model/Reaction.js";
 import { ReactionMixture } from "../../src/common/model/ReactionMixture.js";
-import { getReaction, getReactions } from "../../src/common/model/Reactions.js";
+import { getReaction, REACTION_IDS } from "../../src/common/model/Reactions.js";
 
 /** Runs a mixture until |ln(Q/K)| is tiny, returning the simulated time it took. */
 function settle(mixture: ReactionMixture, limit = 600): number {
@@ -61,7 +61,7 @@ describe("equilibriumSolver", () => {
 
 describe("ReactionMixture", () => {
   it("every reaction settles at K from its default start in a reasonable time", () => {
-    for (const reaction of getReactions()) {
+    for (const reaction of REACTION_IDS.map(getReaction)) {
       const mixture = new ReactionMixture(reaction);
       const time = settle(mixture);
       expect(time, reaction.id).toBeGreaterThan(3);

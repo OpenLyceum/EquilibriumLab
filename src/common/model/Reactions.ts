@@ -238,11 +238,3 @@ export function getReaction(id: ReactionId): Reaction {
   }
   return new Reaction(definition);
 }
-
-/**
- * All reactions, or those whose ids are listed, in menu order.
- * @internal Exported for unit tests; not part of the application API.
- */
-export function getReactions(ids: readonly ReactionId[] = REACTION_IDS): Reaction[] {
-  return ids.map(getReaction);
-}

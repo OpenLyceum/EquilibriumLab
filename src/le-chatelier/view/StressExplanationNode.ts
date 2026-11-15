@@ -16,14 +16,6 @@ import { FONT_SIZE } from "../../EquilibriumLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { LeChatelierModel, StressResult } from "../model/LeChatelierModel.js";
 
-/** RichText markup to plain text for screen-reader responses. */
-export function markupToSpeech(markup: string): string {
-  return markup
-    .replace(/<[^>]+>/g, "")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
-}
-
 /** The explanation of `result` (markup). */
 export function explainStress(result: StressResult | null, reaction: Reaction, form: EquilibriumForm): string {
   const strings = StringManager.getInstance().getLeChatelierStrings();
@@ -128,3 +120,5 @@ export class StressExplanationNode extends VBox {
     super.dispose();
   }
 }
+
+export { markupToSpeech } from "../../common/view/markupToSpeech.js";

@@ -10,9 +10,9 @@ import { localeProperty } from "scenerystack/joist";
 import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { scientific, significant } from "../../common/view/formatValues.js";
+import { markupToSpeech } from "../../common/view/markupToSpeech.js";
 import { plainFormula } from "../../common/view/speciesStyles.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import { markupToSpeech } from "../../le-chatelier/view/StressExplanationNode.js";
 import type { ICETableModel } from "../model/ICETableModel.js";
 
 export class ICETableScreenSummaryContent extends ScreenSummaryContent {

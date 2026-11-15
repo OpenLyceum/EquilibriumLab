@@ -20,6 +20,7 @@ import { EquilibriumForm } from "../../common/model/EquilibriumForm.js";
 import { comboBox, heading, label, note, pushButton, radioGroup } from "../../common/view/ControlFactory.js";
 import { createTimeControl } from "../../common/view/createTimeControl.js";
 import { scientific, significant } from "../../common/view/formatValues.js";
+import { markupToSpeech } from "../../common/view/markupToSpeech.js";
 import { ReactionEquationNode } from "../../common/view/ReactionEquationNode.js";
 import { reactionChoices } from "../../common/view/reactionChoices.js";
 import { speciesStyleIn } from "../../common/view/speciesStyles.js";
@@ -27,7 +28,6 @@ import { type ChartTrace, TimeChartNode } from "../../common/view/TimeChartNode.
 import EquilibriumLabColors from "../../EquilibriumLabColors.js";
 import { FONT_SIZE, SCREEN_VIEW_MARGIN, SIDE_COLUMN_WIDTH } from "../../EquilibriumLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import { markupToSpeech } from "../../le-chatelier/view/StressExplanationNode.js";
 import { ICE_REACTION_IDS, type ICETableModel } from "../model/ICETableModel.js";
 import { feedbackLines, ICEFeedbackNode } from "./ICEFeedbackNode.js";
 import { ICETableNode } from "./ICETableNode.js";

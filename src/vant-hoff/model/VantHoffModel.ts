@@ -42,7 +42,10 @@ export const VANT_HOFF_CHOICE_IDS: readonly VantHoffChoiceId[] = [
 
 const KJ = 1000;
 
-/** The reaction behind a choice; the unknowns are generic reactions with hidden ΔH° and K. */
+/**
+ * The reaction behind a choice; the unknowns are generic reactions with hidden ΔH° and K.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function reactionForChoice(id: VantHoffChoiceId): Reaction {
   if (id === "unknown1") {
     const base = getReaction("genericCombination");

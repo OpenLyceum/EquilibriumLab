@@ -55,9 +55,6 @@ export const GAS_CONSTANT_L_BAR = 0.08314462618;
 /** Standard temperature for tabulated thermodynamic data (K). */
 export const STANDARD_TEMPERATURE = 298.15;
 
-/** Offset between kelvin and degrees Celsius. */
-export const CELSIUS_OFFSET = 273.15;
-
 // ── Kinetics and integration ──────────────────────────────────────────────────
 
 /** A catalyst multiplies both rate constants by this factor. */

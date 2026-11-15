@@ -54,7 +54,7 @@ export function explainStress(result: StressResult | null, reaction: Reaction, f
 }
 
 /** The verdict on a prediction (markup), or "" when none was made. */
-export function judgePrediction(result: StressResult | null): string {
+function judgePrediction(result: StressResult | null): string {
   if (!result?.prediction) {
     return "";
   }

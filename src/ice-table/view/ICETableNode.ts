@@ -25,7 +25,7 @@ const LABEL_WIDTH = 132;
 const ROW_HEIGHT = 50;
 
 /** "0.100 − 2x", "2x", "0.0400". */
-export function changeExpression(initial: number, coefficient: number): string {
+function changeExpression(initial: number, coefficient: number): string {
   const c0 = initial === 0 ? "" : significant(initial, 3);
   if (coefficient === 0) {
     return c0 || "0";

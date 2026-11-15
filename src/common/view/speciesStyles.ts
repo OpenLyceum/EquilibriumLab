@@ -11,7 +11,7 @@ import EquilibriumLabColors from "../../EquilibriumLabColors.js";
 import type { Reaction } from "../model/Reaction.js";
 
 /** One atom of a sprite: offset and radius in px at the particle box's reference scale. */
-export type SpriteAtom = { readonly dx: number; readonly dy: number; readonly r: number };
+type SpriteAtom = { readonly dx: number; readonly dy: number; readonly r: number };
 
 export type SpeciesStyle = {
   readonly color: ProfileColorProperty;
@@ -116,7 +116,7 @@ const STYLES: Record<string, SpeciesStyle> = {
 };
 
 /** Style for a species id; generic dimers reuse their monomer's colour. */
-export function speciesStyle(id: string): SpeciesStyle {
+function speciesStyle(id: string): SpeciesStyle {
   const style = STYLES[id];
   if (!style) {
     throw new Error(`No style for species ${id}`);

@@ -7,7 +7,7 @@
 
 import type { PhetioProperty, Property, TReadOnlyProperty } from "scenerystack/axon";
 import type { Range } from "scenerystack/dot";
-import { HBox, Node, RichText, Text, VBox } from "scenerystack/scenery";
+import { type Node, RichText, Text } from "scenerystack/scenery";
 import { NumberControl, PhetFont } from "scenerystack/scenery-phet";
 import { AquaRadioButtonGroup, Checkbox, ComboBox, type ComboBoxItem, TextPushButton } from "scenerystack/sun";
 import EquilibriumLabColors from "../../EquilibriumLabColors.js";
@@ -22,8 +22,8 @@ import {
 } from "../EquilibriumLabControlOptions.js";
 
 export const CONTROL_FONT = new PhetFont(13);
-export const SMALL_FONT = new PhetFont(12);
-export const HEADING_FONT = new PhetFont({ size: 14, weight: "bold" });
+const SMALL_FONT = new PhetFont(12);
+const HEADING_FONT = new PhetFont({ size: 14, weight: "bold" });
 
 export function heading(text: TReadOnlyProperty<string>, maxWidth: number): Text {
   return new Text(text, { font: HEADING_FONT, fill: EquilibriumLabColors.textColorProperty, maxWidth });
@@ -79,11 +79,6 @@ export function comboBox<T>(
   });
 }
 
-/** A label above a control, left-aligned. */
-export function labeled(text: TReadOnlyProperty<string>, control: Node, maxWidth: number): VBox {
-  return new VBox({ align: "left", spacing: 3, children: [label(text, maxWidth), control] });
-}
-
 export function checkbox(
   property: Property<boolean>,
   text: TReadOnlyProperty<string>,
@@ -134,19 +129,6 @@ export function radioGroup<T>(
       accessibleName,
     },
   );
-}
-
-/** Two checkboxes side by side (or one) for compact panels. */
-export function pairRow(left: Node, right: Node | null, columnWidth: number): HBox {
-  return new HBox({
-    spacing: 8,
-    align: "center",
-    children: right ? [sized(left, columnWidth), right] : [left],
-  });
-}
-
-function sized(node: Node, width: number): Node {
-  return new Node({ children: [node], localBounds: node.localBounds.withMaxX(Math.max(node.localBounds.maxX, width)) });
 }
 
 export type NumberControlChoice = {

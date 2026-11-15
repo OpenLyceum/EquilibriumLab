@@ -38,7 +38,7 @@ export type ICEProblem = {
 };
 
 /** Rounds to `digits` significant figures. */
-export function roundSignificant(value: number, digits = 3): number {
+function roundSignificant(value: number, digits = 3): number {
   if (value === 0 || !Number.isFinite(value)) {
     return value;
   }
@@ -108,7 +108,7 @@ function withKc(reaction: Reaction, temperature: number, k: number): Reaction {
 }
 
 /** Relative tolerance for an entered x or K. */
-export const ANSWER_TOLERANCE = 0.02;
+const ANSWER_TOLERANCE = 0.02;
 
 /**
  * Whether `coefficients` (the change row, in multiples of x) is right: each is the stoichiometric

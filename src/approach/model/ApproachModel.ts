@@ -16,10 +16,10 @@ import { ReactionSceneModel } from "../../common/model/ReactionSceneModel.js";
 import { getReaction, REACTION_IDS } from "../../common/model/Reactions.js";
 
 /** log₁₀ of the generic reactions' K at 298 K. */
-export const GENERIC_LOG_K_RANGE = new Range(-2, 2);
+const GENERIC_LOG_K_RANGE = new Range(-2, 2);
 
 /** The generic reactions' forward rate constant (M^(1−order)/s). */
-export const GENERIC_FORWARD_RATE_RANGE = new Range(0.02, 1);
+const GENERIC_FORWARD_RATE_RANGE = new Range(0.02, 1);
 
 export type StartingMixture = "reactants" | "products" | "random";
 

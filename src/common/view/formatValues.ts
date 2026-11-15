@@ -65,11 +65,6 @@ export function scientificFromLn(lnValue: number, digits = 3): string {
   return `${fixed(10 ** (log10 - exponent), digits - 1)} × 10<sup>${fixed(exponent, 0)}</sup>`;
 }
 
-/** The same value as `scientific`, with Unicode superscripts for plain-text and spoken contexts. */
-export function scientificPlain(value: number, digits = 3): string {
-  return toPlainSuperscript(scientific(value, digits));
-}
-
 const SUPERSCRIPT_DIGITS: Record<string, string> = {
   "0": "⁰",
   "1": "¹",
@@ -89,11 +84,6 @@ export function toPlainSuperscript(markup: string): string {
   return markup.replace(/<sup>(.*?)<\/sup>/g, (_m, text: string) =>
     [...text].map((ch) => SUPERSCRIPT_DIGITS[ch] ?? ch).join(""),
   );
-}
-
-/** Concentration in M to three significant figures. */
-export function formatConcentration(molar: number): string {
-  return significant(molar, 3);
 }
 
 /** Percentage error of `measured` against `accepted`, one decimal, signed. */

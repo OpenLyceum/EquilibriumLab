@@ -1,3 +1,4 @@
+import { APPROACH_MODEL_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ApproachModel.ts
  *
@@ -16,10 +17,13 @@ import { ReactionSceneModel } from "../../common/model/ReactionSceneModel.js";
 import { getReaction, REACTION_IDS } from "../../common/model/Reactions.js";
 
 /** log₁₀ of the generic reactions' K at 298 K. */
-const GENERIC_LOG_K_RANGE = new Range(-2, 2);
+const GENERIC_LOG_K_RANGE = new Range(
+  APPROACH_MODEL_SETTINGS.GENERIC_LOG_K_RANGE_MIN,
+  APPROACH_MODEL_SETTINGS.GENERIC_LOG_K_RANGE_MAX,
+);
 
 /** The generic reactions' forward rate constant (M^(1−order)/s). */
-const GENERIC_FORWARD_RATE_RANGE = new Range(0.02, 1);
+const GENERIC_FORWARD_RATE_RANGE = new Range(APPROACH_MODEL_SETTINGS.GENERIC_FORWARD_RATE_RANGE_MIN, 1);
 
 export type StartingMixture = "reactants" | "products" | "random";
 
@@ -34,7 +38,10 @@ export class ApproachModel implements TModel {
   public readonly initialConcentrationsRebuiltEmitter = new Emitter();
 
   public readonly genericLogKProperty = new NumberProperty(Math.log10(2), { range: GENERIC_LOG_K_RANGE });
-  public readonly genericForwardRateProperty = new NumberProperty(0.2, { range: GENERIC_FORWARD_RATE_RANGE });
+  public readonly genericForwardRateProperty = new NumberProperty(
+    APPROACH_MODEL_SETTINGS.GENERIC_FORWARD_RATE_DEFAULT,
+    { range: GENERIC_FORWARD_RATE_RANGE },
+  );
 
   /** True while the model itself writes the starting concentrations, so they don't each restart the run. */
   private settingConcentrations = false;
@@ -83,7 +90,11 @@ export class ApproachModel implements TModel {
       amounts = reaction.species.map((s) => (s.bulk ? (defaults[reaction.species.indexOf(s)] ?? 0) : 0));
       reaction.species.forEach((s, i) => {
         if (!s.bulk) {
-          amounts[i] = dotRandom.nextDoubleBetween(0.1, 0.6) * reaction.maxAmountOf(i);
+          amounts[i] =
+            dotRandom.nextDoubleBetween(
+              APPROACH_MODEL_SETTINGS.INITIAL_FRACTION_MIN,
+              APPROACH_MODEL_SETTINGS.INITIAL_FRACTION_MAX,
+            ) * reaction.maxAmountOf(i);
         }
       });
     }

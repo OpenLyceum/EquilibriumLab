@@ -1,3 +1,4 @@
+import { ICE_TABLE_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ICETableNode.ts
  *
@@ -21,12 +22,12 @@ import { StringManager } from "../../i18n/StringManager.js";
 import { CHANGE_COEFFICIENT_RANGE, type ICETableModel } from "../model/ICETableModel.js";
 
 /** Width of the row-label column and of each species column (px). */
-const LABEL_WIDTH = 132;
-const ROW_HEIGHT = 50;
+const LABEL_WIDTH: number = ICE_TABLE_NODE_SETTINGS.LABEL_WIDTH;
+const ROW_HEIGHT: number = ICE_TABLE_NODE_SETTINGS.ROW_HEIGHT;
 
 /** "0.100 − 2x", "2x", "0.0400". */
 function changeExpression(initial: number, coefficient: number): string {
-  const c0 = initial === 0 ? "" : significant(initial, 3);
+  const c0 = initial === 0 ? "" : significant(initial, ICE_TABLE_NODE_SETTINGS.C0_DIGITS);
   if (coefficient === 0) {
     return c0 || "0";
   }
@@ -48,14 +49,17 @@ function evaluateCell(
   given: number | null,
 ): { text: string; fill: TColor } {
   if (given !== null) {
-    return { text: `= ${significant(given, 3)}`, fill: EquilibriumLabColors.kMarkerColorProperty };
+    return {
+      text: `= ${significant(given, ICE_TABLE_NODE_SETTINGS.EVALUATE_CELL_DIGITS)}`,
+      fill: EquilibriumLabColors.kMarkerColorProperty,
+    };
   }
   if (x === null) {
     return { text: "", fill: EquilibriumLabColors.mutedTextColorProperty };
   }
   const value = initial + coefficient * x;
   return {
-    text: `= ${scientific(value, 3)}`,
+    text: `= ${scientific(value, ICE_TABLE_NODE_SETTINGS.EVALUATE_CELL_DIGITS)}`,
     fill: value < 0 ? EquilibriumLabColors.poorColorProperty : EquilibriumLabColors.mutedTextColorProperty,
   };
 }
@@ -101,13 +105,13 @@ export class ICETableNode extends Node {
       ];
       rowLabels.forEach(([letter, name], row) => {
         const label = new HBox({
-          spacing: 6,
+          spacing: ICE_TABLE_NODE_SETTINGS.LABEL_SPACING,
           children: [
-            text(letter, 20, true),
+            text(letter, ICE_TABLE_NODE_SETTINGS.LABEL_MAX_WIDTH, true),
             new Text(name, {
               font: smallFont,
               fill: EquilibriumLabColors.mutedTextColorProperty,
-              maxWidth: LABEL_WIDTH - 34,
+              maxWidth: LABEL_WIDTH - ICE_TABLE_NODE_SETTINGS.LABEL_MAX_WIDTH_OFFSET,
             }),
           ],
         });
@@ -135,7 +139,10 @@ export class ICETableNode extends Node {
         const header = text(`[${s.formula}]`, columnWidth - 8, true);
         header.centerX = columnX(i);
         header.centerY = rowY(0);
-        const initial = text(significant(problem.initial[i] ?? 0, 3), columnWidth - 8);
+        const initial = text(
+          significant(problem.initial[i] ?? 0, ICE_TABLE_NODE_SETTINGS.INITIAL_DIGITS),
+          columnWidth - 8,
+        );
         initial.centerX = columnX(i);
         initial.centerY = rowY(1);
 
@@ -150,13 +157,16 @@ export class ICETableNode extends Node {
           font: new PhetFont(FONT_SIZE.readout),
           color: EquilibriumLabColors.accentColorProperty,
           backgroundStroke: EquilibriumLabColors.panelBorderColorProperty,
-          xMargin: 6,
+          xMargin: ICE_TABLE_NODE_SETTINGS.PICKER_X_MARGIN,
           yMargin: 1,
           formatValue: (n: number) => (n > 0 ? `+${n}` : fixed(n, 0)),
           accessibleName: pickerName,
         });
         this.owned.push(picker);
-        const change = new HBox({ spacing: 3, children: [picker, text("x", 20)] });
+        const change = new HBox({
+          spacing: ICE_TABLE_NODE_SETTINGS.CHANGE_SPACING,
+          children: [picker, text("x", ICE_TABLE_NODE_SETTINGS.X_TEXT_MAX_WIDTH)],
+        });
         change.centerX = columnX(i);
         change.centerY = rowY(2);
 
@@ -165,7 +175,7 @@ export class ICETableNode extends Node {
         const value = new RichText("", {
           font: smallFont,
           fill: EquilibriumLabColors.mutedTextColorProperty,
-          maxWidth: columnWidth - 8,
+          maxWidth: columnWidth - ICE_TABLE_NODE_SETTINGS.VALUE_MAX_WIDTH_OFFSET,
         });
         const cell = new VBox({ spacing: 1, children: [expression, value] });
         const multilink = Multilink.multilink([coefficient, model.xEntryProperty], (c, x) => {
@@ -179,7 +189,7 @@ export class ICETableNode extends Node {
           value.string = evaluated.text;
           value.fill = evaluated.fill;
           cell.centerX = columnX(i);
-          cell.centerY = rowY(3);
+          cell.centerY = rowY(ICE_TABLE_NODE_SETTINGS.MULTILINK_CENTER_Y);
         });
         this.owned.push(multilink);
 

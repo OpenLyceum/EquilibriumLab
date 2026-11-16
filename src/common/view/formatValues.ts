@@ -1,3 +1,4 @@
+import { FORMAT_VALUES_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * formatValues.ts
  *
@@ -23,7 +24,7 @@ export function signed(value: number, decimals: number): string {
 }
 
 /** `value` to `digits` significant figures in plain decimals ("0.0138", "57.2", "1450"). */
-export function significant(value: number, digits = 3): string {
+export function significant(value: number, digits: number = FORMAT_VALUES_SETTINGS.DEFAULT_DIGITS): string {
   if (value === 0 || !Number.isFinite(value)) {
     return Number.isFinite(value) ? "0" : "∞";
   }
@@ -35,7 +36,7 @@ export function significant(value: number, digits = 3): string {
  * RichText for `value` to `digits` significant figures: plain decimals between 0.01 and 10000,
  * scientific notation outside that ("5.76 × 10<sup>−3</sup>"), "∞" for infinity.
  */
-export function scientific(value: number, digits = 3): string {
+export function scientific(value: number, digits: number = FORMAT_VALUES_SETTINGS.DEFAULT_DIGITS): string {
   if (!Number.isFinite(value)) {
     return Number.isNaN(value) ? "—" : value > 0 ? "∞" : `${MINUS}∞`;
   }
@@ -53,7 +54,7 @@ export function scientific(value: number, digits = 3): string {
 }
 
 /** Scientific notation from a natural logarithm, so values beyond double range still print. */
-export function scientificFromLn(lnValue: number, digits = 3): string {
+export function scientificFromLn(lnValue: number, digits: number = FORMAT_VALUES_SETTINGS.DEFAULT_DIGITS): string {
   if (!Number.isFinite(lnValue)) {
     return Number.isNaN(lnValue) ? "—" : lnValue > 0 ? "∞" : "0";
   }

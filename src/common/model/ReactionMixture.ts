@@ -1,3 +1,4 @@
+import { REACTION_MIXTURE_NUMERICS } from "../../EquilibriumLabConstants.js";
 /**
  * ReactionMixture.ts
  *
@@ -315,11 +316,14 @@ export class ReactionMixture {
 
   /** |d(flux)/dξ| (1/s): how fast the mixture relaxes near `extent`. */
   private relaxationRate(flux: (extent: number) => number, extent: number, min: number, max: number): number {
-    const delta = Math.max(1e-12, (max - min) * 1e-6);
+    const delta = Math.max(
+      REACTION_MIXTURE_NUMERICS.MIN_EXTENT_DIFFERENCE,
+      (max - min) * REACTION_MIXTURE_NUMERICS.RELATIVE_EXTENT_DIFFERENCE,
+    );
     const low = Math.max(min, extent - delta);
     const high = Math.min(max, extent + delta);
     const rate = high > low ? Math.abs((flux(high) - flux(low)) / (high - low)) : 0;
-    return Math.max(rate, 1e-9);
+    return Math.max(rate, REACTION_MIXTURE_NUMERICS.MIN_RELAXATION_RATE);
   }
 
   /**

@@ -1,3 +1,4 @@
+import { ICE_PROBLEM_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ICEProblem.ts
  *
@@ -38,7 +39,7 @@ export type ICEProblem = {
 };
 
 /** Rounds to `digits` significant figures. */
-function roundSignificant(value: number, digits = 3): number {
+function roundSignificant(value: number, digits: number = ICE_PROBLEM_SETTINGS.DEFAULT_DIGITS): number {
   if (value === 0 || !Number.isFinite(value)) {
     return value;
   }
@@ -69,10 +70,19 @@ export function createProblem(base: Reaction, mode: ICEMode, random: Random): IC
   // Initial concentrations: reactants between 30 % and 90 % of the largest default amount,
   // products usually absent (sometimes present, so the reaction may run either way).
   const largest = Math.max(...d.defaultAmounts) / volume;
-  const anyProducts = random.nextDouble() < 0.3;
+  const anyProducts = random.nextDouble() < ICE_PROBLEM_SETTINGS.PRODUCT_PRESENT_PROBABILITY;
   const initial = base.species.map((s) => {
     if (s.nu < 0 || anyProducts) {
-      const fraction = s.nu < 0 ? random.nextDoubleBetween(0.3, 0.9) : random.nextDoubleBetween(0.1, 0.5);
+      const fraction =
+        s.nu < 0
+          ? random.nextDoubleBetween(
+              ICE_PROBLEM_SETTINGS.REACTANT_FRACTION_MIN,
+              ICE_PROBLEM_SETTINGS.REACTANT_FRACTION_MAX,
+            )
+          : random.nextDoubleBetween(
+              ICE_PROBLEM_SETTINGS.PRODUCT_FRACTION_MIN,
+              ICE_PROBLEM_SETTINGS.PRODUCT_FRACTION_MAX,
+            );
       return roundSignificant(fraction * largest, 2);
     }
     return 0;
@@ -80,7 +90,7 @@ export function createProblem(base: Reaction, mode: ICEMode, random: Random): IC
   const amounts = initial.map((c) => c * volume);
 
   if (mode === "findEquilibrium") {
-    const kShown = roundSignificant(Math.exp(lnTarget), 3);
+    const kShown = roundSignificant(Math.exp(lnTarget), ICE_PROBLEM_SETTINGS.GIVEN_SIGNIFICANT_FIGURES);
     const reaction = withKc(base, temperature, kShown);
     const x = solveEquilibriumExtent(reaction, amounts, volume, Math.log(kShown)) / volume;
     const equilibrium = initial.map((c, i) => c + (base.species[i]?.nu ?? 0) * x);
@@ -91,7 +101,10 @@ export function createProblem(base: Reaction, mode: ICEMode, random: Random): IC
   const trueX = solveEquilibriumExtent(base, amounts, volume, lnTarget) / volume;
   const givenIndex = base.productIndices[0] ?? 0;
   const nu = base.species[givenIndex]?.nu ?? 1;
-  const givenValue = roundSignificant((initial[givenIndex] ?? 0) + nu * trueX, 3);
+  const givenValue = roundSignificant(
+    (initial[givenIndex] ?? 0) + nu * trueX,
+    ICE_PROBLEM_SETTINGS.GIVEN_SIGNIFICANT_FIGURES,
+  );
   let x = (givenValue - (initial[givenIndex] ?? 0)) / nu;
   const { min, max } = extentBounds(base, amounts);
   x = Math.min(max / volume, Math.max(min / volume, x));
@@ -108,7 +121,7 @@ function withKc(reaction: Reaction, temperature: number, k: number): Reaction {
 }
 
 /** Relative tolerance for an entered x or K. */
-const ANSWER_TOLERANCE = 0.02;
+const ANSWER_TOLERANCE: number = ICE_PROBLEM_SETTINGS.ANSWER_TOLERANCE;
 
 /**
  * Whether `coefficients` (the change row, in multiples of x) is right: each is the stoichiometric
@@ -126,7 +139,7 @@ export function changeRowSign(reaction: Reaction, coefficients: readonly number[
 /** Whether `entered` matches `expected` within ANSWER_TOLERANCE (relative). */
 export function matches(entered: number, expected: number): boolean {
   if (expected === 0) {
-    return Math.abs(entered) < 1e-9;
+    return Math.abs(entered) < ICE_PROBLEM_SETTINGS.ZERO_ANSWER_TOLERANCE;
   }
   return Math.abs(entered - expected) <= ANSWER_TOLERANCE * Math.abs(expected);
 }

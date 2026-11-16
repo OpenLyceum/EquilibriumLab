@@ -1,3 +1,4 @@
+import { LE_CHATELIER_MODEL_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * LeChatelierModel.ts
  *
@@ -35,7 +36,7 @@ export type StressResult = {
 };
 
 /** Relative change in ln Q or ln K below which it counts as unchanged. */
-const CHANGE_TOLERANCE = 1e-9;
+const CHANGE_TOLERANCE: number = LE_CHATELIER_MODEL_SETTINGS.CHANGE_TOLERANCE;
 
 export class LeChatelierModel implements TModel {
   public readonly reactionIdProperty: Property<ReactionId>;
@@ -191,7 +192,10 @@ export class LeChatelierModel implements TModel {
 
   /** Whether the fixed-pressure argon button can still expand the vessel. */
   public get canAddArgonAtConstantPressure(): boolean {
-    return this.mixture.volume < this.mixture.reaction.definition.volumeRange.max * (1 - 1e-6);
+    return (
+      this.mixture.volume <
+      this.mixture.reaction.definition.volumeRange.max * (1 - LE_CHATELIER_MODEL_SETTINGS.VOLUME_LIMIT_TOLERANCE)
+    );
   }
 
   private snapshot(): { lnQ: number; lnK: number; volume: number; temperature: number } {

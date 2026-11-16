@@ -1,3 +1,4 @@
+import { STRESS_CONTROLS_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * StressControlsNode.ts
  *
@@ -16,7 +17,7 @@ import { StringManager } from "../../i18n/StringManager.js";
 import type { LeChatelierModel } from "../model/LeChatelierModel.js";
 
 /** Width of the formula column in a species row (px). */
-const FORMULA_WIDTH = 96;
+const FORMULA_WIDTH: number = STRESS_CONTROLS_NODE_SETTINGS.FORMULA_WIDTH;
 
 type Disposable = { dispose: () => void };
 
@@ -31,7 +32,7 @@ export class StressControlsNode extends VBox {
     width: number,
     respond: () => void,
   ) {
-    super({ align: "left", spacing: 8 });
+    super({ align: "left", spacing: STRESS_CONTROLS_NODE_SETTINGS.CONSTRUCTOR_SPACING });
     this.model = model;
     const strings = StringManager.getInstance().getLeChatelierStrings();
     const common = StringManager.getInstance().getCommonStrings();
@@ -79,7 +80,7 @@ export class StressControlsNode extends VBox {
         removeButton.enabledProperty = enabledProperty;
         const formula = label(s.formula, FORMULA_WIDTH);
         return new HBox({
-          spacing: 6,
+          spacing: STRESS_CONTROLS_NODE_SETTINGS.ROWS_SPACING,
           children: [
             new Node({ children: [formula], localBounds: formula.localBounds.withMaxX(FORMULA_WIDTH) }),
             addButton,
@@ -130,7 +131,9 @@ export class StressControlsNode extends VBox {
         this.owned.push(argonPressureEnabled);
         argonVolume.enabledProperty = enabledProperty;
         argonPressure.enabledProperty = argonPressureEnabled;
-        extras.push(new HBox({ spacing: 6, children: [argonVolume, argonPressure] }));
+        extras.push(
+          new HBox({ spacing: STRESS_CONTROLS_NODE_SETTINGS.REBUILD_SPACING, children: [argonVolume, argonPressure] }),
+        );
       } else {
         const water = pushButton(strings.diluteStringProperty, () => {
           model.dilute(markers.waterStringProperty.value);

@@ -1,3 +1,4 @@
+import { PARTICLE_SYSTEM_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ParticleSystem.ts
  *
@@ -30,7 +31,7 @@ import type { Reaction } from "./Reaction.js";
 import type { ReactionMixture } from "./ReactionMixture.js";
 
 /** Most events replayed per frame in each direction; a faster backlog is skipped, not queued. */
-const MAX_EVENTS_PER_STEP = 12;
+const MAX_EVENTS_PER_STEP: number = PARTICLE_SYSTEM_SETTINGS.MAX_EVENTS_PER_STEP;
 
 export type Particle = {
   /** Index of the species in the reaction. */

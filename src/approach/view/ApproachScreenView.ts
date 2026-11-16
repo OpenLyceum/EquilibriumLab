@@ -1,3 +1,4 @@
+import { APPROACH_SCREEN_VIEW_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ApproachScreenView.ts
  *
@@ -41,15 +42,15 @@ type SelfOptions = {
 
 export type ApproachScreenViewOptions = SelfOptions & ScreenViewOptions;
 
-const BOX_WIDTH_PX = 236;
+const BOX_WIDTH_PX: number = APPROACH_SCREEN_VIEW_SETTINGS.BOX_WIDTH_PX;
 const LEFT_X = SCREEN_VIEW_MARGIN + 14;
-const PARTICLE_BOX_Y = 64;
-const CHART_LEFT = 372;
-const CHART_WIDTH = 350;
-const CONCENTRATION_CHART_TOP = 104;
-const CONCENTRATION_CHART_HEIGHT = 168;
-const RATE_CHART_TOP = 388;
-const RATE_CHART_HEIGHT = 112;
+const PARTICLE_BOX_Y: number = APPROACH_SCREEN_VIEW_SETTINGS.PARTICLE_BOX_Y;
+const CHART_LEFT: number = APPROACH_SCREEN_VIEW_SETTINGS.CHART_LEFT;
+const CHART_WIDTH: number = APPROACH_SCREEN_VIEW_SETTINGS.CHART_WIDTH;
+const CONCENTRATION_CHART_TOP: number = APPROACH_SCREEN_VIEW_SETTINGS.CONCENTRATION_CHART_TOP;
+const CONCENTRATION_CHART_HEIGHT: number = APPROACH_SCREEN_VIEW_SETTINGS.CONCENTRATION_CHART_HEIGHT;
+const RATE_CHART_TOP: number = APPROACH_SCREEN_VIEW_SETTINGS.RATE_CHART_TOP;
+const RATE_CHART_HEIGHT: number = APPROACH_SCREEN_VIEW_SETTINGS.RATE_CHART_HEIGHT;
 const SIDE_CONTENT_WIDTH = SIDE_COLUMN_WIDTH - 24;
 
 export class ApproachScreenView extends ScreenView {
@@ -79,7 +80,7 @@ export class ApproachScreenView extends ScreenView {
     // ── Equation, particle box, gauge ───────────────────────────────────────────
     const equation = new ReactionEquationNode(mixture.reactionProperty, scene.formProperty, 680);
     equation.left = SCREEN_VIEW_MARGIN;
-    equation.top = SCREEN_VIEW_MARGIN - 6;
+    equation.top = SCREEN_VIEW_MARGIN - APPROACH_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
 
     this.particleBox = new ParticleBoxNode(mixture, scene.particles, BOX_WIDTH_PX, {
       showFlashesProperty: options.showReactionFlashesProperty,
@@ -143,7 +144,11 @@ export class ApproachScreenView extends ScreenView {
     mixture.reactionProperty.lazyLink(() => concentrationChart.setTraces(speciesTraces()));
     mixture.resetEmitter.addListener(updateEquilibriumLines);
     Multilink.multilinkAny([this.showEquilibriumProperty, mixture.reactionProperty], updateEquilibriumLines);
-    const showEquilibriumCheckbox = checkbox(this.showEquilibriumProperty, common.showEquilibriumStringProperty, 300);
+    const showEquilibriumCheckbox = checkbox(
+      this.showEquilibriumProperty,
+      common.showEquilibriumStringProperty,
+      APPROACH_SCREEN_VIEW_SETTINGS.SHOW_EQUILIBRIUM_CHECKBOX_MAX_WIDTH,
+    );
     showEquilibriumCheckbox.left = CHART_LEFT;
     showEquilibriumCheckbox.top = CONCENTRATION_CHART_TOP + CONCENTRATION_CHART_HEIGHT + 38;
 
@@ -167,14 +172,14 @@ export class ApproachScreenView extends ScreenView {
     const isGasProperty = new DerivedProperty([mixture.reactionProperty], (reaction) => reaction.isGas);
     const formBox = new VBox({
       align: "left",
-      spacing: 4,
+      spacing: APPROACH_SCREEN_VIEW_SETTINGS.FORM_BOX_SPACING,
       children: [heading(common.formHeadingStringProperty, SIDE_CONTENT_WIDTH), formRadio],
       visibleProperty: isGasProperty,
     });
     const reactionPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: APPROACH_SCREEN_VIEW_SETTINGS.REACTION_PANEL_SPACING,
         children: [heading(common.reactionHeadingStringProperty, SIDE_CONTENT_WIDTH), reactionMenu, formBox],
       }),
       { minWidth: SIDE_COLUMN_WIDTH, maxWidth: SIDE_COLUMN_WIDTH },
@@ -203,16 +208,21 @@ export class ApproachScreenView extends ScreenView {
       model.genericLogKProperty.range,
       {
         ...EQUILIBRIUM_LAB_NUMBER_CONTROL_OPTIONS,
-        delta: 0.05,
-        titleNodeOptions: { font: CONTROL_FONT, fill: EquilibriumLabColors.textColorProperty, maxWidth: 120 },
+        delta: APPROACH_SCREEN_VIEW_SETTINGS.LOG_K_CONTROL_DELTA,
+        titleNodeOptions: {
+          font: CONTROL_FONT,
+          fill: EquilibriumLabColors.textColorProperty,
+          maxWidth: APPROACH_SCREEN_VIEW_SETTINGS.LOG_K_CONTROL_MAX_WIDTH,
+        },
         numberDisplayOptions: {
-          numberFormatter: (value: number) => scientific(10 ** value, 2),
+          numberFormatter: (value: number) =>
+            scientific(10 ** value, APPROACH_SCREEN_VIEW_SETTINGS.LOG_K_CONTROL_DIGITS),
           useRichText: true,
         },
         sliderOptions: {
           ...EQUILIBRIUM_LAB_NUMBER_CONTROL_OPTIONS.sliderOptions,
-          keyboardStep: 0.25,
-          shiftKeyboardStep: 0.05,
+          keyboardStep: APPROACH_SCREEN_VIEW_SETTINGS.LOG_K_CONTROL_KEYBOARD_STEP,
+          shiftKeyboardStep: APPROACH_SCREEN_VIEW_SETTINGS.LOG_K_CONTROL_SHIFT_KEYBOARD_STEP,
           pageKeyboardStep: 1,
         },
         accessibleName: strings.equilibriumConstantStringProperty,
@@ -224,14 +234,20 @@ export class ApproachScreenView extends ScreenView {
       model.genericForwardRateProperty.range,
       {
         ...EQUILIBRIUM_LAB_NUMBER_CONTROL_OPTIONS,
-        delta: 0.01,
-        titleNodeOptions: { font: CONTROL_FONT, fill: EquilibriumLabColors.textColorProperty, maxWidth: 140 },
-        numberDisplayOptions: { numberFormatter: (value: number) => significant(value, 2) },
+        delta: APPROACH_SCREEN_VIEW_SETTINGS.KF_CONTROL_DELTA,
+        titleNodeOptions: {
+          font: CONTROL_FONT,
+          fill: EquilibriumLabColors.textColorProperty,
+          maxWidth: APPROACH_SCREEN_VIEW_SETTINGS.KF_CONTROL_MAX_WIDTH,
+        },
+        numberDisplayOptions: {
+          numberFormatter: (value: number) => significant(value, APPROACH_SCREEN_VIEW_SETTINGS.KF_CONTROL_DIGITS),
+        },
         sliderOptions: {
           ...EQUILIBRIUM_LAB_NUMBER_CONTROL_OPTIONS.sliderOptions,
-          keyboardStep: 0.05,
-          shiftKeyboardStep: 0.01,
-          pageKeyboardStep: 0.2,
+          keyboardStep: APPROACH_SCREEN_VIEW_SETTINGS.KF_CONTROL_KEYBOARD_STEP,
+          shiftKeyboardStep: APPROACH_SCREEN_VIEW_SETTINGS.KF_CONTROL_SHIFT_KEYBOARD_STEP,
+          pageKeyboardStep: APPROACH_SCREEN_VIEW_SETTINGS.KF_CONTROL_PAGE_KEYBOARD_STEP,
         },
         accessibleName: strings.forwardRateConstantStringProperty,
       },
@@ -242,7 +258,7 @@ export class ApproachScreenView extends ScreenView {
     );
     const genericBox = new VBox({
       align: "left",
-      spacing: 6,
+      spacing: APPROACH_SCREEN_VIEW_SETTINGS.GENERIC_BOX_SPACING,
       children: [heading(strings.genericHeadingStringProperty, SIDE_CONTENT_WIDTH), logKControl, kfControl],
       visibleProperty: isGenericProperty,
     });
@@ -250,11 +266,14 @@ export class ApproachScreenView extends ScreenView {
     const startPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: APPROACH_SCREEN_VIEW_SETTINGS.START_PANEL_SPACING,
         children: [
           heading(strings.startingHeadingStringProperty, SIDE_CONTENT_WIDTH),
           concentrations,
-          new HBox({ spacing: 6, children: [reactantsButton, productsButton] }),
+          new HBox({
+            spacing: APPROACH_SCREEN_VIEW_SETTINGS.START_PANEL_ITEM_3_SPACING,
+            children: [reactantsButton, productsButton],
+          }),
           randomButton,
           genericBox,
         ],

@@ -1,3 +1,4 @@
+import { RICH_TEXT_LINES_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * RichTextLines.ts
  *
@@ -25,7 +26,7 @@ export class RichTextLines extends VBox {
           ...(wrap ? { lineWrap: maxWidth } : { maxWidth }),
         }),
     );
-    super({ align: "left", spacing: 4, children: lines });
+    super({ align: "left", spacing: RICH_TEXT_LINES_SETTINGS.CONSTRUCTOR_SPACING, children: lines });
     this.lines = lines;
   }
 

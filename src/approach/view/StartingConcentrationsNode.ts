@@ -1,3 +1,4 @@
+import { STARTING_CONCENTRATIONS_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * StartingConcentrationsNode.ts
  *
@@ -21,7 +22,7 @@ export class StartingConcentrationsNode extends VBox {
   private readonly model: ApproachModel;
 
   public constructor(model: ApproachModel, width: number) {
-    super({ align: "left", spacing: 6 });
+    super({ align: "left", spacing: STARTING_CONCENTRATIONS_NODE_SETTINGS.CONSTRUCTOR_SPACING });
     this.model = model;
     const strings = StringManager.getInstance().getApproachStrings();
     const common = StringManager.getInstance().getCommonStrings();

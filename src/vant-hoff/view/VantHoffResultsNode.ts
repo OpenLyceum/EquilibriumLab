@@ -1,3 +1,4 @@
+import { VANT_HOFF_RESULTS_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * VantHoffResultsNode.ts
  *
@@ -16,7 +17,7 @@ import { INVERSE_TEMPERATURE_SCALE } from "../../EquilibriumLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { VantHoffModel } from "../model/VantHoffModel.js";
 
-const KJ = 1000;
+const KJ: number = VANT_HOFF_RESULTS_NODE_SETTINGS.KJ;
 
 export class VantHoffResultsNode extends RichTextLines {
   private readonly multilink: { dispose: () => void };
@@ -50,10 +51,14 @@ export class VantHoffResultsNode extends RichTextLines {
         const muted = EquilibriumLabColors.mutedTextColorProperty;
         const texts: string[] = [
           StringUtils.fillIn(strings.slopePatternStringProperty.value, {
-            value: signed(fit.slope / INVERSE_TEMPERATURE_SCALE, 3),
+            value: signed(fit.slope / INVERSE_TEMPERATURE_SCALE, VANT_HOFF_RESULTS_NODE_SETTINGS.TEXTS_DECIMALS),
           }),
-          StringUtils.fillIn(strings.interceptPatternStringProperty.value, { value: fixed(fit.intercept, 2) }),
-          StringUtils.fillIn(strings.rSquaredPatternStringProperty.value, { value: fixed(fit.rSquared, 4) }),
+          StringUtils.fillIn(strings.interceptPatternStringProperty.value, {
+            value: fixed(fit.intercept, VANT_HOFF_RESULTS_NODE_SETTINGS.TEXTS_DECIMALS_SEGMENT_2),
+          }),
+          StringUtils.fillIn(strings.rSquaredPatternStringProperty.value, {
+            value: fixed(fit.rSquared, VANT_HOFF_RESULTS_NODE_SETTINGS.R_SQUARED_FIXED_DECIMALS),
+          }),
           StringUtils.fillIn(strings.deltaHPatternStringProperty.value, { value: signed(fit.deltaH / KJ, 1) }),
         ];
         const fills: TColor[] = [muted, muted, muted, EquilibriumLabColors.textColorProperty];
@@ -80,7 +85,9 @@ export class VantHoffResultsNode extends RichTextLines {
         const crossover = fit.deltaH / fit.deltaS;
         texts.push(
           crossover > 0 && Number.isFinite(crossover)
-            ? StringUtils.fillIn(strings.crossoverPatternStringProperty.value, { value: significant(crossover, 3) })
+            ? StringUtils.fillIn(strings.crossoverPatternStringProperty.value, {
+                value: significant(crossover, VANT_HOFF_RESULTS_NODE_SETTINGS.SIGNIFICANT_DIGITS),
+              })
             : strings.noCrossoverStringProperty.value,
         );
         fills.push(EquilibriumLabColors.kMarkerColorProperty);

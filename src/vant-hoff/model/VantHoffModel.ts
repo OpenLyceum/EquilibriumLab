@@ -1,3 +1,4 @@
+import { VANT_HOFF_MODEL_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * VantHoffModel.ts
  *
@@ -40,7 +41,7 @@ export const VANT_HOFF_CHOICE_IDS: readonly VantHoffChoiceId[] = [
   "unknown2",
 ];
 
-const KJ = 1000;
+const KJ: number = VANT_HOFF_MODEL_SETTINGS.KJ;
 
 /**
  * The reaction behind a choice; the unknowns are generic reactions with hidden ΔH° and K.
@@ -63,7 +64,7 @@ export function isUnknown(id: VantHoffChoiceId): boolean {
 }
 
 /** Seed for the measurement errors, so a fresh screen replays the same scatter. */
-const NOISE_SEED = 42;
+const NOISE_SEED: number = VANT_HOFF_MODEL_SETTINGS.NOISE_SEED;
 
 export class VantHoffModel implements TModel {
   public readonly choiceProperty = new Property<VantHoffChoiceId>("dinitrogenTetroxide", {

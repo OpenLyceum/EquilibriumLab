@@ -1,3 +1,4 @@
+import { MIXTURE_READOUTS_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * MixtureReadoutsNode.ts
  *
@@ -18,7 +19,7 @@ import type { ReactionMixture } from "../model/ReactionMixture.js";
 import { fixed, significant } from "./formatValues.js";
 
 /** Seconds between refreshes of the readouts, so the numbers stay legible. */
-const REFRESH_INTERVAL = 0.25;
+const REFRESH_INTERVAL: number = MIXTURE_READOUTS_NODE_SETTINGS.REFRESH_INTERVAL;
 
 export class MixtureReadoutsNode extends VBox {
   private readonly update: () => void;
@@ -38,25 +39,29 @@ export class MixtureReadoutsNode extends VBox {
     const reverse = new Text("", { font, fill: EquilibriumLabColors.reverseRateColorProperty, maxWidth: width / 2 });
     super({
       align: "left",
-      spacing: 4,
-      children: [conditions, heading, new HBox({ spacing: 16, children: [forward, reverse] })],
+      spacing: MIXTURE_READOUTS_NODE_SETTINGS.CONSTRUCTOR_SPACING,
+      children: [
+        conditions,
+        heading,
+        new HBox({ spacing: MIXTURE_READOUTS_NODE_SETTINGS.ITEM_3_SPACING, children: [forward, reverse] }),
+      ],
     });
 
     this.update = () => {
       let text = StringUtils.fillIn(strings.conditionsPatternStringProperty.value, {
         temperature: fixed(mixture.temperature, 0),
-        volume: significant(mixture.volume, 3),
+        volume: significant(mixture.volume, MIXTURE_READOUTS_NODE_SETTINGS.VOLUME_SIGNIFICANT_DIGITS),
       });
       if (mixture.reaction.isGas) {
         text += `    ${StringUtils.fillIn(strings.totalPressurePatternStringProperty.value, {
-          value: significant(mixture.getTotalPressure(), 3),
+          value: significant(mixture.getTotalPressure(), MIXTURE_READOUTS_NODE_SETTINGS.SIGNIFICANT_DIGITS),
         })}`;
       }
       mixture.reaction.species.forEach((s, i) => {
         if (s.bulk) {
           text += `<br>${StringUtils.fillIn(strings.excessPatternStringProperty.value, {
             formula: s.formula,
-            value: significant(mixture.getConcentrations()[i] ?? 0, 3),
+            value: significant(mixture.getConcentrations()[i] ?? 0, MIXTURE_READOUTS_NODE_SETTINGS.SIGNIFICANT_DIGITS),
           })}`;
         }
       });

@@ -1,3 +1,4 @@
+import { ICE_TABLE_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ICETableScreenSummaryContent.ts
  *
@@ -27,13 +28,19 @@ export class ICETableScreenSummaryContent extends ScreenSummaryContent {
         problem.mode === "findEquilibrium"
           ? StringUtils.fillIn(strings.givenKPatternStringProperty.value, {
               k: "Kc",
-              value: scientific(problem.k, 3),
-              temperature: significant(problem.temperature, 3),
+              value: scientific(problem.k, ICE_TABLE_SCREEN_SUMMARY_CONTENT_SETTINGS.K_SCIENTIFIC_DIGITS),
+              temperature: significant(
+                problem.temperature,
+                ICE_TABLE_SCREEN_SUMMARY_CONTENT_SETTINGS.TEMPERATURE_SIGNIFICANT_DIGITS,
+              ),
             })
           : StringUtils.fillIn(strings.givenEquilibriumPatternStringProperty.value, {
               formula: plainFormula(problem.reaction.species[problem.givenIndex ?? 0]?.formula ?? ""),
-              value: significant(problem.givenValue ?? 0, 3),
-              temperature: significant(problem.temperature, 3),
+              value: significant(problem.givenValue ?? 0, ICE_TABLE_SCREEN_SUMMARY_CONTENT_SETTINGS.GIVEN_DIGITS),
+              temperature: significant(
+                problem.temperature,
+                ICE_TABLE_SCREEN_SUMMARY_CONTENT_SETTINGS.TEMPERATURE_SIGNIFICANT_DIGITS,
+              ),
             });
       const task = (
         problem.mode === "findEquilibrium" ? strings.taskFindEquilibriumStringProperty : strings.taskFindKStringProperty

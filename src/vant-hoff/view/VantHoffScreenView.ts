@@ -1,3 +1,4 @@
+import { VANT_HOFF_SCREEN_VIEW_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * VantHoffScreenView.ts
  *
@@ -45,23 +46,23 @@ type SelfOptions = {
 
 export type VantHoffScreenViewOptions = SelfOptions & ScreenViewOptions;
 
-const BOX_WIDTH_PX = 220;
+const BOX_WIDTH_PX: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.BOX_WIDTH_PX;
 const LEFT_X = SCREEN_VIEW_MARGIN + 14;
-const PARTICLE_BOX_Y = 64;
-const PLOT_LEFT = 372;
-const PLOT_WIDTH = 340;
-const LN_PLOT_TOP = 78;
-const LN_PLOT_HEIGHT = 180;
-const GIBBS_PLOT_TOP = 340;
-const GIBBS_PLOT_HEIGHT = 140;
+const PARTICLE_BOX_Y: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.PARTICLE_BOX_Y;
+const PLOT_LEFT: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.PLOT_LEFT;
+const PLOT_WIDTH: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.PLOT_WIDTH;
+const LN_PLOT_TOP: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.LN_PLOT_TOP;
+const LN_PLOT_HEIGHT: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.LN_PLOT_HEIGHT;
+const GIBBS_PLOT_TOP: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.GIBBS_PLOT_TOP;
+const GIBBS_PLOT_HEIGHT: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.GIBBS_PLOT_HEIGHT;
 const SIDE_CONTENT_WIDTH = SIDE_COLUMN_WIDTH - 24;
-const KJ = 1000;
+const KJ: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.KJ;
 
 /** Extra room around the expected data, as a fraction of its span (measurement error, margins). */
-const RANGE_PADDING = 0.12;
+const RANGE_PADDING: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.RANGE_PADDING;
 
 /** Seconds between refreshes of the K readout. */
-const READOUT_INTERVAL = 0.25;
+const READOUT_INTERVAL: number = VANT_HOFF_SCREEN_VIEW_SETTINGS.READOUT_INTERVAL;
 
 export class VantHoffScreenView extends ScreenView {
   private readonly particleBox: ParticleBoxNode;
@@ -90,7 +91,7 @@ export class VantHoffScreenView extends ScreenView {
     );
     const equation = new ReactionEquationNode(mixture.reactionProperty, standardFormProperty, 680);
     equation.left = SCREEN_VIEW_MARGIN;
-    equation.top = SCREEN_VIEW_MARGIN - 6;
+    equation.top = SCREEN_VIEW_MARGIN - VANT_HOFF_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
 
     this.particleBox = new ParticleBoxNode(mixture, scene.particles, BOX_WIDTH_PX, {
       showFlashesProperty: options.showReactionFlashesProperty,
@@ -102,18 +103,24 @@ export class VantHoffScreenView extends ScreenView {
     this.readouts.left = SCREEN_VIEW_MARGIN;
     this.readouts.top = this.particleBox.bottom + 8;
 
-    const status = new RichText("", { font: new PhetFont({ size: FONT_SIZE.control, weight: "bold" }), maxWidth: 300 });
+    const status = new RichText("", {
+      font: new PhetFont({ size: FONT_SIZE.control, weight: "bold" }),
+      maxWidth: VANT_HOFF_SCREEN_VIEW_SETTINGS.STATUS_MAX_WIDTH,
+    });
     const kReadout = new RichText("", {
       font: new PhetFont(FONT_SIZE.readout),
       fill: EquilibriumLabColors.textColorProperty,
-      maxWidth: 300,
+      maxWidth: VANT_HOFF_SCREEN_VIEW_SETTINGS.K_READOUT_MAX_WIDTH,
     });
     this.updateKReadout = () => {
       const symbols = mixture.reaction.isGas ? common.kpSymbols : common.kcSymbols;
       const ready = model.atEquilibriumProperty.value;
       kReadout.string = StringUtils.fillIn(strings.kReadoutPatternStringProperty.value, {
         k: (ready ? symbols.kStringProperty : symbols.qStringProperty).value,
-        value: scientificFromLn(mixture.lnStandardQ, 3),
+        value: scientificFromLn(
+          mixture.lnStandardQ,
+          VANT_HOFF_SCREEN_VIEW_SETTINGS.LN_STANDARD_Q_SCIENTIFIC_FROM_LN_DIGITS,
+        ),
       });
       status.string = (ready ? strings.readyStringProperty : strings.waitingStringProperty).value;
       status.fill = ready ? EquilibriumLabColors.goodColorProperty : EquilibriumLabColors.mutedTextColorProperty;
@@ -127,8 +134,15 @@ export class VantHoffScreenView extends ScreenView {
       ],
       this.updateKReadout,
     );
-    const catalystNote = note(strings.catalystNoteStringProperty, 300);
-    const statusBox = new VBox({ align: "left", spacing: 6, children: [kReadout, status, catalystNote] });
+    const catalystNote = note(
+      strings.catalystNoteStringProperty,
+      VANT_HOFF_SCREEN_VIEW_SETTINGS.CATALYST_NOTE_NOTE_WIDTH,
+    );
+    const statusBox = new VBox({
+      align: "left",
+      spacing: VANT_HOFF_SCREEN_VIEW_SETTINGS.STATUS_BOX_SPACING,
+      children: [kReadout, status, catalystNote],
+    });
     statusBox.left = SCREEN_VIEW_MARGIN;
     statusBox.top = this.readouts.bottom + 12;
 
@@ -211,7 +225,7 @@ export class VantHoffScreenView extends ScreenView {
     const reactionPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: VANT_HOFF_SCREEN_VIEW_SETTINGS.REACTION_PANEL_SPACING,
         children: [heading(common.reactionHeadingStringProperty, SIDE_CONTENT_WIDTH), reactionMenu],
       }),
       { minWidth: SIDE_COLUMN_WIDTH, maxWidth: SIDE_COLUMN_WIDTH },
@@ -237,7 +251,7 @@ export class VantHoffScreenView extends ScreenView {
       if (point) {
         this.addAccessibleResponse(
           StringUtils.fillIn(a11y.measuredPatternStringProperty.value, {
-            value: fixed(point.lnK, 2),
+            value: fixed(point.lnK, VANT_HOFF_SCREEN_VIEW_SETTINGS.MEASURE_BUTTON_DECIMALS),
             temperature: fixed(point.temperature, 0),
           }),
         );
@@ -259,12 +273,15 @@ export class VantHoffScreenView extends ScreenView {
     const measurePanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: VANT_HOFF_SCREEN_VIEW_SETTINGS.MEASURE_PANEL_SPACING,
         children: [
           heading(strings.measureHeadingStringProperty, SIDE_CONTENT_WIDTH),
           temperatureParent,
           measureButton,
-          new HBox({ spacing: 6, children: [removeButton, clearButton] }),
+          new HBox({
+            spacing: VANT_HOFF_SCREEN_VIEW_SETTINGS.MEASURE_PANEL_ITEM_4_SPACING,
+            children: [removeButton, clearButton],
+          }),
           errorCheckbox,
           revealCheckbox,
         ],
@@ -277,7 +294,7 @@ export class VantHoffScreenView extends ScreenView {
     const resultsPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 6,
+        spacing: VANT_HOFF_SCREEN_VIEW_SETTINGS.RESULTS_PANEL_SPACING,
         children: [heading(strings.resultsHeadingStringProperty, SIDE_CONTENT_WIDTH), results],
       }),
       { minWidth: SIDE_COLUMN_WIDTH, maxWidth: SIDE_COLUMN_WIDTH },

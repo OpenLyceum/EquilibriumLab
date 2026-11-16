@@ -1,3 +1,4 @@
+import { ICE_TABLE_MODEL_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ICETableModel.ts
  *
@@ -34,10 +35,13 @@ export const ICE_REACTION_IDS: readonly ReactionId[] = [
 ];
 
 /** Range of each change-row coefficient (multiples of x). */
-export const CHANGE_COEFFICIENT_RANGE = new Range(-4, 4);
+export const CHANGE_COEFFICIENT_RANGE = new Range(
+  ICE_TABLE_MODEL_SETTINGS.CHANGE_COEFFICIENT_RANGE_MIN,
+  ICE_TABLE_MODEL_SETTINGS.CHANGE_COEFFICIENT_RANGE_MAX,
+);
 
 /** Seed for problem generation, so a fresh screen always offers the same first problems. */
-const PROBLEM_SEED = 18;
+const PROBLEM_SEED: number = ICE_TABLE_MODEL_SETTINGS.PROBLEM_SEED;
 
 export type ICECheck = {
   /** +1 or −1 if the change row is right (its sign convention), 0 if not. */

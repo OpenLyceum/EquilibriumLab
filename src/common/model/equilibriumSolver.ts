@@ -1,3 +1,4 @@
+import { EQUILIBRIUM_SOLVER_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * equilibriumSolver.ts
  *
@@ -12,7 +13,7 @@ import { GAS_CONSTANT_L_BAR } from "../../EquilibriumLabConstants.js";
 import type { Reaction } from "./Reaction.js";
 
 /** Bisection steps: each halves the bracket, so 200 reaches machine precision for any bracket. */
-const BISECTION_STEPS = 200;
+const BISECTION_STEPS: number = EQUILIBRIUM_SOLVER_SETTINGS.BISECTION_STEPS;
 
 /** The extents a mixture can reach before some species runs out (mol). */
 export function extentBounds(reaction: Reaction, amounts: readonly number[]): { min: number; max: number } {

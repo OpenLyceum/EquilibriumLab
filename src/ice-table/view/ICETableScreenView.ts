@@ -1,3 +1,4 @@
+import { ICE_TABLE_SCREEN_VIEW_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ICETableScreenView.ts
  *
@@ -36,17 +37,17 @@ import { NumberEntryNode } from "./NumberEntryNode.js";
 
 export type ICETableScreenViewOptions = ScreenViewOptions;
 
-const LEFT_WIDTH = 620;
-const TABLE_TOP = 118;
-const CHART_LEFT = 708;
-const CHART_WIDTH = 292;
-const CHART_TOP = 300;
-const CHART_HEIGHT = 140;
+const LEFT_WIDTH: number = ICE_TABLE_SCREEN_VIEW_SETTINGS.LEFT_WIDTH;
+const TABLE_TOP: number = ICE_TABLE_SCREEN_VIEW_SETTINGS.TABLE_TOP;
+const CHART_LEFT: number = ICE_TABLE_SCREEN_VIEW_SETTINGS.CHART_LEFT;
+const CHART_WIDTH: number = ICE_TABLE_SCREEN_VIEW_SETTINGS.CHART_WIDTH;
+const CHART_TOP: number = ICE_TABLE_SCREEN_VIEW_SETTINGS.CHART_TOP;
+const CHART_HEIGHT: number = ICE_TABLE_SCREEN_VIEW_SETTINGS.CHART_HEIGHT;
 const SIDE_CONTENT_WIDTH = SIDE_COLUMN_WIDTH - 24;
 
 /** Largest |x| and K the keypad accepts. */
-const X_ENTRY_LIMIT = 10;
-const K_ENTRY_LIMIT = 1e7;
+const X_ENTRY_LIMIT: number = ICE_TABLE_SCREEN_VIEW_SETTINGS.X_ENTRY_LIMIT;
+const K_ENTRY_LIMIT: number = ICE_TABLE_SCREEN_VIEW_SETTINGS.K_ENTRY_LIMIT;
 
 export class ICETableScreenView extends ScreenView {
   public constructor(model: ICETableModel, providedOptions?: ICETableScreenViewOptions) {
@@ -68,7 +69,7 @@ export class ICETableScreenView extends ScreenView {
     const kcProperty = new Property(EquilibriumForm.KC);
     const equation = new ReactionEquationNode(mixture.reactionProperty, kcProperty, LEFT_WIDTH);
     equation.left = SCREEN_VIEW_MARGIN;
-    equation.top = SCREEN_VIEW_MARGIN - 6;
+    equation.top = SCREEN_VIEW_MARGIN - ICE_TABLE_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
     const given = new RichText("", {
       font: new PhetFont({ size: FONT_SIZE.readout, weight: "bold" }),
       fill: EquilibriumLabColors.kMarkerColorProperty,
@@ -94,13 +95,19 @@ export class ICETableScreenView extends ScreenView {
           problem.mode === "findEquilibrium"
             ? StringUtils.fillIn(strings.givenKPatternStringProperty.value, {
                 k: common.kcSymbols.kStringProperty.value,
-                value: scientific(problem.k, 3),
-                temperature: significant(problem.temperature, 3),
+                value: scientific(problem.k, ICE_TABLE_SCREEN_VIEW_SETTINGS.K_SCIENTIFIC_DIGITS),
+                temperature: significant(
+                  problem.temperature,
+                  ICE_TABLE_SCREEN_VIEW_SETTINGS.TEMPERATURE_SIGNIFICANT_DIGITS,
+                ),
               })
             : StringUtils.fillIn(strings.givenEquilibriumPatternStringProperty.value, {
                 formula: problem.reaction.species[problem.givenIndex ?? 0]?.formula ?? "",
-                value: significant(problem.givenValue ?? 0, 3),
-                temperature: significant(problem.temperature, 3),
+                value: significant(problem.givenValue ?? 0, ICE_TABLE_SCREEN_VIEW_SETTINGS.GIVEN_DIGITS),
+                temperature: significant(
+                  problem.temperature,
+                  ICE_TABLE_SCREEN_VIEW_SETTINGS.TEMPERATURE_SIGNIFICANT_DIGITS,
+                ),
               });
         task.string = (
           problem.mode === "findEquilibrium"
@@ -109,7 +116,11 @@ export class ICETableScreenView extends ScreenView {
         ).value;
       },
     );
-    const statement = new VBox({ align: "left", spacing: 6, children: [given, task] });
+    const statement = new VBox({
+      align: "left",
+      spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.STATEMENT_SPACING,
+      children: [given, task],
+    });
     statement.left = SCREEN_VIEW_MARGIN;
     statement.top = equation.bottom + 8;
 
@@ -138,14 +149,25 @@ export class ICETableScreenView extends ScreenView {
     );
     const findKProperty = new DerivedProperty([model.problemProperty], (problem) => problem.mode === "findK");
     const kEntryRow = new HBox({
-      spacing: 6,
-      children: [label(common.kcSymbols.kStringProperty, 40), label("=", 20), kEntry],
+      spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.K_ENTRY_ROW_SPACING,
+      children: [
+        label(common.kcSymbols.kStringProperty, ICE_TABLE_SCREEN_VIEW_SETTINGS.K_LABEL_MAX_WIDTH),
+        label("=", ICE_TABLE_SCREEN_VIEW_SETTINGS.__LABEL_MAX_WIDTH),
+        kEntry,
+      ],
       visibleProperty: findKProperty,
     });
     const entries = new HBox({
-      spacing: 24,
+      spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.ENTRIES_SPACING,
       children: [
-        new HBox({ spacing: 6, children: [label(strings.xLabelStringProperty, 40), xEntry, label("M", 20)] }),
+        new HBox({
+          spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.ENTRIES_ITEM_1_SPACING,
+          children: [
+            label(strings.xLabelStringProperty, ICE_TABLE_SCREEN_VIEW_SETTINGS.X_LABEL_LABEL_MAX_WIDTH),
+            xEntry,
+            label("M", ICE_TABLE_SCREEN_VIEW_SETTINGS.M_LABEL_MAX_WIDTH),
+          ],
+        }),
         kEntryRow,
       ],
     });
@@ -160,16 +182,29 @@ export class ICETableScreenView extends ScreenView {
       this.addAccessibleResponse(markupToSpeech(feedbackLines(model).texts.join(" ")));
     });
     const runButton = pushButton(strings.runItStringProperty, () => model.runIt());
-    const buttons = new HBox({ spacing: 10, children: [checkButton, solutionButton, runButton] });
-    const work = new VBox({ align: "left", spacing: 14, children: [entries, buttons] });
+    const buttons = new HBox({
+      spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.BUTTONS_SPACING,
+      children: [checkButton, solutionButton, runButton],
+    });
+    const work = new VBox({
+      align: "left",
+      spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.WORK_SPACING,
+      children: [entries, buttons],
+    });
     work.left = SCREEN_VIEW_MARGIN;
     work.top = TABLE_TOP + 214;
 
     const feedbackPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 6,
-        children: [heading(strings.feedbackHeadingStringProperty, 300), feedback],
+        spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.FEEDBACK_PANEL_SPACING,
+        children: [
+          heading(
+            strings.feedbackHeadingStringProperty,
+            ICE_TABLE_SCREEN_VIEW_SETTINGS.FEEDBACK_HEADING_HEADING_MAX_WIDTH,
+          ),
+          feedback,
+        ],
       }),
       { minWidth: LEFT_WIDTH, maxWidth: LEFT_WIDTH },
     );
@@ -197,7 +232,7 @@ export class ICETableScreenView extends ScreenView {
     const problemPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.PROBLEM_PANEL_SPACING,
         children: [
           heading(strings.problemHeadingStringProperty, SIDE_CONTENT_WIDTH),
           modeRadio,
@@ -243,7 +278,7 @@ export class ICETableScreenView extends ScreenView {
       property.link(updateReferences);
     }
     const runHint = note(strings.runHintStringProperty, CHART_WIDTH + 40);
-    runHint.left = CHART_LEFT - 44;
+    runHint.left = CHART_LEFT - ICE_TABLE_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
     runHint.top = CHART_TOP + CHART_HEIGHT + 40;
 
     const timeControl = createTimeControl(scene.timer.isPlayingProperty, scene.timeSpeedProperty, () =>

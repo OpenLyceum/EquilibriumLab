@@ -1,3 +1,4 @@
+import { XY_PLOT_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * XYPlotNode.ts
  *
@@ -20,7 +21,7 @@ import EquilibriumLabColors from "../../EquilibriumLabColors.js";
 import { FONT_SIZE } from "../../EquilibriumLabConstants.js";
 
 /** A spacing wider than any range, used while the ranges change. */
-const COARSE_SPACING = 1e15;
+const COARSE_SPACING: number = XY_PLOT_NODE_SETTINGS.COARSE_SPACING;
 
 export type PlotLabels = {
   readonly title: TReadOnlyProperty<string>;
@@ -79,15 +80,18 @@ export class XYPlotNode extends Node {
     });
     this.sets = { x: [gridX, ticksX, this.labelsX], y: [gridY, ticksY, this.labelsY] };
 
-    this.fitLine = new LinePlot(transform, [], { stroke: EquilibriumLabColors.fitLineColorProperty, lineWidth: 2 });
+    this.fitLine = new LinePlot(transform, [], {
+      stroke: EquilibriumLabColors.fitLineColorProperty,
+      lineWidth: XY_PLOT_NODE_SETTINGS.FIT_LINE_LINE_WIDTH,
+    });
     this.zeroLine = new Line(0, 0, width, 0, {
       stroke: EquilibriumLabColors.markerColorProperty,
-      lineDash: [4, 3],
+      lineDash: [XY_PLOT_NODE_SETTINGS.CONSTRUCTOR_LINE_DASH_DASH, 3],
       visible: showZeroLine,
     });
     const plot = new Node({
       children: [this.zeroLine, this.fitLine, this.pointLayer],
-      clipArea: Shape.rect(-6, -6, width + 12, height + 12),
+      clipArea: Shape.rect(XY_PLOT_NODE_SETTINGS.PLOT_X, XY_PLOT_NODE_SETTINGS.PLOT_Y, width + 12, height + 12),
     });
 
     const titleFont = new PhetFont(FONT_SIZE.small);
@@ -98,7 +102,7 @@ export class XYPlotNode extends Node {
     });
     xTitle.boundsProperty.link(() => {
       xTitle.centerX = width / 2;
-      xTitle.top = height + 18;
+      xTitle.top = height + XY_PLOT_NODE_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
     });
     const yTitle = new RichText(labels.yAxis, {
       font: titleFont,
@@ -107,7 +111,7 @@ export class XYPlotNode extends Node {
       maxWidth: height,
     });
     yTitle.boundsProperty.link(() => {
-      yTitle.right = -38;
+      yTitle.right = XY_PLOT_NODE_SETTINGS.RIGHT_RIGHT;
       yTitle.centerY = height / 2;
     });
     const title = new RichText(labels.title, {
@@ -117,7 +121,7 @@ export class XYPlotNode extends Node {
     });
     title.boundsProperty.link(() => {
       title.left = 0;
-      title.bottom = -8;
+      title.bottom = XY_PLOT_NODE_SETTINGS.BOTTOM_BOTTOM;
     });
 
     this.children = [
@@ -181,7 +185,7 @@ export class XYPlotNode extends Node {
     disposeChildren(this.pointLayer);
     this.pointLayer.children = points.map(
       (p) =>
-        new Circle(4, {
+        new Circle(XY_PLOT_NODE_SETTINGS.CHILDREN_RADIUS, {
           fill: this.pointColor,
           stroke: EquilibriumLabColors.backgroundColorProperty,
           center: this.chartTransform.modelToViewPosition(p),

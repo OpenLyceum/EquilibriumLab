@@ -1,3 +1,4 @@
+import { ICE_FEEDBACK_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ICEFeedbackNode.ts
  *
@@ -16,7 +17,7 @@ import { smallXPercent } from "../model/ICEProblem.js";
 import type { ICETableModel } from "../model/ICETableModel.js";
 
 /** The small-x approximation holds when the change is under this percentage of the start. */
-const SMALL_X_LIMIT_PERCENT = 5;
+const SMALL_X_LIMIT_PERCENT: number = ICE_FEEDBACK_NODE_SETTINGS.SMALL_X_LIMIT_PERCENT;
 
 /** The feedback lines (markup) and their colours for the model's current check. */
 export function feedbackLines(model: ICETableModel): { texts: string[]; fills: TColor[] } {
@@ -43,7 +44,9 @@ export function feedbackLines(model: ICETableModel): { texts: string[]; fills: T
     add(strings.xMissingStringProperty, muted);
   } else if (check.xCorrect) {
     add(
-      StringUtils.fillIn(strings.xRightStringProperty.value, { value: scientific(model.xEntryProperty.value ?? 0, 3) }),
+      StringUtils.fillIn(strings.xRightStringProperty.value, {
+        value: scientific(model.xEntryProperty.value ?? 0, ICE_FEEDBACK_NODE_SETTINGS.FEEDBACK_LINES_DIGITS),
+      }),
       good,
     );
   } else if (check.sign !== 0) {
@@ -56,7 +59,7 @@ export function feedbackLines(model: ICETableModel): { texts: string[]; fills: T
       add(
         check.kCorrect
           ? StringUtils.fillIn(strings.kRightStringProperty.value, {
-              value: scientific(model.kEntryProperty.value ?? 0, 3),
+              value: scientific(model.kEntryProperty.value ?? 0, ICE_FEEDBACK_NODE_SETTINGS.FEEDBACK_LINES_DIGITS),
             })
           : strings.kWrongStringProperty,
         check.kCorrect ? good : poor,

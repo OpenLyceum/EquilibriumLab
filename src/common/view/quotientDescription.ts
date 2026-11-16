@@ -1,3 +1,4 @@
+import { QUOTIENT_DESCRIPTION_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * quotientDescription.ts
  *
@@ -33,7 +34,11 @@ export function describeQuotient(
   }[shiftDirection(mixture.lnQOverK)].value;
   return {
     direction,
-    q: toPlainSuperscript(scientificFromLn(kp ? mixture.lnQp : mixture.lnQc, 2)),
-    k: toPlainSuperscript(scientificFromLn(kp ? mixture.lnKp : mixture.lnKc, 2)),
+    q: toPlainSuperscript(
+      scientificFromLn(kp ? mixture.lnQp : mixture.lnQc, QUOTIENT_DESCRIPTION_SETTINGS.DESCRIBE_QUOTIENT_DIGITS),
+    ),
+    k: toPlainSuperscript(
+      scientificFromLn(kp ? mixture.lnKp : mixture.lnKc, QUOTIENT_DESCRIPTION_SETTINGS.DESCRIBE_QUOTIENT_DIGITS),
+    ),
   };
 }

@@ -1,3 +1,4 @@
+import { NUMBER_ENTRY_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * NumberEntryNode.ts
  *
@@ -31,14 +32,14 @@ export class NumberEntryNode extends RectangularPushButton {
     const text = new RichText("", {
       font: new PhetFont(FONT_SIZE.readout),
       fill: LIGHT_SURFACE_TEXT_FILL,
-      maxWidth: width - 16,
+      maxWidth: width - NUMBER_ENTRY_NODE_SETTINGS.TEXT_MAX_WIDTH_OFFSET,
     });
     super({
       ...FLAT_PANEL_PUSH_BUTTON_OPTIONS,
       content: text,
       minWidth: width,
-      xMargin: 8,
-      yMargin: 4,
+      xMargin: NUMBER_ENTRY_NODE_SETTINGS.CONSTRUCTOR_X_MARGIN,
+      yMargin: NUMBER_ENTRY_NODE_SETTINGS.CONSTRUCTOR_Y_MARGIN,
       accessibleName,
       listener: () => {
         keypadDialog.beginEdit(
@@ -52,7 +53,7 @@ export class NumberEntryNode extends RectangularPushButton {
       },
     });
     this.multilink = Multilink.multilink([valueProperty, strings.unknownStringProperty], (value, unknown) => {
-      text.string = value === null ? unknown : scientific(value, 3);
+      text.string = value === null ? unknown : scientific(value, NUMBER_ENTRY_NODE_SETTINGS.TEXT_DIGITS);
     });
   }
 

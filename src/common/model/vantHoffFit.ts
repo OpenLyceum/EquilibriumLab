@@ -1,3 +1,4 @@
+import { VANT_HOFF_FIT_NUMERICS } from "../../EquilibriumLabConstants.js";
 /**
  * vantHoffFit.ts
  *
@@ -47,7 +48,7 @@ export function fitVantHoff(points: readonly VantHoffPoint[]): VantHoffFit | nul
     sxy += dx * dy;
     syy += dy * dy;
   }
-  if (sxx <= 1e-18) {
+  if (sxx <= VANT_HOFF_FIT_NUMERICS.MIN_TEMPERATURE_VARIANCE) {
     return null;
   }
   const slope = sxy / sxx;

@@ -1,3 +1,4 @@
+import { EQUILIBRIUM_LAB_PREFERENCES_NODE_SETTINGS } from "../EquilibriumLabConstants.js";
 /**
  * EquilibriumLabPreferencesNode.ts
  *
@@ -24,7 +25,7 @@ export class EquilibriumLabPreferencesNode extends VBox {
     // colors (readable on white in both default and projector profiles), not textColorProperty
     // (which is near-white in default mode and would be invisible on the white dialog).
     const header = new Text(prefStrings.titleStringProperty, {
-      font: new PhetFont({ size: 18, weight: "bold" }),
+      font: new PhetFont({ size: EQUILIBRIUM_LAB_PREFERENCES_NODE_SETTINGS.HEADER_FONT_SIZE, weight: "bold" }),
       fill: EquilibriumLabColors.controlSurfaceTextColorProperty,
     });
 
@@ -32,14 +33,14 @@ export class EquilibriumLabPreferencesNode extends VBox {
       new Checkbox(
         property,
         new Text(label, {
-          font: new PhetFont(14),
+          font: new PhetFont(EQUILIBRIUM_LAB_PREFERENCES_NODE_SETTINGS.PREFERENCE_CHECKBOX_FONT_SIZE),
           fill: EquilibriumLabColors.controlSurfaceTextColorProperty,
-          maxWidth: 420,
+          maxWidth: EQUILIBRIUM_LAB_PREFERENCES_NODE_SETTINGS.PREFERENCE_CHECKBOX_MAX_WIDTH,
         }),
         {
           checkboxColor: EquilibriumLabColors.controlSurfaceTextColorProperty,
           checkboxColorBackground: EquilibriumLabColors.controlSurfaceColorProperty,
-          spacing: 8,
+          spacing: EQUILIBRIUM_LAB_PREFERENCES_NODE_SETTINGS.PREFERENCE_CHECKBOX_SPACING,
           accessibleName: label,
           ...(tandem && { tandem: tandem.createTandem(name) }),
         },
@@ -47,7 +48,7 @@ export class EquilibriumLabPreferencesNode extends VBox {
 
     super({
       align: "left",
-      spacing: 12,
+      spacing: EQUILIBRIUM_LAB_PREFERENCES_NODE_SETTINGS.CONSTRUCTOR_SPACING,
       children: [
         header,
         preferenceCheckbox(

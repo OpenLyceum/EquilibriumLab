@@ -1,3 +1,4 @@
+import { LE_CHATELIER_SCREEN_VIEW_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * LeChatelierScreenView.ts
  *
@@ -40,14 +41,14 @@ type SelfOptions = {
 
 export type LeChatelierScreenViewOptions = SelfOptions & ScreenViewOptions;
 
-const BOX_WIDTH_PX = 236;
+const BOX_WIDTH_PX: number = LE_CHATELIER_SCREEN_VIEW_SETTINGS.BOX_WIDTH_PX;
 const LEFT_X = SCREEN_VIEW_MARGIN + 14;
-const PARTICLE_BOX_Y = 64;
-const CHART_LEFT = 372;
-const CHART_WIDTH = 350;
-const CHART_TOP = 104;
-const CHART_HEIGHT = 196;
-const MIDDLE_PANEL_WIDTH = 398;
+const PARTICLE_BOX_Y: number = LE_CHATELIER_SCREEN_VIEW_SETTINGS.PARTICLE_BOX_Y;
+const CHART_LEFT: number = LE_CHATELIER_SCREEN_VIEW_SETTINGS.CHART_LEFT;
+const CHART_WIDTH: number = LE_CHATELIER_SCREEN_VIEW_SETTINGS.CHART_WIDTH;
+const CHART_TOP: number = LE_CHATELIER_SCREEN_VIEW_SETTINGS.CHART_TOP;
+const CHART_HEIGHT: number = LE_CHATELIER_SCREEN_VIEW_SETTINGS.CHART_HEIGHT;
+const MIDDLE_PANEL_WIDTH: number = LE_CHATELIER_SCREEN_VIEW_SETTINGS.MIDDLE_PANEL_WIDTH;
 const SIDE_CONTENT_WIDTH = SIDE_COLUMN_WIDTH - 24;
 
 export class LeChatelierScreenView extends ScreenView {
@@ -97,7 +98,7 @@ export class LeChatelierScreenView extends ScreenView {
     // ── Equation, particle box, gauge ───────────────────────────────────────────
     const equation = new ReactionEquationNode(mixture.reactionProperty, scene.formProperty, 680);
     equation.left = SCREEN_VIEW_MARGIN;
-    equation.top = SCREEN_VIEW_MARGIN - 6;
+    equation.top = SCREEN_VIEW_MARGIN - LE_CHATELIER_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
 
     this.particleBox = new ParticleBoxNode(mixture, scene.particles, BOX_WIDTH_PX, {
       showFlashesProperty: options.showReactionFlashesProperty,
@@ -157,12 +158,22 @@ export class LeChatelierScreenView extends ScreenView {
     const explanationPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 6,
-        children: [heading(strings.explanationHeadingStringProperty, 300), explanation],
+        spacing: LE_CHATELIER_SCREEN_VIEW_SETTINGS.EXPLANATION_PANEL_SPACING,
+        children: [
+          heading(
+            strings.explanationHeadingStringProperty,
+            LE_CHATELIER_SCREEN_VIEW_SETTINGS.EXPLANATION_HEADING_HEADING_MAX_WIDTH,
+          ),
+          explanation,
+        ],
       }),
       { minWidth: MIDDLE_PANEL_WIDTH, maxWidth: MIDDLE_PANEL_WIDTH },
     );
-    const predictCheckbox = checkbox(model.predictFirstProperty, strings.predictFirstStringProperty, 300);
+    const predictCheckbox = checkbox(
+      model.predictFirstProperty,
+      strings.predictFirstStringProperty,
+      LE_CHATELIER_SCREEN_VIEW_SETTINGS.PREDICT_FIRST_CHECKBOX_MAX_WIDTH,
+    );
     const predictionRadio = radioGroup<ShiftDirection | null>(
       model.predictionProperty,
       [
@@ -171,7 +182,7 @@ export class LeChatelierScreenView extends ScreenView {
         { value: "right", label: strings.predictRightStringProperty },
       ],
       a11y.predictionRadioStringProperty,
-      110,
+      LE_CHATELIER_SCREEN_VIEW_SETTINGS.PREDICTION_RADIO_GROUP_MAX_WIDTH,
       "horizontal",
     );
     const waitingProperty = new DerivedProperty(
@@ -180,16 +191,28 @@ export class LeChatelierScreenView extends ScreenView {
     );
     const predictionBox = new VBox({
       align: "left",
-      spacing: 6,
+      spacing: LE_CHATELIER_SCREEN_VIEW_SETTINGS.PREDICTION_BOX_SPACING,
       children: [
-        heading(strings.predictionHeadingStringProperty, 300),
+        heading(
+          strings.predictionHeadingStringProperty,
+          LE_CHATELIER_SCREEN_VIEW_SETTINGS.PREDICTION_HEADING_HEADING_MAX_WIDTH,
+        ),
         predictionRadio,
-        new Node({ children: [note(strings.predictPromptStringProperty, 340)], visibleProperty: waitingProperty }),
+        new Node({
+          children: [
+            note(strings.predictPromptStringProperty, LE_CHATELIER_SCREEN_VIEW_SETTINGS.PREDICT_PROMPT_NOTE_WIDTH),
+          ],
+          visibleProperty: waitingProperty,
+        }),
       ],
       visibleProperty: model.predictFirstProperty,
     });
     const predictionPanel = new EquilibriumLabPanel(
-      new VBox({ align: "left", spacing: 8, children: [predictCheckbox, predictionBox] }),
+      new VBox({
+        align: "left",
+        spacing: LE_CHATELIER_SCREEN_VIEW_SETTINGS.PREDICTION_PANEL_SPACING,
+        children: [predictCheckbox, predictionBox],
+      }),
       { minWidth: MIDDLE_PANEL_WIDTH, maxWidth: MIDDLE_PANEL_WIDTH },
     );
     const middleColumn = new VBox({
@@ -198,7 +221,7 @@ export class LeChatelierScreenView extends ScreenView {
       children: [explanationPanel, predictionPanel],
     });
     middleColumn.boundsProperty.link(() => {
-      middleColumn.left = CHART_LEFT - 44;
+      middleColumn.left = CHART_LEFT - LE_CHATELIER_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
       middleColumn.top = CHART_TOP + CHART_HEIGHT + 42;
     });
 
@@ -223,13 +246,13 @@ export class LeChatelierScreenView extends ScreenView {
     const reactionPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: LE_CHATELIER_SCREEN_VIEW_SETTINGS.REACTION_PANEL_SPACING,
         children: [
           heading(common.reactionHeadingStringProperty, SIDE_CONTENT_WIDTH),
           reactionMenu,
           new VBox({
             align: "left",
-            spacing: 4,
+            spacing: LE_CHATELIER_SCREEN_VIEW_SETTINGS.REACTION_PANEL_ITEM_3_SPACING,
             children: [heading(common.formHeadingStringProperty, SIDE_CONTENT_WIDTH), formRadio],
             visibleProperty: isGasProperty,
           }),
@@ -266,7 +289,7 @@ export class LeChatelierScreenView extends ScreenView {
     const stressPanel = new EquilibriumLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: LE_CHATELIER_SCREEN_VIEW_SETTINGS.STRESS_PANEL_SPACING,
         children: [
           heading(strings.stressesHeadingStringProperty, SIDE_CONTENT_WIDTH),
           stressControls,

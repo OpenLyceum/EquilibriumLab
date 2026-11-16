@@ -1,3 +1,4 @@
+import { STRESS_EXPLANATION_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * StressExplanationNode.ts
  *
@@ -81,7 +82,11 @@ export class StressExplanationNode extends VBox {
       font: new PhetFont({ size: FONT_SIZE.control, weight: "bold" }),
       lineWrap: width,
     });
-    super({ align: "left", spacing: 6, children: [explanation, verdict] });
+    super({
+      align: "left",
+      spacing: STRESS_EXPLANATION_NODE_SETTINGS.CONSTRUCTOR_SPACING,
+      children: [explanation, verdict],
+    });
 
     const e = strings.explanations;
     this.multilink = Multilink.multilinkAny(

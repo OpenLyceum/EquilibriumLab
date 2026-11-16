@@ -1,3 +1,4 @@
+import { REACTION_EQUATION_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ReactionEquationNode.ts
  *
@@ -26,7 +27,7 @@ export class ReactionEquationNode extends VBox {
   ) {
     const strings = StringManager.getInstance().getCommonStrings();
     const equation = new RichText("", {
-      font: new PhetFont({ size: 20 }),
+      font: new PhetFont({ size: REACTION_EQUATION_NODE_SETTINGS.EQUATION_FONT_SIZE }),
       fill: EquilibriumLabColors.textColorProperty,
       maxWidth,
     });
@@ -35,7 +36,11 @@ export class ReactionEquationNode extends VBox {
       fill: EquilibriumLabColors.textColorProperty,
       maxWidth,
     });
-    super({ align: "left", spacing: 4, children: [equation, quotient] });
+    super({
+      align: "left",
+      spacing: REACTION_EQUATION_NODE_SETTINGS.CONSTRUCTOR_SPACING,
+      children: [equation, quotient],
+    });
 
     this.multilink = Multilink.multilink(
       [

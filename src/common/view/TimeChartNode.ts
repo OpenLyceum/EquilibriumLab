@@ -1,3 +1,4 @@
+import { TIME_CHART_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * TimeChartNode.ts
  *
@@ -37,7 +38,7 @@ export function decimalsFor(step: number): number {
 }
 
 /** Smallest y range shown, so an all-zero record still has sensible axes. */
-const MIN_Y_SPAN = 1e-6;
+const MIN_Y_SPAN: number = TIME_CHART_NODE_SETTINGS.MIN_Y_SPAN;
 
 function tickLabel(value: number, step: number): Text {
   return new Text(fixed(value, decimalsFor(step)), {
@@ -93,7 +94,7 @@ export class TimeChartNode extends Node {
     labels: TimeChartLabels,
     width: number,
     height: number,
-    minTime = 30,
+    minTime: number = TIME_CHART_NODE_SETTINGS.DEFAULT_MIN_TIME,
     providedOptions?: NodeOptions,
   ) {
     super();
@@ -126,7 +127,7 @@ export class TimeChartNode extends Node {
 
     const plot = new Node({
       children: [this.referenceLayer, this.markerLayer, this.plotLayer],
-      clipArea: Shape.rect(-6, -6, width + 12, height + 12),
+      clipArea: Shape.rect(TIME_CHART_NODE_SETTINGS.PLOT_X, TIME_CHART_NODE_SETTINGS.PLOT_Y, width + 12, height + 12),
     });
 
     const titleFont = new PhetFont(FONT_SIZE.small);
@@ -137,7 +138,7 @@ export class TimeChartNode extends Node {
     });
     xTitle.boundsProperty.link(() => {
       xTitle.centerX = width / 2;
-      xTitle.top = height + 18;
+      xTitle.top = height + TIME_CHART_NODE_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
     });
     const yTitle = new RichText(labels.yAxis, {
       font: titleFont,
@@ -146,19 +147,22 @@ export class TimeChartNode extends Node {
       maxWidth: height,
     });
     yTitle.boundsProperty.link(() => {
-      yTitle.right = -42;
+      yTitle.right = TIME_CHART_NODE_SETTINGS.RIGHT_RIGHT;
       yTitle.centerY = height / 2;
     });
     const title = new RichText(labels.title, {
       font: new PhetFont({ size: FONT_SIZE.label, weight: "bold" }),
       fill: EquilibriumLabColors.textColorProperty,
-      maxWidth: width * 0.4,
+      maxWidth: width * TIME_CHART_NODE_SETTINGS.TITLE_MAX_WIDTH_FACTOR,
     });
     title.boundsProperty.link(() => {
       title.left = 0;
-      title.bottom = -8;
+      title.bottom = TIME_CHART_NODE_SETTINGS.BOTTOM_BOTTOM;
     });
-    this.legend = new HBox({ spacing: 10, maxWidth: width * 0.58 });
+    this.legend = new HBox({
+      spacing: TIME_CHART_NODE_SETTINGS.LEGEND_SPACING,
+      maxWidth: width * TIME_CHART_NODE_SETTINGS.CONSTRUCTOR_MAX_WIDTH_FACTOR,
+    });
     this.legend.boundsProperty.link(() => {
       this.legend.right = width;
       this.legend.bottom = -10;
@@ -193,8 +197,16 @@ export class TimeChartNode extends Node {
     this.traces = traces;
     disposeChildren(this.plotLayer);
     disposeChildren(this.legend);
-    this.plots = traces.map((trace) => new LinePlot(this.chartTransform, [], { stroke: trace.color, lineWidth: 2 }));
-    this.dots = traces.map((trace) => new Circle(3.5, { fill: trace.color, visible: false }));
+    this.plots = traces.map(
+      (trace) =>
+        new LinePlot(this.chartTransform, [], {
+          stroke: trace.color,
+          lineWidth: TIME_CHART_NODE_SETTINGS.PLOTS_LINE_WIDTH,
+        }),
+    );
+    this.dots = traces.map(
+      (trace) => new Circle(TIME_CHART_NODE_SETTINGS.DOTS_RADIUS, { fill: trace.color, visible: false }),
+    );
     this.plots.forEach((plotNode, i) => {
       plotNode.visible = traces[i]?.visible !== false;
     });
@@ -205,10 +217,17 @@ export class TimeChartNode extends Node {
       .map(
         (trace) =>
           new HBox({
-            spacing: 4,
+            spacing: TIME_CHART_NODE_SETTINGS.CHILDREN_SPACING,
             children: [
-              new Line(0, 0, 14, 0, { stroke: trace.color, lineWidth: 2 }),
-              new RichText(trace.label, { font, fill: EquilibriumLabColors.textColorProperty, maxWidth: 90 }),
+              new Line(0, 0, TIME_CHART_NODE_SETTINGS.CHILDREN_END_X, 0, {
+                stroke: trace.color,
+                lineWidth: TIME_CHART_NODE_SETTINGS.CHILDREN_LINE_WIDTH,
+              }),
+              new RichText(trace.label, {
+                font,
+                fill: EquilibriumLabColors.textColorProperty,
+                maxWidth: TIME_CHART_NODE_SETTINGS.CHILDREN_MAX_WIDTH,
+              }),
             ],
           }),
       );
@@ -277,9 +296,9 @@ export class TimeChartNode extends Node {
       return [
         new Line(0, lineY, this.chartWidth, lineY, {
           stroke: trace.color,
-          lineDash: [5, 4],
-          lineWidth: 1.2,
-          opacity: 0.8,
+          lineDash: [TIME_CHART_NODE_SETTINGS.REDRAW_LINE_DASH_DASH, 4],
+          lineWidth: TIME_CHART_NODE_SETTINGS.ITEM_1_LINE_WIDTH,
+          opacity: TIME_CHART_NODE_SETTINGS.CHILDREN_OPACITY,
         }),
       ];
     });
@@ -293,14 +312,14 @@ export class TimeChartNode extends Node {
           stroke: EquilibriumLabColors.markerColorProperty,
           lineDash: [3, 3],
           lineWidth: 1,
-          opacity: 0.7,
+          opacity: TIME_CHART_NODE_SETTINGS.ITEM_1_OPACITY,
         }),
         new RichText(marker.label, {
           font,
           fill: EquilibriumLabColors.markerColorProperty,
-          left: markerX + 3,
-          top: 3,
-          maxWidth: 70,
+          left: markerX + TIME_CHART_NODE_SETTINGS.REDRAW_LEFT_OFFSET,
+          top: TIME_CHART_NODE_SETTINGS.CHILDREN_TOP,
+          maxWidth: TIME_CHART_NODE_SETTINGS.ITEM_2_MAX_WIDTH,
         }),
       ];
     });

@@ -1,3 +1,4 @@
+import { TIME_RECORD_NUMERICS } from "../../EquilibriumLabConstants.js";
 /**
  * TimeRecord.ts
  *
@@ -47,7 +48,7 @@ export class TimeRecord {
    * when `force` is set (right after a stress, so the jump is drawn sharply).
    */
   public record(time: number, values: readonly number[], force = false): void {
-    if (!force && time - this.lastTime < this.interval - 1e-9) {
+    if (!force && time - this.lastTime < this.interval - TIME_RECORD_NUMERICS.SAMPLE_TIME_TOLERANCE) {
       return;
     }
     this.lastTime = time;

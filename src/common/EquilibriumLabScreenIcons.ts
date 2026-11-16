@@ -1,3 +1,4 @@
+import { EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS } from "../EquilibriumLabConstants.js";
 /**
  * EquilibriumLabScreenIcons.ts
  *
@@ -34,7 +35,7 @@ function frame(x: number, y: number, width: number, height: number): Rectangle {
   return new Rectangle(x, y, width, height, {
     fill: EquilibriumLabColors.chartBackgroundColorProperty,
     stroke: EquilibriumLabColors.chartAxisColorProperty,
-    lineWidth: 4,
+    lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.FRAME_LINE_WIDTH,
   });
 }
 
@@ -58,12 +59,24 @@ function relaxation(
 }
 
 export function createApproachIcon(): ScreenIcon {
-  const vessel = new Rectangle(40, 70, 190, 240, {
-    fill: EquilibriumLabColors.vesselInteriorColorProperty,
-    stroke: EquilibriumLabColors.glassColorProperty,
-    lineWidth: 8,
-  });
-  const tint = new Rectangle(44, 74, 182, 232, { fill: EquilibriumLabColors.speciesNO2ColorProperty, opacity: 0.35 });
+  const vessel = new Rectangle(
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.VESSEL_X,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.VESSEL_Y,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.VESSEL_WIDTH,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.VESSEL_HEIGHT,
+    {
+      fill: EquilibriumLabColors.vesselInteriorColorProperty,
+      stroke: EquilibriumLabColors.glassColorProperty,
+      lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.VESSEL_LINE_WIDTH,
+    },
+  );
+  const tint = new Rectangle(
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.TINT_X,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.TINT_Y,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.TINT_WIDTH,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.TINT_HEIGHT,
+    { fill: EquilibriumLabColors.speciesNO2ColorProperty, opacity: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.TINT_OPACITY },
+  );
   const positions: [number, number][] = [
     [80, 110],
     [150, 130],
@@ -83,21 +96,26 @@ export function createApproachIcon(): ScreenIcon {
           i % 3 === 0 ? EquilibriumLabColors.speciesN2O4ColorProperty : EquilibriumLabColors.speciesNO2ColorProperty,
       }),
   );
-  const chart = frame(280, 70, 230, 240);
+  const chart = frame(
+    280,
+    70,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CHART_WIDTH,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CHART_HEIGHT,
+  );
   const falling = new Path(relaxation(290, 500, 110, 170), {
     stroke: EquilibriumLabColors.speciesN2O4ColorProperty,
-    lineWidth: 8,
+    lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.FALLING_LINE_WIDTH,
   });
   const rising = new Path(relaxation(290, 500, 300, 230), {
     stroke: EquilibriumLabColors.speciesNO2ColorProperty,
-    lineWidth: 8,
+    lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.RISING_LINE_WIDTH,
   });
   return iconFrom(new Node({ children: [background(), vessel, tint, ...particles, chart, falling, rising] }));
 }
 
 export function createICETableIcon(): ScreenIcon {
-  const left = 70;
-  const top = 50;
+  const left: number = EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.LEFT;
+  const top: number = EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.TOP;
   const cell = 136;
   const row = 90;
   const children: Node[] = [background()];
@@ -105,11 +123,11 @@ export function createICETableIcon(): ScreenIcon {
     children.push(
       new Line(left, top + r * row, left + 3 * cell, top + r * row, {
         stroke: EquilibriumLabColors.chartAxisColorProperty,
-        lineWidth: 4,
+        lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CREATE_ICE_TABLE_ICON_LINE_WIDTH,
       }),
     );
   }
-  const font = new PhetFont({ size: 64, weight: "bold" });
+  const font = new PhetFont({ size: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.FONT_FONT_SIZE, weight: "bold" });
   ["I", "C", "E"].forEach((letter, r) => {
     children.push(
       new Text(letter, {
@@ -120,7 +138,7 @@ export function createICETableIcon(): ScreenIcon {
       }),
     );
   });
-  const valueFont = new PhetFont(46);
+  const valueFont = new PhetFont(EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.VALUE_FONT_SIZE);
   const cells = [
     ["1.0", "0"],
     ["−x", "+2x"],
@@ -132,9 +150,9 @@ export function createICETableIcon(): ScreenIcon {
         new Text(value, {
           font: valueFont,
           fill: EquilibriumLabColors.textColorProperty,
-          centerX: left + (c + 1.5) * cell,
+          centerX: left + (c + EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CREATE_ICE_TABLE_ICON_CENTER_X_OFFSET) * cell,
           centerY: top + (r + 0.5) * row,
-          maxWidth: cell - 12,
+          maxWidth: cell - EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CREATE_ICE_TABLE_ICON_MAX_WIDTH_OFFSET,
         }),
       );
     });
@@ -143,33 +161,89 @@ export function createICETableIcon(): ScreenIcon {
 }
 
 export function createLeChatelierIcon(): ScreenIcon {
-  const chart = frame(60, 50, 430, 270);
+  const chart = frame(
+    60,
+    50,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CHART_WIDTH_SEGMENT_2,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CHART_HEIGHT_SEGMENT_2,
+  );
   const stressX = 210;
-  const marker = new Line(stressX, 54, stressX, 316, {
-    stroke: EquilibriumLabColors.markerColorProperty,
-    lineDash: [12, 10],
-    lineWidth: 4,
-  });
-  const before = new Shape().moveTo(64, 230).lineTo(stressX, 230).lineTo(stressX, 110);
+  const marker = new Line(
+    stressX,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.MARKER_START_Y,
+    stressX,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.MARKER_END_Y,
+    {
+      stroke: EquilibriumLabColors.markerColorProperty,
+      lineDash: [
+        EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.MARKER_LINE_DASH_DASH,
+        EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CREATE_LE_CHATELIER_ICON_MARKER_LINE_DASH_DASH,
+      ],
+      lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.MARKER_LINE_WIDTH,
+    },
+  );
+  const before = new Shape()
+    .moveTo(EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.BEFORE_X, EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.BEFORE_Y)
+    .lineTo(stressX, EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.BEFORE_Y)
+    .lineTo(stressX, EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.BEFORE_Y_SEGMENT_2);
   const after = relaxation(stressX, 486, 110, 180, 4);
-  const added = new Path(before, { stroke: EquilibriumLabColors.speciesN2ColorProperty, lineWidth: 8 });
-  const relaxing = new Path(after, { stroke: EquilibriumLabColors.speciesN2ColorProperty, lineWidth: 8 });
-  const product = new Path(relaxation(stressX, 486, 280, 245, 4, new Shape().moveTo(64, 280).lineTo(stressX, 280)), {
-    stroke: EquilibriumLabColors.speciesNH3ColorProperty,
-    lineWidth: 8,
+  const added = new Path(before, {
+    stroke: EquilibriumLabColors.speciesN2ColorProperty,
+    lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.ADDED_LINE_WIDTH,
   });
+  const relaxing = new Path(after, {
+    stroke: EquilibriumLabColors.speciesN2ColorProperty,
+    lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.RELAXING_LINE_WIDTH,
+  });
+  const product = new Path(
+    relaxation(
+      stressX,
+      486,
+      280,
+      245,
+      4,
+      new Shape()
+        .moveTo(EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.PRODUCT_X, EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.PRODUCT_Y)
+        .lineTo(stressX, EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.PRODUCT_Y),
+    ),
+    {
+      stroke: EquilibriumLabColors.speciesNH3ColorProperty,
+      lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.PRODUCT_LINE_WIDTH,
+    },
+  );
   return iconFrom(new Node({ children: [background(), chart, marker, added, relaxing, product] }));
 }
 
 export function createVantHoffIcon(): ScreenIcon {
-  const chart = frame(60, 40, 430, 290);
-  const line = new Line(80, 300, 470, 70, { stroke: EquilibriumLabColors.fitLineColorProperty, lineWidth: 8 });
+  const chart = frame(
+    60,
+    40,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CHART_WIDTH_SEGMENT_2,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.CHART_HEIGHT_SEGMENT_3,
+  );
+  const line = new Line(
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.LINE_START_X,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.LINE_START_Y,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.LINE_END_X,
+    EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.LINE_END_Y,
+    {
+      stroke: EquilibriumLabColors.fitLineColorProperty,
+      lineWidth: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.LINE_LINE_WIDTH,
+    },
+  );
   const points = [
     [130, 266],
     [210, 225],
     [290, 170],
     [370, 133],
     [440, 84],
-  ].map(([x, y]) => new Circle(15, { x: x ?? 0, y: y ?? 0, fill: EquilibriumLabColors.dataPointColorProperty }));
+  ].map(
+    ([x, y]) =>
+      new Circle(EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.POINTS_RADIUS, {
+        x: x ?? 0,
+        y: y ?? 0,
+        fill: EquilibriumLabColors.dataPointColorProperty,
+      }),
+  );
   return iconFrom(new Node({ children: [background(), chart, line, ...points] }));
 }

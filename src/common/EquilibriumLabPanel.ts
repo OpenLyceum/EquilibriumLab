@@ -1,3 +1,4 @@
+import { EQUILIBRIUM_LAB_PANEL_SETTINGS } from "../EquilibriumLabConstants.js";
 /**
  * EquilibriumLabPanel.ts
  *
@@ -40,8 +41,8 @@ export class EquilibriumLabPanel extends Panel {
         fill: EquilibriumLabColors.panelBackgroundColorProperty,
         stroke: EquilibriumLabColors.panelBorderColorProperty,
         cornerRadius: PANEL_CORNER_RADIUS,
-        xMargin: 12,
-        yMargin: 10,
+        xMargin: EQUILIBRIUM_LAB_PANEL_SETTINGS.OPTIONS_X_MARGIN,
+        yMargin: EQUILIBRIUM_LAB_PANEL_SETTINGS.OPTIONS_Y_MARGIN,
       },
       providedOptions,
     );

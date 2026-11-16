@@ -1,3 +1,4 @@
+import { QK_GAUGE_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * QKGaugeNode.ts
  *
@@ -23,9 +24,9 @@ import { disposeChildren } from "./disposeChildren.js";
 import { scientificFromLn } from "./formatValues.js";
 
 /** Decades shown on each side of K. */
-const HALF_SPAN_DECADES = 4;
+const HALF_SPAN_DECADES: number = QK_GAUGE_NODE_SETTINGS.HALF_SPAN_DECADES;
 
-const TRACK_HEIGHT = 8;
+const TRACK_HEIGHT: number = QK_GAUGE_NODE_SETTINGS.TRACK_HEIGHT;
 
 export class QKGaugeNode extends Node {
   private readonly disposeQKGaugeNode: () => void;
@@ -37,23 +38,43 @@ export class QKGaugeNode extends Node {
     const font = new PhetFont(FONT_SIZE.small);
     const tinyFont = new PhetFont(FONT_SIZE.tiny);
 
-    const track = new Rectangle(0, 0, width, TRACK_HEIGHT, 4, 4, {
-      fill: EquilibriumLabColors.gaugeTrackColorProperty,
-      stroke: EquilibriumLabColors.chartAxisColorProperty,
-    });
+    const track = new Rectangle(
+      0,
+      0,
+      width,
+      TRACK_HEIGHT,
+      QK_GAUGE_NODE_SETTINGS.TRACK_CORNER_X,
+      QK_GAUGE_NODE_SETTINGS.TRACK_CORNER_Y,
+      {
+        fill: EquilibriumLabColors.gaugeTrackColorProperty,
+        stroke: EquilibriumLabColors.chartAxisColorProperty,
+      },
+    );
     const tickLayer = new Node();
-    const kMarker = new Line(width / 2, -6, width / 2, TRACK_HEIGHT + 6, {
+    const kMarker = new Line(width / 2, QK_GAUGE_NODE_SETTINGS.K_MARKER_START_Y, width / 2, TRACK_HEIGHT + 6, {
       stroke: EquilibriumLabColors.kMarkerColorProperty,
-      lineWidth: 3,
+      lineWidth: QK_GAUGE_NODE_SETTINGS.K_MARKER_LINE_WIDTH,
     });
-    const kLabel = new RichText("", { font, fill: EquilibriumLabColors.kMarkerColorProperty, maxWidth: 40 });
-    const pointerShape = new Shape().moveTo(0, 0).lineTo(-7, -11).lineTo(7, -11).close();
+    const kLabel = new RichText("", {
+      font,
+      fill: EquilibriumLabColors.kMarkerColorProperty,
+      maxWidth: QK_GAUGE_NODE_SETTINGS.K_LABEL_MAX_WIDTH,
+    });
+    const pointerShape = new Shape()
+      .moveTo(0, 0)
+      .lineTo(QK_GAUGE_NODE_SETTINGS.POINTER_SHAPE_X, QK_GAUGE_NODE_SETTINGS.POINTER_SHAPE_Y)
+      .lineTo(QK_GAUGE_NODE_SETTINGS.POINTER_SHAPE_X_SEGMENT_2, QK_GAUGE_NODE_SETTINGS.POINTER_SHAPE_Y)
+      .close();
     const pointer = new Path(pointerShape, {
       fill: EquilibriumLabColors.qPointerColorProperty,
       stroke: EquilibriumLabColors.backgroundColorProperty,
     });
     const offScaleArrow = new Path(null, { fill: EquilibriumLabColors.qPointerColorProperty });
-    const qLabel = new RichText("", { font, fill: EquilibriumLabColors.qPointerColorProperty, maxWidth: 40 });
+    const qLabel = new RichText("", {
+      font,
+      fill: EquilibriumLabColors.qPointerColorProperty,
+      maxWidth: QK_GAUGE_NODE_SETTINGS.Q_LABEL_MAX_WIDTH,
+    });
 
     const readout = new RichText("", { font, fill: EquilibriumLabColors.textColorProperty, maxWidth: width });
     const caption = new RichText("", {
@@ -61,7 +82,11 @@ export class QKGaugeNode extends Node {
       maxWidth: width,
     });
     const scale = new Node({ children: [track, tickLayer, kMarker, kLabel, offScaleArrow, pointer, qLabel] });
-    const column = new VBox({ align: "left", spacing: 8, children: [scale, readout, caption] });
+    const column = new VBox({
+      align: "left",
+      spacing: QK_GAUGE_NODE_SETTINGS.COLUMN_SPACING,
+      children: [scale, readout, caption],
+    });
     this.children = [column];
 
     let tickCenter = Number.NaN;
@@ -83,8 +108,8 @@ export class QKGaugeNode extends Node {
               font: tinyFont,
               fill: EquilibriumLabColors.mutedTextColorProperty,
               centerX: x,
-              top: TRACK_HEIGHT + 5,
-              maxWidth: 34,
+              top: TRACK_HEIGHT + QK_GAUGE_NODE_SETTINGS.DRAW_TICKS_TOP_OFFSET,
+              maxWidth: QK_GAUGE_NODE_SETTINGS.DRAW_TICKS_MAX_WIDTH,
             }),
           );
         }
@@ -104,8 +129,8 @@ export class QKGaugeNode extends Node {
 
       kMarker.x = toX(log10K) - width / 2;
       kLabel.string = symbols.kStringProperty.value;
-      kLabel.left = toX(log10K) + 8;
-      kLabel.bottom = -2;
+      kLabel.left = toX(log10K) + QK_GAUGE_NODE_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
+      kLabel.bottom = QK_GAUGE_NODE_SETTINGS.BOTTOM_BOTTOM;
 
       const log10Q = lnQ / Math.LN10;
       const known = !Number.isNaN(log10Q);
@@ -114,7 +139,7 @@ export class QKGaugeNode extends Node {
       pointer.visible = known;
       qLabel.visible = known;
       pointer.x = clamped;
-      pointer.y = -2;
+      pointer.y = QK_GAUGE_NODE_SETTINGS.Y_Y;
       qLabel.string = symbols.qStringProperty.value;
       qLabel.centerX = clamped;
       qLabel.bottom = Math.min(pointer.top, kLabel.top) - 1;
@@ -122,9 +147,9 @@ export class QKGaugeNode extends Node {
       offScaleArrow.shape =
         x < 0
           ? new Shape()
-              .moveTo(-12, TRACK_HEIGHT / 2)
-              .lineTo(-4, -1)
-              .lineTo(-4, TRACK_HEIGHT + 1)
+              .moveTo(QK_GAUGE_NODE_SETTINGS.SHAPE_X, TRACK_HEIGHT / 2)
+              .lineTo(QK_GAUGE_NODE_SETTINGS.OFF_SCALE_ARROW_X, -1)
+              .lineTo(QK_GAUGE_NODE_SETTINGS.OFF_SCALE_ARROW_X, TRACK_HEIGHT + 1)
               .close()
           : new Shape()
               .moveTo(width + 12, TRACK_HEIGHT / 2)

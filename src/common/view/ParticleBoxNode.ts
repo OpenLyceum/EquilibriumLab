@@ -1,3 +1,4 @@
+import { PARTICLE_BOX_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ParticleBoxNode.ts
  *
@@ -31,30 +32,30 @@ import type { ReactionMixture } from "../model/ReactionMixture.js";
 import { speciesStyleIn } from "./speciesStyles.js";
 
 /** Sprite sizes in speciesStyles.ts are for a box this wide (px). */
-const REFERENCE_WIDTH = 260;
+const REFERENCE_WIDTH: number = PARTICLE_BOX_NODE_SETTINGS.REFERENCE_WIDTH;
 
 /** Seconds a newly formed particle is ringed. */
-const FLASH_TIME = 0.5;
+const FLASH_TIME: number = PARTICLE_BOX_NODE_SETTINGS.FLASH_TIME;
 
 /** Above this many reaction events per second the rings fade in proportion. */
-const FLASH_RATE_LIMIT = 24;
+const FLASH_RATE_LIMIT: number = PARTICLE_BOX_NODE_SETTINGS.FLASH_RATE_LIMIT;
 
 /** Wall thickness of the vessel (px). */
-const WALL = 4;
+const WALL: number = PARTICLE_BOX_NODE_SETTINGS.WALL;
 
 /** Piston plate thickness and handle size (px). */
-const PISTON_THICKNESS = 10;
-const HANDLE_WIDTH = 46;
-const HANDLE_HEIGHT = 14;
+const PISTON_THICKNESS: number = PARTICLE_BOX_NODE_SETTINGS.PISTON_THICKNESS;
+const HANDLE_WIDTH: number = PARTICLE_BOX_NODE_SETTINGS.HANDLE_WIDTH;
+const HANDLE_HEIGHT: number = PARTICLE_BOX_NODE_SETTINGS.HANDLE_HEIGHT;
 
 /** Length of the piston rod between the plate and the handle (px). */
-const ROD_LENGTH = 18;
+const ROD_LENGTH: number = PARTICLE_BOX_NODE_SETTINGS.ROD_LENGTH;
 
 /** Volume change per keyboard press, as a fraction of the largest volume. */
-const KEYBOARD_VOLUME_FRACTION = 0.02;
+const KEYBOARD_VOLUME_FRACTION: number = PARTICLE_BOX_NODE_SETTINGS.KEYBOARD_VOLUME_FRACTION;
 
 /** Inert-gas particles drawn per mole of argon, relative to the reaction's particles per mole. */
-const INERT_DOTS_CAP = 120;
+const INERT_DOTS_CAP: number = PARTICLE_BOX_NODE_SETTINGS.INERT_DOTS_CAP;
 
 type SelfOptions = {
   /** Whether newly formed particles are ringed. */
@@ -118,13 +119,21 @@ export class ParticleBoxNode extends Node {
     });
     const rod = new Line(width / 2, -PISTON_THICKNESS, width / 2, -PISTON_THICKNESS - ROD_LENGTH, {
       stroke: EquilibriumLabColors.pistonDarkColorProperty,
-      lineWidth: 5,
+      lineWidth: PARTICLE_BOX_NODE_SETTINGS.ROD_LINE_WIDTH,
     });
-    const handle = new Rectangle(-HANDLE_WIDTH / 2, -HANDLE_HEIGHT / 2, HANDLE_WIDTH, HANDLE_HEIGHT, 4, 4, {
-      fill: EquilibriumLabColors.pistonColorProperty,
-      stroke: EquilibriumLabColors.pistonDarkColorProperty,
-      lineWidth: 1.5,
-    });
+    const handle = new Rectangle(
+      -HANDLE_WIDTH / 2,
+      -HANDLE_HEIGHT / 2,
+      HANDLE_WIDTH,
+      HANDLE_HEIGHT,
+      PARTICLE_BOX_NODE_SETTINGS.HANDLE_CORNER_X,
+      PARTICLE_BOX_NODE_SETTINGS.HANDLE_CORNER_Y,
+      {
+        fill: EquilibriumLabColors.pistonColorProperty,
+        stroke: EquilibriumLabColors.pistonDarkColorProperty,
+        lineWidth: PARTICLE_BOX_NODE_SETTINGS.HANDLE_LINE_WIDTH,
+      },
+    );
     const handleRoot = new Node({
       children: [handle],
       cursor: "ns-resize",
@@ -229,7 +238,9 @@ class ParticleCanvasNode extends CanvasNode {
     top: number,
     showFlashesProperty: TReadOnlyProperty<boolean> | null,
   ) {
-    super({ canvasBounds: new Bounds2(-2, top - 2, width + 2, top + maxHeight + 2) });
+    super({
+      canvasBounds: new Bounds2(PARTICLE_BOX_NODE_SETTINGS.CONSTRUCTOR_MIN_X, top - 2, width + 2, top + maxHeight + 2),
+    });
     this.mixture = mixture;
     this.particles = particles;
     this.boxWidth = width;

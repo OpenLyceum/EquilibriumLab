@@ -111,7 +111,7 @@ export class XYPlotNode extends Node {
       maxWidth: height,
     });
     yTitle.boundsProperty.link(() => {
-      yTitle.right = XY_PLOT_NODE_SETTINGS.RIGHT_RIGHT;
+      yTitle.right = XY_PLOT_NODE_SETTINGS.Y_TITLE_RIGHT;
       yTitle.centerY = height / 2;
     });
     const title = new RichText(labels.title, {
@@ -121,7 +121,7 @@ export class XYPlotNode extends Node {
     });
     title.boundsProperty.link(() => {
       title.left = 0;
-      title.bottom = XY_PLOT_NODE_SETTINGS.BOTTOM_BOTTOM;
+      title.bottom = XY_PLOT_NODE_SETTINGS.TITLE_BOTTOM;
     });
 
     this.children = [

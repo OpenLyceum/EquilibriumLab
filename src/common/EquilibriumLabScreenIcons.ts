@@ -127,7 +127,7 @@ export function createICETableIcon(): ScreenIcon {
       }),
     );
   }
-  const font = new PhetFont({ size: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.FONT_FONT_SIZE, weight: "bold" });
+  const font = new PhetFont({ size: EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS.FONT_SIZE, weight: "bold" });
   ["I", "C", "E"].forEach((letter, r) => {
     children.push(
       new Text(letter, {

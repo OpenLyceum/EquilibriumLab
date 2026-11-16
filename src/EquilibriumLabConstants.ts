@@ -288,8 +288,8 @@ export const EQUILIBRIUM_LAB_SCREEN_ICONS_SETTINGS = {
   TOP: 50,
   /** Create ice table icon line width (px). */
   CREATE_ICE_TABLE_ICON_LINE_WIDTH: 4,
-  /** Font font size (px). */
-  FONT_FONT_SIZE: 64,
+  /** Font size (px). */
+  FONT_SIZE: 64,
   /** Value font size (px). */
   VALUE_FONT_SIZE: 46,
   /** Marker start y (px). */
@@ -442,10 +442,10 @@ export const QK_GAUGE_NODE_SETTINGS = {
   COLUMN_SPACING: 8,
   /** Draw ticks max width (px). */
   DRAW_TICKS_MAX_WIDTH: 34,
-  /** Bottom bottom (px). */
-  BOTTOM_BOTTOM: -2,
-  /** Y y (px). */
-  Y_Y: -2,
+  /** K label bottom inset (px). */
+  K_LABEL_BOTTOM: -2,
+  /** Q pointer y (px). */
+  POINTER_Y: -2,
   /** Shape x (px). */
   SHAPE_X: -12,
 } as const;
@@ -478,16 +478,16 @@ export const TIME_CHART_NODE_SETTINGS = {
 
   /** Smallest y range shown, so an all-zero record still has sensible axes. */
   MIN_Y_SPAN: 1e-6,
-  /** Default min time (px). */
+  /** Default minimum time window (s). */
   DEFAULT_MIN_TIME: 30,
   /** Plot x (px). */
   PLOT_X: -6,
   /** Plot y (px). */
   PLOT_Y: -6,
-  /** Right right (px). */
-  RIGHT_RIGHT: -42,
-  /** Bottom bottom (px). */
-  BOTTOM_BOTTOM: -8,
+  /** Y-axis title right inset (px). */
+  Y_TITLE_RIGHT: -42,
+  /** Chart title bottom inset (px). */
+  TITLE_BOTTOM: -8,
   /** Legend spacing (px). */
   LEGEND_SPACING: 10,
   /** Plots line width (px). */
@@ -587,7 +587,7 @@ export const ICE_TABLE_SCREEN_VIEW_SETTINGS = {
   TEMPERATURE_SIGNIFICANT_DIGITS: 3, // digits
   GIVEN_DIGITS: 3, // digits
   K_LABEL_MAX_WIDTH: 40, // px
-  __LABEL_MAX_WIDTH: 20, // px
+  EQUALS_LABEL_MAX_WIDTH: 20, // px
   ENTRIES_ITEM_1_SPACING: 6, // px
   X_LABEL_LABEL_MAX_WIDTH: 40, // px
   M_LABEL_MAX_WIDTH: 20, // px
@@ -717,7 +717,7 @@ export const EQUILIBRIUM_LAB_PREFERENCES_NODE_SETTINGS = {
 
 /** Settings for vant-hoff/model/VantHoffModel.ts. */
 export const VANT_HOFF_MODEL_SETTINGS = {
-  /** Kj (J/kJ). */
+  /** Joules per kilojoule (J/kJ). */
   KJ: 1000,
   /** Seed for the measurement errors, so a fresh screen replays the same scatter. */
   NOISE_SEED: 42,
@@ -730,7 +730,7 @@ export const VANT_HOFF_RESULTS_NODE_SETTINGS = {
   R_SQUARED_FIXED_DECIMALS: 4, // digits
   SIGNIFICANT_DIGITS: 3, // digits
 
-  /** Kj (px). */
+  /** Joules per kilojoule (J/kJ). */
   KJ: 1000,
 } as const;
 
@@ -759,7 +759,7 @@ export const VANT_HOFF_SCREEN_VIEW_SETTINGS = {
   GIBBS_PLOT_TOP: 340,
   /** Gibbs plot height (px). */
   GIBBS_PLOT_HEIGHT: 140,
-  /** Kj (px). */
+  /** Joules per kilojoule (J/kJ). */
   KJ: 1000,
   /** Extra room around the expected data, as a fraction of its span (measurement error, margins). */
   RANGE_PADDING: 0.12,
@@ -792,10 +792,10 @@ export const XY_PLOT_NODE_SETTINGS = {
   PLOT_X: -6,
   /** Plot y (px). */
   PLOT_Y: -6,
-  /** Right right (px). */
-  RIGHT_RIGHT: -38,
-  /** Bottom bottom (px). */
-  BOTTOM_BOTTOM: -8,
+  /** Y-axis title right inset (px). */
+  Y_TITLE_RIGHT: -38,
+  /** Chart title bottom inset (px). */
+  TITLE_BOTTOM: -8,
   /** Children radius (px). */
   CHILDREN_RADIUS: 4,
 } as const;

@@ -130,7 +130,7 @@ export class QKGaugeNode extends Node {
       kMarker.x = toX(log10K) - width / 2;
       kLabel.string = symbols.kStringProperty.value;
       kLabel.left = toX(log10K) + QK_GAUGE_NODE_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
-      kLabel.bottom = QK_GAUGE_NODE_SETTINGS.BOTTOM_BOTTOM;
+      kLabel.bottom = QK_GAUGE_NODE_SETTINGS.K_LABEL_BOTTOM;
 
       const log10Q = lnQ / Math.LN10;
       const known = !Number.isNaN(log10Q);
@@ -139,7 +139,7 @@ export class QKGaugeNode extends Node {
       pointer.visible = known;
       qLabel.visible = known;
       pointer.x = clamped;
-      pointer.y = QK_GAUGE_NODE_SETTINGS.Y_Y;
+      pointer.y = QK_GAUGE_NODE_SETTINGS.POINTER_Y;
       qLabel.string = symbols.qStringProperty.value;
       qLabel.centerX = clamped;
       qLabel.bottom = Math.min(pointer.top, kLabel.top) - 1;

@@ -152,7 +152,7 @@ export class ICETableScreenView extends ScreenView {
       spacing: ICE_TABLE_SCREEN_VIEW_SETTINGS.K_ENTRY_ROW_SPACING,
       children: [
         label(common.kcSymbols.kStringProperty, ICE_TABLE_SCREEN_VIEW_SETTINGS.K_LABEL_MAX_WIDTH),
-        label("=", ICE_TABLE_SCREEN_VIEW_SETTINGS.__LABEL_MAX_WIDTH),
+        label("=", ICE_TABLE_SCREEN_VIEW_SETTINGS.EQUALS_LABEL_MAX_WIDTH),
         kEntry,
       ],
       visibleProperty: findKProperty,

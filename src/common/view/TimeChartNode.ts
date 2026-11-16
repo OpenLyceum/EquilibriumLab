@@ -147,7 +147,7 @@ export class TimeChartNode extends Node {
       maxWidth: height,
     });
     yTitle.boundsProperty.link(() => {
-      yTitle.right = TIME_CHART_NODE_SETTINGS.RIGHT_RIGHT;
+      yTitle.right = TIME_CHART_NODE_SETTINGS.Y_TITLE_RIGHT;
       yTitle.centerY = height / 2;
     });
     const title = new RichText(labels.title, {
@@ -157,7 +157,7 @@ export class TimeChartNode extends Node {
     });
     title.boundsProperty.link(() => {
       title.left = 0;
-      title.bottom = TIME_CHART_NODE_SETTINGS.BOTTOM_BOTTOM;
+      title.bottom = TIME_CHART_NODE_SETTINGS.TITLE_BOTTOM;
     });
     this.legend = new HBox({
       spacing: TIME_CHART_NODE_SETTINGS.LEGEND_SPACING,

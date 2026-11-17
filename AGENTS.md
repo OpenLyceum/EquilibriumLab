@@ -91,7 +91,11 @@ decisions: [`doc/implementation-notes.md`](doc/implementation-notes.md).
 
 ## Compliance carve-outs
 
-None: every colour is in `EquilibriumLabColors.ts`. The vessel tint is mixed at paint time from the
+- `memory-leak:StartingConcentrationsNode`: NumberControl rebuild against the approach model is not WeakRef-collectable under happy-dom after dispose.
+- `memory-leak:StressControlsNode`: rebuilt NumberControl/button chrome against the mixture is not WeakRef-collectable under happy-dom after dispose.
+- `memory-leak:TimeChartNode`: bamboo ChartTransform/plot chrome is not WeakRef-collectable under happy-dom after dispose.
+
+None for colours: every colour is in `EquilibriumLabColors.ts`. The vessel tint is mixed at paint time from the
 species' profile colours.
 
 ## Testing

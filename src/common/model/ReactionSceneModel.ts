@@ -29,7 +29,7 @@ export class ReactionSceneModel {
   /** Two traces: forward and reverse rate (M/s) against time (s). */
   public readonly rateRecord = new TimeRecord(2);
 
-  public readonly timer = new TimeModel(true);
+  public readonly timer = new TimeModel({ initiallyPlaying: true });
   public readonly timeSpeedProperty = new EnumerationProperty(TimeSpeed.NORMAL);
 
   /** Simulated time since the run started (s). */

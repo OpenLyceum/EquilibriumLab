@@ -268,15 +268,27 @@ export class ICETableScreenView extends ScreenView {
     mixture.reactionProperty.lazyLink(() => chart.setTraces(speciesTraces()));
     const updateReferences = () => chart.setReferenceValues(model.getEnteredEquilibrium() ?? []);
     model.xEntryProperty.link(updateReferences);
-    model.changeRowRebuiltEmitter.addListener(() => {
-      for (const property of model.changeCoefficientProperties) {
+    // Relink on each rebuilt change row; unlink first so disposed coefficient Properties are not left
+    // with chart listeners (and so we never link the same callback twice).
+    let unlinkCoefficients: (() => void) | null = null;
+    const linkCoefficients = () => {
+      unlinkCoefficients?.();
+      const properties = model.changeCoefficientProperties;
+      for (const property of properties) {
         property.link(updateReferences);
       }
+      unlinkCoefficients = () => {
+        for (const property of properties) {
+          if (!property.isDisposed) {
+            property.unlink(updateReferences);
+          }
+        }
+        unlinkCoefficients = null;
+      };
       updateReferences();
-    });
-    for (const property of model.changeCoefficientProperties) {
-      property.link(updateReferences);
-    }
+    };
+    model.changeRowRebuiltEmitter.addListener(linkCoefficients);
+    linkCoefficients();
     const runHint = note(strings.runHintStringProperty, CHART_WIDTH + 40);
     runHint.left = CHART_LEFT - ICE_TABLE_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
     runHint.top = CHART_TOP + CHART_HEIGHT + 40;

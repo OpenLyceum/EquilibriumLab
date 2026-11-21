@@ -84,11 +84,14 @@ export class ICETableNode extends Node {
       });
 
     this.rebuild = () => {
-      disposeChildren(this);
+      // Multilinks and accessible-name DerivedProperties first — disposeChildren would otherwise
+      // tear down RichTexts/NumberPickers they still paint into (and NumberPicker must not be
+      // disposed twice: it is a child, so it is not tracked in `owned`).
       for (const item of this.owned) {
         item.dispose();
       }
       this.owned = [];
+      disposeChildren(this);
       const problem = model.problem;
       const reaction = problem.reaction;
       const count = reaction.species.length;
@@ -162,7 +165,6 @@ export class ICETableNode extends Node {
           formatValue: (n: number) => (n > 0 ? `+${n}` : fixed(n, 0)),
           accessibleName: pickerName,
         });
-        this.owned.push(picker);
         const change = new HBox({
           spacing: ICE_TABLE_NODE_SETTINGS.CHANGE_SPACING,
           children: [picker, text("x", ICE_TABLE_NODE_SETTINGS.X_TEXT_MAX_WIDTH)],
@@ -203,9 +205,13 @@ export class ICETableNode extends Node {
 
   public override dispose(): void {
     this.model.changeRowRebuiltEmitter.removeListener(this.rebuild);
+    // Same order as rebuild(): Multilinks and DerivedProperties, then the children they paint
+    // into (the NumberPickers link to the model's coefficient Properties).
     for (const item of this.owned) {
       item.dispose();
     }
+    this.owned = [];
+    disposeChildren(this);
     super.dispose();
   }
 }

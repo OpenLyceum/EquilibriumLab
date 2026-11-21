@@ -84,14 +84,28 @@ export class ICETableModel implements TModel {
 
   private readonly random = new Random({ seed: PROBLEM_SEED });
 
+  /**
+   * When true, mode/reaction listeners skip the rebuild — used by reset() so a single
+   * newProblem() runs after both Properties settle, instead of one per reset Property.
+   */
+  private suppressProblemRefresh = false;
+
   public constructor() {
     this.problemProperty = new Property(this.generate());
     this.scene = new ReactionSceneModel(this.problemProperty.value.reaction);
     this.scene.timer.isPlayingProperty.value = false;
     this.applyProblem();
 
-    this.modeProperty.lazyLink(() => this.newProblem());
-    this.reactionIdProperty.lazyLink(() => this.newProblem());
+    // Synchronous on purpose: the mode, reaction and problem must never disagree (showSolution or
+    // a check in between would grade the wrong problem). applyProblem() orders the teardown so
+    // the view releases the old row before its Properties are disposed.
+    const refresh = () => {
+      if (!this.suppressProblemRefresh) {
+        this.newProblem();
+      }
+    };
+    this.modeProperty.lazyLink(refresh);
+    this.reactionIdProperty.lazyLink(refresh);
     const clearCheck = () => {
       this.checkProperty.value = null;
     };
@@ -162,8 +176,10 @@ export class ICETableModel implements TModel {
   }
 
   public reset(): void {
+    this.suppressProblemRefresh = true;
     this.modeProperty.reset();
     this.reactionIdProperty.reset();
+    this.suppressProblemRefresh = false;
     this.scene.reset();
     this.newProblem();
   }
@@ -176,12 +192,16 @@ export class ICETableModel implements TModel {
     return createProblem(getReaction(this.reactionIdProperty.value), this.modeProperty.value, this.random);
   }
 
-  /** Clears the entries and sets the mixture to the new problem's initial row, paused. */
+  /**
+   * Clears the entries and sets the mixture to the new problem's initial row, paused.
+   *
+   * Coefficient Properties are swapped before the view rebuilds, and the old ones are disposed
+   * only after Multilinks/NumberPickers have released them. Setting x/k to null before that
+   * disposal used to notify Multilinks still wired to disposed dependencies (?ea asserts).
+   */
   private applyProblem(): void {
     const problem = this.problem;
-    for (const property of this.changeCoefficientProperties) {
-      property.dispose();
-    }
+    const oldCoefficients = this.changeCoefficientProperties;
     this.changeCoefficientProperties = problem.reaction.species.map(
       () => new NumberProperty(0, { range: CHANGE_COEFFICIENT_RANGE, numberType: "Integer" }),
     );
@@ -190,6 +210,14 @@ export class ICETableModel implements TModel {
         this.checkProperty.value = null;
       });
     }
+
+    // View drops Multilinks/pickers on the old row and binds to the new Properties.
+    this.changeRowRebuiltEmitter.emit();
+
+    for (const property of oldCoefficients) {
+      property.dispose();
+    }
+
     this.xEntryProperty.value = null;
     this.kEntryProperty.value = null;
     this.checkProperty.value = null;
@@ -201,6 +229,5 @@ export class ICETableModel implements TModel {
     );
     this.scene.mixture.temperatureProperty.value = problem.temperature;
     this.scene.timer.isPlayingProperty.value = false;
-    this.changeRowRebuiltEmitter.emit();
   }
 }

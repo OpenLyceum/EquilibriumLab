@@ -70,6 +70,18 @@ export class QKGaugeNode extends Node {
       stroke: EquilibriumLabColors.backgroundColorProperty,
     });
     const offScaleArrow = new Path(null, { fill: EquilibriumLabColors.qPointerColorProperty });
+    // Built once: refresh used to allocate a new Shape on every mixture step.
+    const offScaleLeft = new Shape()
+      .moveTo(QK_GAUGE_NODE_SETTINGS.SHAPE_X, TRACK_HEIGHT / 2)
+      .lineTo(QK_GAUGE_NODE_SETTINGS.OFF_SCALE_ARROW_X, -1)
+      .lineTo(QK_GAUGE_NODE_SETTINGS.OFF_SCALE_ARROW_X, TRACK_HEIGHT + 1)
+      .close();
+    const offScaleRight = new Shape()
+      .moveTo(width + 12, TRACK_HEIGHT / 2)
+      .lineTo(width + 4, -1)
+      .lineTo(width + 4, TRACK_HEIGHT + 1)
+      .close();
+    let offScaleSide: "left" | "right" | null = null;
     const qLabel = new RichText("", {
       font,
       fill: EquilibriumLabColors.qPointerColorProperty,
@@ -143,19 +155,12 @@ export class QKGaugeNode extends Node {
       qLabel.string = symbols.qStringProperty.value;
       qLabel.centerX = clamped;
       qLabel.bottom = Math.min(pointer.top, kLabel.top) - 1;
-      offScaleArrow.visible = known && (x < 0 || x > width);
-      offScaleArrow.shape =
-        x < 0
-          ? new Shape()
-              .moveTo(QK_GAUGE_NODE_SETTINGS.SHAPE_X, TRACK_HEIGHT / 2)
-              .lineTo(QK_GAUGE_NODE_SETTINGS.OFF_SCALE_ARROW_X, -1)
-              .lineTo(QK_GAUGE_NODE_SETTINGS.OFF_SCALE_ARROW_X, TRACK_HEIGHT + 1)
-              .close()
-          : new Shape()
-              .moveTo(width + 12, TRACK_HEIGHT / 2)
-              .lineTo(width + 4, -1)
-              .lineTo(width + 4, TRACK_HEIGHT + 1)
-              .close();
+      const side: "left" | "right" | null = !known ? null : x < 0 ? "left" : x > width ? "right" : null;
+      offScaleArrow.visible = side !== null;
+      if (side !== offScaleSide) {
+        offScaleSide = side;
+        offScaleArrow.shape = side === "left" ? offScaleLeft : side === "right" ? offScaleRight : null;
+      }
 
       readout.string = StringUtils.fillIn(strings.quotientReadoutPatternStringProperty.value, {
         q: symbols.qStringProperty.value,

@@ -11,18 +11,44 @@ import { TIME_CHART_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
  * of it, so the axes don't twitch while the data grows.
  */
 
-import type { TReadOnlyProperty } from "scenerystack/axon";
-import { ChartRectangle, ChartTransform, GridLineSet, LinePlot, TickLabelSet, TickMarkSet } from "scenerystack/bamboo";
+import { isTReadOnlyProperty, type TReadOnlyProperty } from "scenerystack/axon";
+import {
+  CanvasLinePlot,
+  ChartCanvasNode,
+  ChartRectangle,
+  ChartTransform,
+  GridLineSet,
+  TickLabelSet,
+  TickMarkSet,
+} from "scenerystack/bamboo";
 import { Range, toFixed } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { Orientation } from "scenerystack/phet-core";
-import { Circle, HBox, Line, Node, type NodeOptions, RichText, type TColor, Text } from "scenerystack/scenery";
+import {
+  Circle,
+  type Color,
+  HBox,
+  Line,
+  Node,
+  type NodeOptions,
+  RichText,
+  type TColor,
+  Text,
+} from "scenerystack/scenery";
 import { PhetFont } from "scenerystack/scenery-phet";
 import EquilibriumLabColors from "../../EquilibriumLabColors.js";
 import { FONT_SIZE } from "../../EquilibriumLabConstants.js";
 import type { TimeRecord } from "../model/TimeRecord.js";
 import { disposeChildren } from "./disposeChildren.js";
 import { fixed } from "./formatValues.js";
+
+/** CSS for a bamboo canvas stroke; Properties are resolved by the caller. */
+function strokeCSS(paint: Color | string | null): string | null {
+  if (paint === null) {
+    return null;
+  }
+  return typeof paint === "string" ? paint : paint.toCSS();
+}
 
 /** A "nice" tick spacing (1, 2, 2.5 or 5 × 10ⁿ) giving about `count` intervals over `span`. */
 export function niceStep(span: number, count: number): number {
@@ -77,12 +103,16 @@ export class TimeChartNode extends Node {
   private readonly minTime: number;
   private readonly chartWidth: number;
   private readonly chartHeight: number;
-  private plots: LinePlot[] = [];
+  /** Canvas plots: Path/LinePlot rebuilds an SVG Shape every sample and retains heap while a run grows. */
+  private plots: CanvasLinePlot[] = [];
+  private chartCanvas: ChartCanvasNode | null = null;
   private dots: Circle[] = [];
   private traces: readonly ChartTrace[] = [];
   private referenceValues: readonly (number | null)[] = [];
   private xStep = 10;
   private yStep = 0.01;
+  /** Unlink color→stroke binders created in setTraces. */
+  private readonly disposeStrokeBindings: (() => void)[] = [];
 
   /** What the reference lines and markers were last drawn for, so they are rebuilt only on change. */
   private decorationKey = "";
@@ -195,22 +225,30 @@ export class TimeChartNode extends Node {
   /** Replaces the traces (a new reaction has other species). */
   public setTraces(traces: readonly ChartTrace[]): void {
     this.traces = traces;
+    while (this.disposeStrokeBindings.length > 0) {
+      this.disposeStrokeBindings.pop()?.();
+    }
+    for (const plot of this.plots) {
+      plot.dispose();
+    }
+    this.chartCanvas?.dispose();
+    this.chartCanvas = null;
     disposeChildren(this.plotLayer);
     disposeChildren(this.legend);
-    this.plots = traces.map(
-      (trace) =>
-        new LinePlot(this.chartTransform, [], {
-          stroke: trace.color,
-          lineWidth: TIME_CHART_NODE_SETTINGS.PLOTS_LINE_WIDTH,
-        }),
-    );
+
+    this.plots = traces.map((trace) => {
+      const plot = new CanvasLinePlot(this.chartTransform, [], {
+        lineWidth: TIME_CHART_NODE_SETTINGS.PLOTS_LINE_WIDTH,
+        visible: trace.visible !== false,
+      });
+      this.bindPlotStroke(plot, trace.color);
+      return plot;
+    });
+    this.chartCanvas = new ChartCanvasNode(this.chartTransform, this.plots);
     this.dots = traces.map(
       (trace) => new Circle(TIME_CHART_NODE_SETTINGS.DOTS_RADIUS, { fill: trace.color, visible: false }),
     );
-    this.plots.forEach((plotNode, i) => {
-      plotNode.visible = traces[i]?.visible !== false;
-    });
-    this.plotLayer.children = [...this.plots, ...this.dots];
+    this.plotLayer.children = [this.chartCanvas, ...this.dots];
     const font = new PhetFont(FONT_SIZE.tiny);
     this.legend.children = traces
       .filter((trace) => trace.visible !== false)
@@ -236,6 +274,21 @@ export class TimeChartNode extends Node {
     this.redraw();
   }
 
+  /** Keeps a canvas plot's stroke in sync with a TColor (Property or concrete paint). */
+  private bindPlotStroke(plot: CanvasLinePlot, color: TColor): void {
+    const apply = (paint: Color | string | null): void => {
+      plot.setStroke(strokeCSS(paint));
+      this.chartCanvas?.update();
+    };
+    if (isTReadOnlyProperty(color)) {
+      const listener = (paint: Color | string | null) => apply(paint);
+      color.link(listener);
+      this.disposeStrokeBindings.push(() => color.unlink(listener));
+    } else {
+      apply(color);
+    }
+  }
+
   /** Dashed horizontal lines, one per trace (null for none), e.g. equilibrium concentrations. */
   public setReferenceValues(values: readonly (number | null)[]): void {
     this.referenceValues = values;
@@ -244,6 +297,14 @@ export class TimeChartNode extends Node {
 
   public override dispose(): void {
     this.record.changedEmitter.removeListener(this.update);
+    while (this.disposeStrokeBindings.length > 0) {
+      this.disposeStrokeBindings.pop()?.();
+    }
+    for (const plot of this.plots) {
+      plot.dispose();
+    }
+    this.chartCanvas?.dispose();
+    this.chartCanvas = null;
     super.dispose();
   }
 
@@ -277,6 +338,7 @@ export class TimeChartNode extends Node {
         }
       }
     });
+    this.chartCanvas?.update();
 
     const x = transform.modelXRange;
     const y = transform.modelYRange;

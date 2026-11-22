@@ -21,7 +21,7 @@ import {
   TickLabelSet,
   TickMarkSet,
 } from "scenerystack/bamboo";
-import { Range, toFixed } from "scenerystack/dot";
+import { Bounds2, Range, toFixed } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { Orientation } from "scenerystack/phet-core";
 import {
@@ -41,14 +41,6 @@ import { FONT_SIZE } from "../../EquilibriumLabConstants.js";
 import type { TimeRecord } from "../model/TimeRecord.js";
 import { disposeChildren } from "./disposeChildren.js";
 import { fixed } from "./formatValues.js";
-
-/** CSS for a bamboo canvas stroke; Properties are resolved by the caller. */
-function strokeCSS(paint: Color | string | null): string | null {
-  if (paint === null) {
-    return null;
-  }
-  return typeof paint === "string" ? paint : paint.toCSS();
-}
 
 /** A "nice" tick spacing (1, 2, 2.5 or 5 × 10ⁿ) giving about `count` intervals over `span`. */
 export function niceStep(span: number, count: number): number {
@@ -239,12 +231,17 @@ export class TimeChartNode extends Node {
     this.plots = traces.map((trace) => {
       const plot = new CanvasLinePlot(this.chartTransform, [], {
         lineWidth: TIME_CHART_NODE_SETTINGS.PLOTS_LINE_WIDTH,
-        visible: trace.visible !== false,
       });
+      // CanvasLinePlot's constructor drops CanvasPainter's `visible` option, so set it here.
+      plot.visible = trace.visible !== false;
       this.bindPlotStroke(plot, trace.color);
       return plot;
     });
+    // Canvas bounds match the plot clip area (not just the chart rectangle), so strokes on an edge,
+    // e.g. a zero concentration, are not half-clipped compared with the old Path plots.
+    const { PLOT_X, PLOT_Y } = TIME_CHART_NODE_SETTINGS;
     this.chartCanvas = new ChartCanvasNode(this.chartTransform, this.plots);
+    this.chartCanvas.canvasBounds = new Bounds2(PLOT_X, PLOT_Y, this.chartWidth - PLOT_X, this.chartHeight - PLOT_Y);
     this.dots = traces.map(
       (trace) => new Circle(TIME_CHART_NODE_SETTINGS.DOTS_RADIUS, { fill: trace.color, visible: false }),
     );
@@ -277,7 +274,7 @@ export class TimeChartNode extends Node {
   /** Keeps a canvas plot's stroke in sync with a TColor (Property or concrete paint). */
   private bindPlotStroke(plot: CanvasLinePlot, color: TColor): void {
     const apply = (paint: Color | string | null): void => {
-      plot.setStroke(strokeCSS(paint));
+      plot.setStroke(paint);
       this.chartCanvas?.update();
     };
     if (isTReadOnlyProperty(color)) {

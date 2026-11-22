@@ -81,7 +81,6 @@ export class QKGaugeNode extends Node {
       .lineTo(width + 4, -1)
       .lineTo(width + 4, TRACK_HEIGHT + 1)
       .close();
-    let offScaleSide: "left" | "right" | null = null;
     const qLabel = new RichText("", {
       font,
       fill: EquilibriumLabColors.qPointerColorProperty,
@@ -155,11 +154,11 @@ export class QKGaugeNode extends Node {
       qLabel.string = symbols.qStringProperty.value;
       qLabel.centerX = clamped;
       qLabel.bottom = Math.min(pointer.top, kLabel.top) - 1;
-      const side: "left" | "right" | null = !known ? null : x < 0 ? "left" : x > width ? "right" : null;
-      offScaleArrow.visible = side !== null;
-      if (side !== offScaleSide) {
-        offScaleSide = side;
-        offScaleArrow.shape = side === "left" ? offScaleLeft : side === "right" ? offScaleRight : null;
+      offScaleArrow.visible = known && (x < 0 || x > width);
+      // Same selection as before (right unless x < 0), so the hidden arrow keeps shaping the bounds.
+      const offScaleShape = x < 0 ? offScaleLeft : offScaleRight;
+      if (offScaleArrow.shape !== offScaleShape) {
+        offScaleArrow.shape = offScaleShape;
       }
 
       readout.string = StringUtils.fillIn(strings.quotientReadoutPatternStringProperty.value, {

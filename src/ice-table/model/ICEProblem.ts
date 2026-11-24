@@ -1,3 +1,4 @@
+import { roundSymmetric } from "scenerystack/dot";
 import { ICE_PROBLEM_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ICEProblem.ts
@@ -44,7 +45,7 @@ function roundSignificant(value: number, digits: number = ICE_PROBLEM_SETTINGS.D
     return value;
   }
   const scale = 10 ** (digits - 1 - Math.floor(Math.log10(Math.abs(value))));
-  return Math.round(value * scale) / scale;
+  return roundSymmetric(value * scale) / scale;
 }
 
 function concentrationAt(concentrations: readonly number[], index: number, species: Species): number {

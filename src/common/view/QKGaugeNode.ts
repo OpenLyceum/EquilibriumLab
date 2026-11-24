@@ -1,3 +1,4 @@
+import { roundSymmetric } from "scenerystack/dot";
 import { QK_GAUGE_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * QKGaugeNode.ts
@@ -134,7 +135,7 @@ export class QKGaugeNode extends Node {
       const lnQ = kp ? mixture.lnQp : mixture.lnQc;
       const symbols = kp ? strings.kpSymbols : strings.kcSymbols;
       const log10K = lnK / Math.LN10;
-      const centerDecade = Math.round(log10K);
+      const centerDecade = roundSymmetric(log10K);
       drawTicks(centerDecade);
       const toX = (log10: number) => ((log10 - centerDecade + HALF_SPAN_DECADES) / (2 * HALF_SPAN_DECADES)) * width;
 

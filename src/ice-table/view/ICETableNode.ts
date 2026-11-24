@@ -150,11 +150,11 @@ export class ICETableNode extends Node {
         initial.centerY = rowY(1);
 
         // Change row: picker × x.
-        const pickerName = new DerivedProperty(
+        const pickerNameProperty = new DerivedProperty(
           [a11y.changePickerPatternStringProperty, speciesName(species.id)],
           (pattern, name) => StringUtils.fillIn(pattern, { name }),
         );
-        this.owned.push(pickerName);
+        this.owned.push(pickerNameProperty);
         const picker = new NumberPicker(coefficientProperty, coefficientProperty.rangeProperty, {
           font: new PhetFont(FONT_SIZE.readout),
           color: EquilibriumLabColors.accentColorProperty,
@@ -162,7 +162,7 @@ export class ICETableNode extends Node {
           xMargin: ICE_TABLE_NODE_SETTINGS.PICKER_X_MARGIN,
           yMargin: 1,
           formatValue: (n: number) => (n > 0 ? `+${n}` : fixed(n, 0)),
-          accessibleName: pickerName,
+          accessibleName: pickerNameProperty,
         });
         const change = new HBox({
           spacing: ICE_TABLE_NODE_SETTINGS.CHANGE_SPACING,

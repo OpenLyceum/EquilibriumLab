@@ -17,7 +17,7 @@ import { PARTICLE_SYSTEM_SETTINGS } from "../../EquilibriumLabConstants.js";
  * height is proportional to the volume, so compressing the gas squeezes the particles together.
  */
 
-import { Random } from "scenerystack/dot";
+import { Random, roundSymmetric } from "scenerystack/dot";
 import {
   BOX_MAX_HEIGHT,
   BOX_WIDTH,
@@ -123,7 +123,7 @@ export class ParticleSystem {
     const ppm = this.reaction.definition.particlesPerMole;
     this.reaction.species.forEach((s, i) => {
       if (!s.bulk) {
-        const count = Math.round(this.mixture.getAmount(i) * ppm);
+        const count = roundSymmetric(this.mixture.getAmount(i) * ppm);
         for (let k = 0; k < count && this.particles.length < MAX_PARTICLES; k++) {
           this.particles.push(
             this.createParticle(i, this.random.nextDouble() * BOX_WIDTH, this.random.nextDouble() * this.height, 1),
@@ -134,7 +134,7 @@ export class ParticleSystem {
     const flows = this.mixture.getFlows();
     this.forwardDone = Math.floor(flows.forward * ppm);
     this.reverseDone = Math.floor(flows.reverse * ppm);
-    this.netDone = Math.round(this.mixture.getTotalExtent() * ppm);
+    this.netDone = roundSymmetric(this.mixture.getTotalExtent() * ppm);
   }
 
   /** Replays the mixture's reaction since the last step, then moves the particles. */
@@ -195,7 +195,7 @@ export class ParticleSystem {
 
     // Keep the composition matched to the net extent (equilibrate() and dropped backlogs move it
     // without gross flows).
-    const netTarget = Math.round(this.mixture.getTotalExtent() * ppm);
+    const netTarget = roundSymmetric(this.mixture.getTotalExtent() * ppm);
     for (let i = 0; i < MAX_EVENTS_PER_STEP && this.netDone !== netTarget; i++) {
       const forward = netTarget > this.netDone;
       if (!this.react(forward)) {
@@ -251,7 +251,7 @@ export class ParticleSystem {
     if (this.reaction.species[index]?.bulk) {
       return;
     }
-    const count = Math.round(Math.abs(moles) * this.reaction.definition.particlesPerMole);
+    const count = roundSymmetric(Math.abs(moles) * this.reaction.definition.particlesPerMole);
     if (moles > 0) {
       for (let k = 0; k < count && this.particles.length < MAX_PARTICLES; k++) {
         // Added material enters at the top of the box.

@@ -11,7 +11,7 @@ import { PARTICLE_BOX_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
  */
 
 import { Multilink, type TReadOnlyProperty } from "scenerystack/axon";
-import { Bounds2, Random } from "scenerystack/dot";
+import { Bounds2, Random, roundSymmetric } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { optionize } from "scenerystack/phet-core";
 import {
@@ -297,7 +297,10 @@ class ParticleCanvasNode extends CanvasNode {
     };
     reaction.species.forEach((s, i) => {
       if (s.bulk) {
-        const count = Math.min(MAX_BULK_DOTS, Math.round((concentrations[i] ?? 0) * 30 * (height / this.boxMaxHeight)));
+        const count = Math.min(
+          MAX_BULK_DOTS,
+          roundSymmetric((concentrations[i] ?? 0) * 30 * (height / this.boxMaxHeight)),
+        );
         context.fillStyle = speciesStyleIn(reaction, i).color.value.withAlpha(0.55).toCSS();
         for (let k = 0; k < count; k++) {
           const fraction = this.scatter[k];
@@ -307,7 +310,10 @@ class ParticleCanvasNode extends CanvasNode {
         }
       }
     });
-    const inert = Math.min(INERT_DOTS_CAP, Math.round(mixture.getInertAmount() * reaction.definition.particlesPerMole));
+    const inert = Math.min(
+      INERT_DOTS_CAP,
+      roundSymmetric(mixture.getInertAmount() * reaction.definition.particlesPerMole),
+    );
     context.fillStyle = EquilibriumLabColors.inertGasColorProperty.value.toCSS();
     for (let k = 0; k < inert; k++) {
       const fraction = this.scatter[this.scatter.length - 1 - k];

@@ -1,3 +1,4 @@
+import { roundSymmetric } from "scenerystack/dot";
 import { ICE_PROBLEM_SETTINGS } from "../../EquilibriumLabConstants.js";
 /**
  * ICEProblem.ts
@@ -17,7 +18,7 @@ import { ICE_PROBLEM_SETTINGS } from "../../EquilibriumLabConstants.js";
 
 import type { Random } from "scenerystack/dot";
 import { amountsAtExtent, extentBounds, solveEquilibriumExtent } from "../../common/model/equilibriumSolver.js";
-import type { Reaction } from "../../common/model/Reaction.js";
+import type { Reaction, Species } from "../../common/model/Reaction.js";
 import { GAS_CONSTANT } from "../../EquilibriumLabConstants.js";
 
 export type ICEMode = "findEquilibrium" | "findK";
@@ -44,12 +45,26 @@ function roundSignificant(value: number, digits: number = ICE_PROBLEM_SETTINGS.D
     return value;
   }
   const scale = 10 ** (digits - 1 - Math.floor(Math.log10(Math.abs(value))));
-  return Math.round(value * scale) / scale;
+  return roundSymmetric(value * scale) / scale;
+}
+
+function concentrationAt(concentrations: readonly number[], index: number, species: Species): number {
+  const concentration = concentrations[index];
+  if (concentration === undefined) {
+    throw new Error(`Missing concentration for ${species.id}.`);
+  }
+  return concentration;
 }
 
 /** Kc of a set of equilibrium concentrations. */
 export function kFromConcentrations(reaction: Reaction, concentrations: readonly number[]): number {
-  return reaction.species.reduce((product, s, i) => product * (concentrations[i] ?? 0) ** s.nu, 1);
+  if (concentrations.length !== reaction.species.length) {
+    throw new Error("A concentration must be supplied for each reaction species.");
+  }
+  return reaction.species.reduce(
+    (product, species, i) => product * concentrationAt(concentrations, i, species) ** species.nu,
+    1,
+  );
 }
 
 /** Generic reactions: K values that make tidy problems. */
@@ -71,10 +86,10 @@ export function createProblem(base: Reaction, mode: ICEMode, random: Random): IC
   // products usually absent (sometimes present, so the reaction may run either way).
   const largest = Math.max(...d.defaultAmounts) / volume;
   const anyProducts = random.nextDouble() < ICE_PROBLEM_SETTINGS.PRODUCT_PRESENT_PROBABILITY;
-  const initial = base.species.map((s) => {
-    if (s.nu < 0 || anyProducts) {
+  const initialRows = base.species.map((species) => {
+    if (species.nu < 0 || anyProducts) {
       const fraction =
-        s.nu < 0
+        species.nu < 0
           ? random.nextDoubleBetween(
               ICE_PROBLEM_SETTINGS.REACTANT_FRACTION_MIN,
               ICE_PROBLEM_SETTINGS.REACTANT_FRACTION_MAX,
@@ -83,29 +98,34 @@ export function createProblem(base: Reaction, mode: ICEMode, random: Random): IC
               ICE_PROBLEM_SETTINGS.PRODUCT_FRACTION_MIN,
               ICE_PROBLEM_SETTINGS.PRODUCT_FRACTION_MAX,
             );
-      return roundSignificant(fraction * largest, 2);
+      return { species, concentration: roundSignificant(fraction * largest, 2) };
     }
-    return 0;
+    return { species, concentration: 0 };
   });
+  const initial = initialRows.map(({ concentration }) => concentration);
   const amounts = initial.map((c) => c * volume);
 
   if (mode === "findEquilibrium") {
     const kShown = roundSignificant(Math.exp(lnTarget), ICE_PROBLEM_SETTINGS.GIVEN_SIGNIFICANT_FIGURES);
     const reaction = withKc(base, temperature, kShown);
     const x = solveEquilibriumExtent(reaction, amounts, volume, Math.log(kShown)) / volume;
-    const equilibrium = initial.map((c, i) => c + (base.species[i]?.nu ?? 0) * x);
+    const equilibrium = initialRows.map(({ species, concentration }) => concentration + species.nu * x);
     return { mode, reaction, temperature, initial, givenIndex: null, givenValue: null, x, equilibrium, k: kShown };
   }
 
   // findK: give the equilibrium concentration of the first product (rounded), and derive K.
   const trueX = solveEquilibriumExtent(base, amounts, volume, lnTarget) / volume;
-  const givenIndex = base.productIndices[0] ?? 0;
-  const nu = base.species[givenIndex]?.nu ?? 1;
+  const givenIndex = initialRows.findIndex(({ species }) => species.nu > 0);
+  const givenRow = initialRows[givenIndex];
+  if (givenRow === undefined) {
+    throw new Error("A find K problem requires a product concentration to give.");
+  }
+  const givenCoefficient = givenRow.species.nu;
   const givenValue = roundSignificant(
-    (initial[givenIndex] ?? 0) + nu * trueX,
+    givenRow.concentration + givenCoefficient * trueX,
     ICE_PROBLEM_SETTINGS.GIVEN_SIGNIFICANT_FIGURES,
   );
-  let x = (givenValue - (initial[givenIndex] ?? 0)) / nu;
+  let x = (givenValue - givenRow.concentration) / givenCoefficient;
   const { min, max } = extentBounds(base, amounts);
   x = Math.min(max / volume, Math.max(min / volume, x));
   const equilibrium = amountsAtExtent(base, amounts, x * volume).map((n) => n / volume);
@@ -127,9 +147,11 @@ const ANSWER_TOLERANCE: number = ICE_PROBLEM_SETTINGS.ANSWER_TOLERANCE;
  * Whether `coefficients` (the change row, in multiples of x) is right: each is the stoichiometric
  * coefficient times one common sign. Returns that sign (+1 or −1), or 0 if the row is wrong.
  */
-export function changeRowSign(reaction: Reaction, coefficients: readonly number[]): 1 | -1 | 0 {
+export function changeRowSign(
+  rows: readonly { readonly species: Pick<Species, "nu">; readonly coefficient: number }[],
+): 1 | -1 | 0 {
   for (const sign of [1, -1] as const) {
-    if (reaction.species.every((s, i) => coefficients[i] === sign * s.nu)) {
+    if (rows.every(({ species, coefficient }) => coefficient === sign * species.nu)) {
       return sign;
     }
   }
@@ -150,9 +172,9 @@ export function matches(entered: number, expected: number): boolean {
  */
 export function smallXPercent(problem: ICEProblem): { percent: number; index: number } | null {
   let best: { percent: number; index: number } | null = null;
-  problem.reaction.species.forEach((s, i) => {
-    const c0 = problem.initial[i] ?? 0;
-    const consumed = -s.nu * problem.x;
+  problem.reaction.species.forEach((species, i) => {
+    const c0 = concentrationAt(problem.initial, i, species);
+    const consumed = -species.nu * problem.x;
     if (c0 > 0 && consumed > 0) {
       const percent = (100 * consumed) / c0;
       if (!best || percent > best.percent) {

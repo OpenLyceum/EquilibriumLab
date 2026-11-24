@@ -50,20 +50,20 @@ export class StressControlsNode extends VBox {
 
       const rows = reaction.species.map((s, i) => {
         const name = speciesName(s.id);
-        const addName = new DerivedProperty([a11y.addPatternStringProperty, name], (pattern, n) =>
+        const addNameProperty = new DerivedProperty([a11y.addPatternStringProperty, name], (pattern, n) =>
           StringUtils.fillIn(pattern, { name: n }),
         );
-        const removeName = new DerivedProperty([a11y.removePatternStringProperty, name], (pattern, n) =>
+        const removeNameProperty = new DerivedProperty([a11y.removePatternStringProperty, name], (pattern, n) =>
           StringUtils.fillIn(pattern, { name: n }),
         );
-        this.owned.push(addName, removeName);
+        this.owned.push(addNameProperty, removeNameProperty);
         const addButton = pushButton(
           strings.addButtonStringProperty,
           () => {
             model.addSpecies(i, StringUtils.fillIn(markers.addPatternStringProperty.value, { formula: s.formula }));
             respond();
           },
-          addName,
+          addNameProperty,
         );
         const removeButton = pushButton(
           strings.removeButtonStringProperty,
@@ -74,7 +74,7 @@ export class StressControlsNode extends VBox {
             );
             respond();
           },
-          removeName,
+          removeNameProperty,
         );
         addButton.enabledProperty = enabledProperty;
         removeButton.enabledProperty = enabledProperty;
@@ -124,13 +124,13 @@ export class StressControlsNode extends VBox {
           model.addArgon(true, markers.argonStringProperty.value);
           respond();
         });
-        const argonPressureEnabled = new DerivedProperty(
+        const argonPressureEnabledProperty = new DerivedProperty(
           [enabledProperty, mixture.volumeProperty],
           (enabled) => enabled && model.canAddArgonAtConstantPressure,
         );
-        this.owned.push(argonPressureEnabled);
+        this.owned.push(argonPressureEnabledProperty);
         argonVolume.enabledProperty = enabledProperty;
-        argonPressure.enabledProperty = argonPressureEnabled;
+        argonPressure.enabledProperty = argonPressureEnabledProperty;
         extras.push(
           new HBox({ spacing: STRESS_CONTROLS_NODE_SETTINGS.REBUILD_SPACING, children: [argonVolume, argonPressure] }),
         );
@@ -139,12 +139,12 @@ export class StressControlsNode extends VBox {
           model.dilute(markers.waterStringProperty.value);
           respond();
         });
-        const waterEnabled = new DerivedProperty(
+        const waterEnabledProperty = new DerivedProperty(
           [enabledProperty, mixture.volumeProperty],
           (enabled, volume) => enabled && volume < reaction.definition.volumeRange.max,
         );
-        this.owned.push(waterEnabled);
-        water.enabledProperty = waterEnabled;
+        this.owned.push(waterEnabledProperty);
+        water.enabledProperty = waterEnabledProperty;
         extras.push(water);
       }
 

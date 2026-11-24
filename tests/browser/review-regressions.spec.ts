@@ -20,6 +20,27 @@ async function ready(page: Page, screen: number, locale = "en") {
   await page.locator("h1").first().waitFor();
 }
 
+test("ICE-table pickers edit the species rows for the current reaction", async ({ page }) => {
+  await ready(page, 2);
+  const nitrogenDioxide = page.getByRole("slider", { name: "Change in nitrogen dioxide, in multiples of x" });
+  const showSolution = page.getByRole("button", { name: "Show solution" });
+  await nitrogenDioxide.press("ArrowDown");
+  await expect(nitrogenDioxide).toHaveValue("-1");
+  await showSolution.press("Enter");
+  await expect(nitrogenDioxide).toHaveValue("2");
+
+  await page.getByRole("button", { name: /Reaction/ }).press("Enter");
+  await page.getByRole("option", { name: "Water-gas shift" }).press("Enter");
+  await expect(nitrogenDioxide).toHaveCount(0);
+
+  const carbonDioxide = page.getByRole("slider", { name: "Change in carbon dioxide, in multiples of x" });
+  await expect(carbonDioxide).toHaveValue("0");
+  await carbonDioxide.press("ArrowDown");
+  await expect(carbonDioxide).toHaveValue("-1");
+  await showSolution.press("Enter");
+  await expect(carbonDioxide).toHaveValue("1");
+});
+
 for (const control of ["temperature", "piston"] as const) {
   test(`held ${control} keyboard gesture keeps a correct prediction and resumes on release`, async ({ page }) => {
     await ready(page, 3);

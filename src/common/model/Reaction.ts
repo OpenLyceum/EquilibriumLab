@@ -20,6 +20,8 @@
 import type { Range } from "scenerystack/dot";
 import { GAS_CONSTANT, GAS_CONSTANT_L_BAR, STANDARD_TEMPERATURE } from "../../EquilibriumLabConstants.js";
 
+import type stringsEn from "../../i18n/strings_en.json";
+
 export type Phase = "gas" | "aqueous";
 
 /** The family a reaction belongs to, which groups it in the reaction menus. */
@@ -36,9 +38,11 @@ export type ReactionId =
   | "genericCombination"
   | "genericDimer";
 
+export type SpeciesId = keyof (typeof stringsEn)["common"]["speciesNames"];
+
 export type Species = {
   /** Identifier used for colours, particle sprites and string lookups (e.g. "NO2"). */
-  readonly id: string;
+  readonly id: SpeciesId;
   /** Formula as RichText markup, without phase or coefficient (e.g. "NO<sub>2</sub>"). */
   readonly formula: string;
   /** Signed stoichiometric coefficient: negative for reactants, positive for products. */

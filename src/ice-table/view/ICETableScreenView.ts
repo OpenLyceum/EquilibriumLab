@@ -273,15 +273,13 @@ export class ICETableScreenView extends ScreenView {
     let unlinkCoefficients: (() => void) | null = null;
     const linkCoefficients = () => {
       unlinkCoefficients?.();
-      const properties = model.changeCoefficientProperties;
-      for (const property of properties) {
-        property.link(updateReferences);
+      const rows = model.speciesRows;
+      for (const { coefficientProperty } of rows) {
+        coefficientProperty.lazyLink(updateReferences);
       }
       unlinkCoefficients = () => {
-        for (const property of properties) {
-          if (!property.isDisposed) {
-            property.unlink(updateReferences);
-          }
+        for (const { coefficientProperty } of rows) {
+          coefficientProperty.unlink(updateReferences);
         }
         unlinkCoefficients = null;
       };

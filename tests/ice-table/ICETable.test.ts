@@ -11,6 +11,7 @@ import { getReaction } from "../../src/common/model/Reactions.js";
 import {
   changeRowSign,
   createProblem,
+  type ICEProblem,
   kFromConcentrations,
   smallXPercent,
 } from "../../src/ice-table/model/ICEProblem.js";
@@ -39,12 +40,19 @@ describe("ICE problems", () => {
     }
   });
 
-  it("accepts the change row in either sign convention", () => {
-    const reaction = getReaction("hydrogenIodide");
-    expect(changeRowSign(reaction, [-1, -1, 2])).toBe(1);
-    expect(changeRowSign(reaction, [1, 1, -2])).toBe(-1);
-    expect(changeRowSign(reaction, [-1, -1, 1])).toBe(0);
-    expect(changeRowSign(reaction, [-1, 1, 2])).toBe(0);
+  it.each([
+    [-1, -1, 2, 1],
+    [1, 1, -2, -1],
+    [-1, -1, 1, 0],
+    [-1, 1, 2, 0],
+  ])("checks change coefficients (%i, %i, %i) with sign %i", (hydrogen, iodine, product, sign) => {
+    expect(
+      changeRowSign([
+        { species: { nu: -1 }, coefficient: hydrogen },
+        { species: { nu: -1 }, coefficient: iodine },
+        { species: { nu: 2 }, coefficient: product },
+      ]),
+    ).toBe(sign);
   });
 
   it("reports x as a percentage of the initial concentration it depletes", () => {
@@ -53,15 +61,21 @@ describe("ICE problems", () => {
     expect(result?.index).toBe(0);
     expect(result?.percent).toBeCloseTo((100 * problem.x) / (problem.initial[0] ?? 1), 9);
   });
+
+  it("rejects a missing concentration when calculating K", () => {
+    expect(() => kFromConcentrations(getReaction("hydrogenIodide"), [1, 1])).toThrow(
+      "A concentration must be supplied for each reaction species.",
+    );
+  });
 });
 
 describe("ICETableModel", () => {
   it("checks a correct answer, with either sign convention", () => {
     const model = new ICETableModel();
     const problem = model.problem;
-    problem.reaction.species.forEach((s, i) => {
-      model.changeCoefficientProperties[i]!.value = -s.nu;
-    });
+    for (const { species, coefficientProperty } of model.speciesRows) {
+      coefficientProperty.value = -species.nu;
+    }
     model.xEntryProperty.value = -problem.x;
     model.check();
     expect(model.checkProperty.value).toMatchObject({ sign: -1, xCorrect: true });
@@ -97,12 +111,37 @@ describe("ICETableModel", () => {
     });
   });
 
-  it("a new reaction or mode deals a new problem with a blank change row", () => {
+  it("publishes matching rows and releases old coefficients after the views can rebind", () => {
     const model = new ICETableModel();
-    model.changeCoefficientProperties[0]!.value = -1;
+    model.showSolution();
+    const oldRows = model.speciesRows;
+    const observeProblem = (problem: ICEProblem) => {
+      expect(model.speciesRows.map(({ species }) => species)).toEqual(problem.reaction.species);
+      expect(model.speciesRows.map(({ initial }) => initial)).toEqual(problem.initial);
+    };
+    model.problemProperty.lazyLink(observeProblem);
+    const checkRebuild = () => {
+      expect(model.speciesRows).not.toBe(oldRows);
+      expect(oldRows.every(({ coefficientProperty }) => !coefficientProperty.isDisposed)).toBe(true);
+    };
+    model.changeRowRebuiltEmitter.addListener(checkRebuild);
     model.reactionIdProperty.value = "waterGasShift";
+    model.problemProperty.unlink(observeProblem);
+    model.changeRowRebuiltEmitter.removeListener(checkRebuild);
+
     expect(model.problem.reaction.id).toBe("waterGasShift");
-    expect(model.getChangeCoefficients()).toEqual([0, 0, 0, 0]);
+    expect(oldRows.every(({ coefficientProperty }) => coefficientProperty.isDisposed)).toBe(true);
+    expect(model.speciesRows.map(({ coefficientProperty }) => coefficientProperty.value)).toEqual([0, 0, 0, 0]);
     expect(model.xEntryProperty.value).toBeNull();
+
+    model.showSolution();
+    expect(model.checkProperty.value).toMatchObject({ sign: 1, xCorrect: true });
+    model.problem.equilibrium.forEach((expected, index) => {
+      expect(model.getEnteredEquilibrium()?.[index]).toBeCloseTo(expected, 10);
+    });
+    model.reset();
+    expect(model.problem.reaction.id).toBe("dinitrogenTetroxide");
+    expect(model.speciesRows.map(({ coefficientProperty }) => coefficientProperty.value)).toEqual([0, 0]);
+    expect(model.checkProperty.value).toBeNull();
   });
 });

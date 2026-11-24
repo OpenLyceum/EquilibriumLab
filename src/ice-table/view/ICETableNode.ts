@@ -8,7 +8,7 @@ import { ICE_TABLE_NODE_SETTINGS } from "../../EquilibriumLabConstants.js";
  * cell. Rebuilt with each new problem.
  */
 
-import { DerivedProperty, Multilink, Property, type TReadOnlyProperty } from "scenerystack/axon";
+import { DerivedProperty, Multilink, type TReadOnlyProperty } from "scenerystack/axon";
 import { StringUtils } from "scenerystack/phetcommon";
 import { HBox, Line, Node, RichText, type TColor, Text, VBox } from "scenerystack/scenery";
 import { PhetFont } from "scenerystack/scenery-phet";
@@ -19,7 +19,7 @@ import { speciesName } from "../../common/view/reactionChoices.js";
 import EquilibriumLabColors from "../../EquilibriumLabColors.js";
 import { FONT_SIZE } from "../../EquilibriumLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import { CHANGE_COEFFICIENT_RANGE, type ICETableModel } from "../model/ICETableModel.js";
+import type { ICETableModel } from "../model/ICETableModel.js";
 
 /** Width of the row-label column and of each species column (px). */
 const LABEL_WIDTH: number = ICE_TABLE_NODE_SETTINGS.LABEL_WIDTH;
@@ -93,8 +93,8 @@ export class ICETableNode extends Node {
       this.owned = [];
       disposeChildren(this);
       const problem = model.problem;
-      const reaction = problem.reaction;
-      const count = reaction.species.length;
+      const rows = model.speciesRows;
+      const count = rows.length;
       const columnWidth = (width - LABEL_WIDTH) / count;
       const columnX = (i: number) => LABEL_WIDTH + (i + 0.5) * columnWidth;
       const rowY = (row: number) => (row + 0.5) * ROW_HEIGHT;
@@ -137,26 +137,25 @@ export class ICETableNode extends Node {
         }),
       );
 
-      reaction.species.forEach((s, i) => {
+      rows.forEach(({ species, initial: initialConcentration, coefficientProperty }, i) => {
         // Header and initial row.
-        const header = text(`[${s.formula}]`, columnWidth - 8, true);
+        const header = text(`[${species.formula}]`, columnWidth - 8, true);
         header.centerX = columnX(i);
         header.centerY = rowY(0);
         const initial = text(
-          significant(problem.initial[i] ?? 0, ICE_TABLE_NODE_SETTINGS.INITIAL_DIGITS),
+          significant(initialConcentration, ICE_TABLE_NODE_SETTINGS.INITIAL_DIGITS),
           columnWidth - 8,
         );
         initial.centerX = columnX(i);
         initial.centerY = rowY(1);
 
         // Change row: picker × x.
-        const coefficient = model.changeCoefficientProperties[i] ?? new Property(0);
         const pickerName = new DerivedProperty(
-          [a11y.changePickerPatternStringProperty, speciesName(s.id)],
+          [a11y.changePickerPatternStringProperty, speciesName(species.id)],
           (pattern, name) => StringUtils.fillIn(pattern, { name }),
         );
         this.owned.push(pickerName);
-        const picker = new NumberPicker(coefficient, new Property(CHANGE_COEFFICIENT_RANGE), {
+        const picker = new NumberPicker(coefficientProperty, coefficientProperty.rangeProperty, {
           font: new PhetFont(FONT_SIZE.readout),
           color: EquilibriumLabColors.accentColorProperty,
           backgroundStroke: EquilibriumLabColors.panelBorderColorProperty,
@@ -180,10 +179,10 @@ export class ICETableNode extends Node {
           maxWidth: columnWidth - ICE_TABLE_NODE_SETTINGS.VALUE_MAX_WIDTH_OFFSET,
         });
         const cell = new VBox({ spacing: 1, children: [expression, value] });
-        const multilink = Multilink.multilink([coefficient, model.xEntryProperty], (c, x) => {
-          expression.string = changeExpression(problem.initial[i] ?? 0, c);
+        const multilink = Multilink.multilink([coefficientProperty, model.xEntryProperty], (c, x) => {
+          expression.string = changeExpression(initialConcentration, c);
           const evaluated = evaluateCell(
-            problem.initial[i] ?? 0,
+            initialConcentration,
             c,
             x,
             problem.givenIndex === i ? problem.givenValue : null,

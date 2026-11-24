@@ -8,10 +8,10 @@ import { ICE_TABLE_MODEL_SETTINGS } from "../../EquilibriumLabConstants.js";
  * equilibrium row they wrote.
  */
 
-import { Emitter, NumberProperty, Property } from "scenerystack/axon";
+import { Emitter, NumberProperty, Property, type TReadOnlyProperty } from "scenerystack/axon";
 import { Random, Range } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
-import type { ReactionId } from "../../common/model/Reaction.js";
+import type { ReactionId, Species } from "../../common/model/Reaction.js";
 import { ReactionSceneModel } from "../../common/model/ReactionSceneModel.js";
 import { getReaction } from "../../common/model/Reactions.js";
 import {
@@ -35,7 +35,7 @@ export const ICE_REACTION_IDS: readonly ReactionId[] = [
 ];
 
 /** Range of each change-row coefficient (multiples of x). */
-export const CHANGE_COEFFICIENT_RANGE = new Range(
+const CHANGE_COEFFICIENT_RANGE = new Range(
   ICE_TABLE_MODEL_SETTINGS.CHANGE_COEFFICIENT_RANGE_MIN,
   ICE_TABLE_MODEL_SETTINGS.CHANGE_COEFFICIENT_RANGE_MAX,
 );
@@ -54,6 +54,12 @@ export type ICECheck = {
   readonly kCorrect: boolean;
 };
 
+type ICESpeciesRow = {
+  readonly species: Species;
+  readonly initial: number;
+  readonly coefficientProperty: NumberProperty;
+};
+
 export class ICETableModel implements TModel {
   public readonly modeProperty = new Property<ICEMode>("findEquilibrium", {
     validValues: ["findEquilibrium", "findK"],
@@ -61,12 +67,9 @@ export class ICETableModel implements TModel {
   public readonly reactionIdProperty = new Property<ReactionId>("dinitrogenTetroxide", {
     validValues: ICE_REACTION_IDS,
   });
-  public readonly problemProperty: Property<ICEProblem>;
+  public readonly problemProperty: TReadOnlyProperty<ICEProblem>;
 
-  /** The change row, one coefficient of x per species; rebuilt with each problem. */
-  public changeCoefficientProperties: NumberProperty[] = [];
-
-  /** Fires after changeCoefficientProperties is rebuilt. */
+  /** Fires after the new problem and its rows are available. */
   public readonly changeRowRebuiltEmitter = new Emitter();
 
   /** The x and K the student entered (null until entered). */
@@ -82,6 +85,8 @@ export class ICETableModel implements TModel {
   /** The mixture "Run it" plays from the initial row. */
   public readonly scene: ReactionSceneModel;
 
+  private readonly currentProblemProperty: Property<ICEProblem>;
+  private rows: readonly ICESpeciesRow[] = [];
   private readonly random = new Random({ seed: PROBLEM_SEED });
 
   /**
@@ -91,10 +96,11 @@ export class ICETableModel implements TModel {
   private suppressProblemRefresh = false;
 
   public constructor() {
-    this.problemProperty = new Property(this.generate());
-    this.scene = new ReactionSceneModel(this.problemProperty.value.reaction);
-    this.scene.timer.isPlayingProperty.value = false;
-    this.applyProblem();
+    const problem = this.generate();
+    this.currentProblemProperty = new Property(problem);
+    this.problemProperty = this.currentProblemProperty;
+    this.scene = new ReactionSceneModel(problem.reaction);
+    this.applyProblem(problem);
 
     // Synchronous on purpose: the mode, reaction and problem must never disagree (showSolution or
     // a check in between would grade the wrong problem). applyProblem() orders the teardown so
@@ -117,9 +123,9 @@ export class ICETableModel implements TModel {
     return this.problemProperty.value;
   }
 
-  /** The change row as entered. */
-  public getChangeCoefficients(): number[] {
-    return this.changeCoefficientProperties.map((p) => p.value);
+  /** One editable coefficient of x per species, paired with its initial concentration. */
+  public get speciesRows(): readonly ICESpeciesRow[] {
+    return this.rows;
   }
 
   /** The equilibrium row the student's entries give (M), or null until x is entered. */
@@ -128,17 +134,18 @@ export class ICETableModel implements TModel {
     if (x === null) {
       return null;
     }
-    return this.problem.initial.map((c, i) => c + (this.changeCoefficientProperties[i]?.value ?? 0) * x);
+    return this.rows.map(({ initial, coefficientProperty }) => initial + coefficientProperty.value * x);
   }
 
   public newProblem(): void {
-    this.problemProperty.value = this.generate();
-    this.applyProblem();
+    this.applyProblem(this.generate());
   }
 
   public check(): void {
     const problem = this.problem;
-    const sign = changeRowSign(problem.reaction, this.getChangeCoefficients());
+    const sign = changeRowSign(
+      this.rows.map(({ species, coefficientProperty }) => ({ species, coefficient: coefficientProperty.value })),
+    );
     const x = this.xEntryProperty.value;
     const k = this.kEntryProperty.value;
     const expectedX = problem.x * (sign === 0 ? 1 : sign);
@@ -150,9 +157,9 @@ export class ICETableModel implements TModel {
   /** Fills in the change row and x (and K) with the solution. */
   public showSolution(): void {
     const problem = this.problem;
-    this.changeCoefficientProperties.forEach((property, i) => {
-      property.value = problem.reaction.species[i]?.nu ?? 0;
-    });
+    for (const { species, coefficientProperty } of this.rows) {
+      coefficientProperty.value = species.nu;
+    }
     this.xEntryProperty.value = problem.x;
     if (problem.mode === "findK") {
       this.kEntryProperty.value = problem.k;
@@ -165,7 +172,7 @@ export class ICETableModel implements TModel {
   public runIt(): void {
     const problem = this.problem;
     const volume = problem.reaction.definition.defaultVolume;
-    this.scene.restart(problem.initial.map((c) => c * volume));
+    this.scene.restart(this.rows.map(({ initial }) => initial * volume));
     this.scene.timer.isPlayingProperty.value = true;
   }
 
@@ -199,23 +206,32 @@ export class ICETableModel implements TModel {
    * only after Multilinks/NumberPickers have released them. Setting x/k to null before that
    * disposal used to notify Multilinks still wired to disposed dependencies (?ea asserts).
    */
-  private applyProblem(): void {
-    const problem = this.problem;
-    const oldCoefficients = this.changeCoefficientProperties;
-    this.changeCoefficientProperties = problem.reaction.species.map(
-      () => new NumberProperty(0, { range: CHANGE_COEFFICIENT_RANGE, numberType: "Integer" }),
-    );
-    for (const property of this.changeCoefficientProperties) {
-      property.lazyLink(() => {
+  private applyProblem(problem: ICEProblem): void {
+    if (problem.initial.length !== problem.reaction.species.length) {
+      throw new Error("An ICE problem must provide one initial concentration per species.");
+    }
+    const initialRows = problem.reaction.species.map((species, index) => {
+      const initial = problem.initial[index];
+      if (initial === undefined) {
+        throw new Error(`An ICE problem is missing the initial concentration for ${species.id}.`);
+      }
+      return { species, initial };
+    });
+    const oldRows = this.rows;
+    this.rows = initialRows.map(({ species, initial }) => {
+      const coefficientProperty = new NumberProperty(0, { range: CHANGE_COEFFICIENT_RANGE, numberType: "Integer" });
+      coefficientProperty.lazyLink(() => {
         this.checkProperty.value = null;
       });
-    }
+      return { species, initial, coefficientProperty };
+    });
+    this.currentProblemProperty.value = problem;
 
     // View drops Multilinks/pickers on the old row and binds to the new Properties.
     this.changeRowRebuiltEmitter.emit();
 
-    for (const property of oldCoefficients) {
-      property.dispose();
+    for (const { coefficientProperty } of oldRows) {
+      coefficientProperty.dispose();
     }
 
     this.xEntryProperty.value = null;
@@ -225,7 +241,7 @@ export class ICETableModel implements TModel {
     const volume = problem.reaction.definition.defaultVolume;
     this.scene.setReaction(
       problem.reaction,
-      problem.initial.map((c) => c * volume),
+      this.rows.map(({ initial }) => initial * volume),
     );
     this.scene.mixture.temperatureProperty.value = problem.temperature;
     this.scene.timer.isPlayingProperty.value = false;
